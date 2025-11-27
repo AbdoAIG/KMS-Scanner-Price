@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ماسح المنتجات</title>
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<style>
+  body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4; }
+  #reader { width: 100%; max-width: 500px; margin: 0 auto; border: 2px solid #333; border-radius: 10px; }
+  .result-box { margin-top: 20px; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); display: none; }
+  .product-img { width: 150px; height: 150px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; }
+  .price { font-size: 24px; color: green; font-weight: bold; }
+  .name { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
+  .btn { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin-top: 10px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+  <h2>ماسح المنتجات</h2>
+  
+  <div id="reader"></div>
+  
+  <div id="result" class="result-box">
+    <img id="p_img" src="" class="product-img">
+    <div id="p_name" class="name"></div>
+    <div id="p_price" class="price"></div>
+    <button class="btn" onclick="startScan()">مسح منتج آخر</button>
+  </div>
+
+  <script>
+    // ==========================================
+    // منطقة تعديل المنتجات (قاعدة البيانات)
+    // ==========================================
+    var products = {
+      "6221001234567": { name: "شيبسي عائلي", price: "15 ج.م", img: "https://via.placeholder.com/150" },
+      "123456789": { name: "بيبسي كانز", price: "10 ج.م", img: "https://via.placeholder.com/150" },
+      "111222333": { name: "بسكويت شاي", price: "5 ج.م", img: "https://via.placeholder.com/150" }
+    };
+    // ==========================================
+    
+    var html5QrcodeScanner;
+
+    function onScanSuccess(decodedText, decodedResult) {
+      // إيقاف الكاميرا عند العثور على كود
+      html5QrcodeScanner.clear();
+      
+      // البحث عن المنتج
+      if (products[decodedText]) {
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('p_name').innerText = products[decodedText].name;
+        document.getElementById('p_price').innerText = products[decodedText].price;
+        document.getElementById('p_img').src = products[decodedText].img;
+      } else {
+        alert("هذا المنتج غير مسجل: " + decodedText);
+        startScan(); // إعادة تشغيل الكاميرا
+      }
+    }
+
+    function startScan() {
+      document.getElementById('result').style.display = 'none';
+      html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+      html5QrcodeScanner.render(onScanSuccess);
+    }
+
+    // تشغيل الماسح عند فتح الصفحة
+    startScan();
+  </script>
+
+</body>
+</html>
