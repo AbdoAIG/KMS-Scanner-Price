@@ -178,7 +178,7 @@
       document.getElementById('result-screen').style.display = 'block';
       
       document.getElementById('p_name').innerText = product.name;
-      document.getElementById('p_price').innerText = product.price;
+      document.getElementById('p_price').innerText = product.price + " ج.م";
       
       const imgElem = document.getElementById('p_img');
       if(product.img && product.img.startsWith('http')) {
@@ -217,3 +217,4 @@
 </body>
 
 </html>
+
