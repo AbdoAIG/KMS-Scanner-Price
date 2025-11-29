@@ -7,29 +7,18 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>تطبيق المنتجات الذكي</title>
+<title>تطبيق المنتجات</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
   body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 10px; background-color: #f0f2f5; margin: 0; }
   .container { max-width: 600px; margin: 0 auto; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
   
-  /* --- تنسيق البحث الجديد --- */
+  /* مربع البحث */
   .search-wrapper { position: relative; margin-bottom: 15px; }
   .search-input { width: 100%; padding: 12px; border: 2px solid #007bff; border-radius: 8px; font-size: 16px; box-sizing: border-box; outline: none; }
   
   /* قائمة الاقتراحات */
-  .suggestions-list { 
-      position: absolute; 
-      top: 100%; left: 0; right: 0; 
-      background: white; 
-      border: 1px solid #ddd; 
-      border-radius: 0 0 8px 8px; 
-      z-index: 1000; 
-      max-height: 250px; 
-      overflow-y: auto; 
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      display: none; /* مخفية افتراضياً */
-  }
+  .suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 0 0 8px 8px; z-index: 1000; max-height: 250px; overflow-y: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none; }
   .suggestion-item { padding: 12px; border-bottom: 1px solid #eee; text-align: right; cursor: pointer; display: flex; justify-content: space-between; }
   .suggestion-item:hover { background-color: #f1f8ff; }
   .s-name { font-weight: bold; color: #333; }
@@ -39,18 +28,15 @@
   #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-bottom: 15px; border: 2px solid #ddd; min-height: 250px; background: #eee; }
   
   /* النتائج */
-  h2 { color: #333; margin-bottom: 10px; font-size: 20px; }
   .result-box { display: none; text-align: center; padding: 20px 0; }
   .product-img { width: 100%; max-width: 200px; height: 200px; object-fit: contain; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee; }
   .price { font-size: 32px; color: #28a745; font-weight: bold; margin: 10px 0; }
   .name { font-size: 22px; font-weight: bold; color: #333; margin-bottom: 5px; }
   
-  /* الأزرار */
+  /* الأزرار والرسائل */
   .btn { display: block; width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; text-decoration: none; box-sizing: border-box; }
   .btn-primary { background-color: #007bff; color: white; }
   .btn-warning { background-color: #ffc107; color: #333; }
-  
-  /* رسائل التنبيه */
   .status-msg { margin: 10px 0; font-size: 14px; padding: 8px; border-radius: 5px; display: none; }
   .loading { background-color: #e2e6ea; color: #333; }
   .offline { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
@@ -63,15 +49,14 @@
   
   <div id="scan-screen">
     <h2>ماسح المنتجات</h2>
-    <div id="status" class="status-msg loading">جاري تحميل البيانات...</div>
+    <div id="status" class="status-msg loading">جاري التحميل...</div>
 
     <div class="search-wrapper">
-        <input type="text" id="search-input" class="search-input" placeholder="اكتب اسم المنتج أو الباركود..." onkeyup="suggestProducts()" autocomplete="off">
+        <input type="text" id="search-input" class="search-input" placeholder="بحث بالاسم أو الباركود..." onkeyup="suggestProducts()" autocomplete="off">
         <div id="suggestions" class="suggestions-list"></div>
     </div>
 
     <div id="reader"></div> 
-    
     <a id="add-btn" href="#" target="_blank" class="btn btn-warning">+ إضافة منتج جديد</a>
   </div>
 
@@ -101,53 +86,31 @@
 
     document.getElementById('add-btn').href = GOOGLE_FORM_URL;
 
-    // --- 🔎 دالة الاقتراحات الذكية (Autocomplete) ---
+    // --- دالة الاقتراحات ---
     function suggestProducts() {
         let inputVal = document.getElementById('search-input').value.toLowerCase().trim();
         let listDiv = document.getElementById('suggestions');
-        listDiv.innerHTML = ""; // مسح القائمة القديمة
+        listDiv.innerHTML = ""; 
 
-        if (inputVal.length < 1) { // لو الخانة فاضية نخفي القائمة
-            listDiv.style.display = "none";
-            return;
-        }
+        if (inputVal.length < 1) { listDiv.style.display = "none"; return; }
 
         let matchCount = 0;
-        
-        // البحث في المنتجات
         for (let code in productsDB) {
             let p = productsDB[code];
-            // البحث بالاسم أو الباركود
             if (p.name.toLowerCase().includes(inputVal) || code.includes(inputVal)) {
-                
                 let item = document.createElement('div');
                 item.className = 'suggestion-item';
-                item.innerHTML = `
-                    <span class="s-name">${p.name}</span>
-                    <span class="s-price">${p.price} ج.م</span>
-                `;
-                // عند الضغط على الاقتراح
-                item.onclick = function() {
-                    showResultScreen(p); // عرض المنتج
-                    document.getElementById('search-input').value = ""; // تفريغ الخانة
-                    listDiv.style.display = "none"; // إخفاء القائمة
-                };
-
+                item.innerHTML = `<span class="s-name">${p.name}</span><span class="s-price">${p.price} ج.م</span>`;
+                item.onclick = function() { showResultScreen(p); document.getElementById('search-input').value = ""; listDiv.style.display = "none"; };
                 listDiv.appendChild(item);
                 matchCount++;
-
-                if(matchCount >= 10) break; // عرض أول 10 نتائج فقط لتجنب البطء
+                if(matchCount >= 10) break;
             }
         }
-
-        if (matchCount > 0) {
-            listDiv.style.display = "block";
-        } else {
-            listDiv.style.display = "none";
-        }
+        listDiv.style.display = (matchCount > 0) ? "block" : "none";
     }
 
-    // --- دالة تحميل البيانات ---
+    // --- تحميل البيانات ---
     async function fetchProducts() {
       showStatus("جاري التحديث...", "loading");
       try {
@@ -160,12 +123,8 @@
         setTimeout(() => { statusDiv.style.display = 'none'; }, 1000);
       } catch (error) {
         const cachedData = localStorage.getItem('offline_products_csv');
-        if (cachedData) {
-          parseCSV(cachedData);
-          showStatus("⚠️ وضع الأوفلاين", "offline");
-        } else {
-          showStatus("❌ خطأ بالإنترنت", "error");
-        }
+        if (cachedData) { parseCSV(cachedData); showStatus("⚠️ وضع الأوفلاين", "offline"); }
+        else { showStatus("❌ خطأ بالإنترنت", "error"); }
       }
     }
 
@@ -175,10 +134,7 @@
       for (let i = 1; i < rows.length; i++) {
         const row = rows[i].split(','); 
         if (row.length >= 4) {
-          const code = clean(row[1]); 
-          const name = clean(row[2]); 
-          const price = clean(row[3]); 
-          const img = row[4] ? clean(row[4]) : ""; 
+          const code = clean(row[1]); const name = clean(row[2]); const price = clean(row[3]); const img = row[4] ? clean(row[4]) : ""; 
           if(code) productsDB[code] = { name: name, price: price, img: img };
         }
       }
@@ -188,45 +144,44 @@
 
     function onScanSuccess(decodedText, decodedResult) {
       if(html5QrcodeScanner) html5QrcodeScanner.clear();
-
-      if (productsDB[decodedText]) {
-        showResultScreen(productsDB[decodedText]);
-      } else {
-        if(confirm("غير مسجل: " + decodedText + "\nهل تريد إضافته؟")) {
-            window.open(GOOGLE_FORM_URL, '_blank');
-            resetScanner();
-        } else {
-            resetScanner();
-        }
+      if (productsDB[decodedText]) { showResultScreen(productsDB[decodedText]); }
+      else {
+        if(confirm("غير مسجل: " + decodedText + "\nإضافة؟")) { window.open(GOOGLE_FORM_URL, '_blank'); resetScanner(); }
+        else { resetScanner(); }
       }
     }
 
     function showResultScreen(product) {
       document.getElementById('scan-screen').style.display = 'none';
       document.getElementById('result-screen').style.display = 'block';
-      
       document.getElementById('p_name').innerText = product.name;
       document.getElementById('p_price').innerText = product.price + " ج.م";
-      
       const imgElem = document.getElementById('p_img');
-      if(product.img && product.img.startsWith('http')) {
-        imgElem.src = product.img;
-        imgElem.style.display = 'inline-block';
-      } else {
-        imgElem.style.display = 'none';
-      }
+      if(product.img && product.img.startsWith('http')) { imgElem.src = product.img; imgElem.style.display = 'inline-block'; }
+      else { imgElem.style.display = 'none'; }
     }
 
     function resetScanner() {
       document.getElementById('result-screen').style.display = 'none';
       document.getElementById('scan-screen').style.display = 'block';
-      document.getElementById('suggestions').style.display = "none"; // إخفاء القائمة
+      document.getElementById('suggestions').style.display = "none";
       startCamera();
     }
 
+    // --- 📷 هنا التعديل السحري للكاميرا الخلفية ---
     function startCamera() {
       document.getElementById('reader').innerHTML = "";
-      html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+      
+      // إعدادات الكاميرا: إجبار الكاميرا الخلفية (environment)
+      html5QrcodeScanner = new Html5QrcodeScanner(
+          "reader", 
+          { 
+              fps: 10, 
+              qrbox: 250,
+              videoConstraints: { facingMode: "environment" } // هذا السطر هو السر
+          }
+      );
+      
       html5QrcodeScanner.render(onScanSuccess);
     }
 
