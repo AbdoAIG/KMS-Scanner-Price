@@ -7,65 +7,107 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>تطبيق الشركة</title>
+<title>تطبيق الشركة الاحترافي</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
-  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; background-color: #f0f2f5; margin: 0; }
-  .container { max-width: 600px; margin: 10px auto; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; min-height: 90vh; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; background-color: #1a1a1a; margin: 0; color: white; }
+  .container { max-width: 600px; margin: 10px auto; background: #222; padding: 15px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; min-height: 90vh; border: 1px solid #333; }
   
   /* الشعار */
-  .app-logo { max-width: 150px; max-height: 80px; display: block; margin: 0 auto 10px auto; object-fit: contain; }
+  .app-logo { max-width: 140px; max-height: 70px; display: block; margin: 0 auto 15px auto; object-fit: contain; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
 
   /* القائمة الجانبية */
-  .menu-btn { position: absolute; top: 15px; right: 15px; font-size: 24px; cursor: pointer; background: none; border: none; color: #333; z-index: 100; }
-  .sidenav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background-color: #333; overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; }
-  .sidenav a { padding: 8px 8px 8px 32px; text-decoration: none; font-size: 18px; color: #f1f1f1; display: block; transition: 0.3s; border-bottom: 1px solid #444; margin-right: 10px; }
-  .sidenav .closebtn { position: absolute; top: 0; right: 25px; font-size: 36px; margin-left: 50px; border: none; }
+  .menu-btn { position: absolute; top: 15px; right: 15px; font-size: 26px; cursor: pointer; background: none; border: none; color: #fff; z-index: 100; text-shadow: 0 0 10px black; }
+  .sidenav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background-color: #111; overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; border-left: 1px solid #333; }
+  .sidenav a { padding: 12px 15px 12px 32px; text-decoration: none; font-size: 18px; color: #ccc; display: block; transition: 0.3s; border-bottom: 1px solid #222; margin-right: 5px; }
+  .sidenav a:hover { color: #fff; background: #007bff; }
+  .sidenav .closebtn { position: absolute; top: 0; right: 25px; font-size: 36px; margin-left: 50px; border: none; background: none; }
   
   /* البحث */
-  .search-wrapper { position: relative; margin-bottom: 15px; }
-  .search-input { width: 100%; padding: 12px; border: 2px solid #007bff; border-radius: 8px; font-size: 16px; box-sizing: border-box; outline: none; }
-  .suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 0 0 8px 8px; z-index: 1000; max-height: 250px; overflow-y: auto; display: none; }
-  .suggestion-item { padding: 12px; border-bottom: 1px solid #eee; text-align: right; cursor: pointer; display: flex; justify-content: space-between; }
-  
-  /* الكاميرا والنتائج */
-  #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-bottom: 15px; border: 2px solid #ddd; min-height: 250px; background: #eee; }
-  #list-screen, .result-box { display: none; text-align: right; }
-  #list-screen .list-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-  .result-box { text-align: center; }
-  
-  /* --- 🖼️ تنسيق الصورة (قابلة للضغط) --- */
-  .product-img { width: 100%; max-width: 200px; height: 200px; object-fit: contain; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee; cursor: pointer; }
-  
-  /* --- 🔍 تنسيق شاشة التكبير (Modal) --- */
-  .modal { display: none; position: fixed; z-index: 5000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); }
-  .modal-content { margin: auto; display: block; width: 90%; max-width: 700px; max-height: 80vh; object-fit: contain; }
-  .close-zoom { position: absolute; top: 15px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; }
+  .search-wrapper { position: relative; margin-bottom: 20px; }
+  .search-input { width: 100%; padding: 14px; background: #333; border: 2px solid #444; color: white; border-radius: 12px; font-size: 16px; box-sizing: border-box; outline: none; transition: 0.3s; }
+  .search-input:focus { border-color: #007bff; box-shadow: 0 0 15px rgba(0,123,255,0.3); }
+  .suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: #333; border: 1px solid #444; border-radius: 0 0 12px 12px; z-index: 1000; max-height: 250px; overflow-y: auto; display: none; }
+  .suggestion-item { padding: 15px; border-bottom: 1px solid #444; text-align: right; cursor: pointer; display: flex; justify-content: space-between; color: white; }
+  .suggestion-item:hover { background-color: #444; }
 
-  .price { font-size: 32px; color: #28a745; font-weight: bold; margin: 10px 0; }
-  .name { font-size: 22px; font-weight: bold; color: #333; margin-bottom: 5px; }
-  .category-tag { background: #eee; padding: 5px 10px; border-radius: 15px; font-size: 12px; color: #666; margin-bottom: 10px; display: inline-block; }
+  /* --- 📷 تصميم الماسح الجديد (الاحترافي) --- */
+  .scanner-wrapper { position: relative; width: 100%; height: 300px; margin-bottom: 20px; border-radius: 15px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.8); border: 2px solid #444; }
+  #reader { width: 100%; height: 100%; object-fit: cover; }
+  
+  /* خط الليزر المتحرك */
+  .laser-beam {
+      position: absolute; width: 100%; height: 2px; background: red;
+      box-shadow: 0 0 15px red, 0 0 30px red;
+      top: 0; left: 0; z-index: 10;
+      animation: scan-anim 2s infinite ease-in-out;
+      opacity: 0.8;
+      pointer-events: none; /* للسماح بالضغط من خلاله */
+  }
+  @keyframes scan-anim {
+      0% { top: 10%; opacity: 0; }
+      50% { opacity: 1; }
+      100% { top: 90%; opacity: 0; }
+  }
+
+  /* إطار الزوايا (Viewfinder) */
+  .scan-overlay {
+      position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      pointer-events: none;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+  }
+  .scan-overlay::before, .scan-overlay::after {
+      content: ''; position: absolute; width: 30px; height: 30px;
+      border-color: #007bff; border-style: solid; border-width: 0;
+      transition: 0.3s;
+  }
+  /* الزوايا العلوية */
+  .scan-overlay::before { top: -2px; left: -2px; border-top-width: 4px; border-left-width: 4px; border-radius: 8px 0 0 0; }
+  .scan-overlay::after { top: -2px; right: -2px; border-top-width: 4px; border-right-width: 4px; border-radius: 0 8px 0 0; }
+  /* الزوايا السفلية (عناصر إضافية) */
+  .scan-corners-bottom { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+  .scan-corners-bottom::before, .scan-corners-bottom::after {
+      content: ''; position: absolute; width: 30px; height: 30px;
+      border-color: #007bff; border-style: solid; border-width: 0;
+  }
+  .scan-corners-bottom::before { bottom: -2px; left: -2px; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 8px; }
+  .scan-corners-bottom::after { bottom: -2px; right: -2px; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 8px 0; }
+
+  /* النتائج */
+  #list-screen, .result-box { display: none; text-align: right; }
+  .result-box { text-align: center; background: #333; padding: 20px; border-radius: 15px; }
+  .product-img { width: 100%; max-width: 200px; height: 200px; object-fit: contain; border-radius: 10px; margin-bottom: 15px; border: 1px solid #555; background: white; cursor: pointer; }
+  
+  /* شاشة التكبير */
+  .modal { display: none; position: fixed; z-index: 5000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.95); }
+  .modal-content { margin: auto; display: block; width: 95%; max-width: 700px; object-fit: contain; border: 2px solid white; border-radius: 10px; }
+  .close-zoom { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; }
+
+  .price { font-size: 36px; color: #2ecc71; font-weight: bold; margin: 10px 0; text-shadow: 0 0 10px rgba(46, 204, 113, 0.3); }
+  .name { font-size: 24px; font-weight: bold; color: white; margin-bottom: 5px; }
+  .category-tag { background: #444; padding: 6px 12px; border-radius: 20px; font-size: 13px; color: #ccc; display: inline-block; margin-bottom: 10px; border: 1px solid #555; }
   
   /* الأزرار */
-  .btn { display: block; width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; box-sizing: border-box; }
-  .btn-primary { background-color: #007bff; }
-  .btn-warning { background-color: #ffc107; color: #333; }
-  .btn-secondary { background-color: #6c757d; }
+  .btn { display: block; width: 100%; padding: 14px; margin-top: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; }
+  .btn-primary { background: linear-gradient(45deg, #007bff, #0056b3); box-shadow: 0 4px 15px rgba(0,123,255,0.4); }
+  .btn-warning { background: linear-gradient(45deg, #f1c40f, #f39c12); color: #222; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4); }
+  .btn-secondary { background: #555; color: #ccc; }
   
-  .status-msg { margin: 10px 0; font-size: 14px; padding: 8px; border-radius: 5px; display: none; }
-  .loading { background-color: #e2e6ea; color: #333; }
+  .status-msg { margin: 10px 0; font-size: 14px; padding: 10px; border-radius: 8px; display: none; }
+  .loading { background-color: #333; color: #ccc; border: 1px solid #444; }
+  .offline { background-color: #856404; color: #fff; border: 1px solid #ffeeba; }
+  .error { background-color: #721c24; color: #fff; }
 </style>
 </head>
 <body>
 
-<div id="imageModal" class="modal" onclick="closeImageModal()">
-  <span class="close-zoom">&times;</span>
-  <img class="modal-content" id="img01">
-</div>
+<div id="imageModal" class="modal" onclick="closeImageModal()"><span class="close-zoom">&times;</span><img class="modal-content" id="img01"></div>
 
 <div id="mySidenav" class="sidenav">
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-  <h3 style="color:white; padding-right:10px; border-bottom:1px solid #555; padding-bottom:10px;">الأقسام</h3>
+  <h3 style="color:white; padding-right:15px; border-bottom:1px solid #444; padding-bottom:15px;">الأقسام</h3>
   <div id="categories-container"></div>
 </div>
 
@@ -75,161 +117,128 @@
 
   <div id="scan-screen">
     <img id="company-logo" src="" class="app-logo" alt="Logo" onerror="this.style.display='none'">
-    <h2 style="margin-top:5px;">ماسح المنتجات</h2>
+    <h2 style="color:white; font-weight:300;">ماسح المنتجات</h2>
     <div id="status" class="status-msg loading">جاري التحميل...</div>
 
     <div class="search-wrapper">
-        <input type="text" id="search-input" class="search-input" placeholder="بحث بالاسم أو الباركود..." onkeyup="suggestProducts()" autocomplete="off">
+        <input type="text" id="search-input" class="search-input" placeholder="🔍 بحث سريع..." onkeyup="suggestProducts()" autocomplete="off">
         <div id="suggestions" class="suggestions-list"></div>
     </div>
 
-    <div id="reader"></div> 
-    <a id="add-btn" href="#" target="_blank" class="btn btn-warning">+ إضافة منتج جديد</a>
+    <div class="scanner-wrapper">
+        <div id="reader"></div>
+        <div class="laser-beam"></div> <div class="scan-overlay"> <div class="scan-corners-bottom"></div>
+        </div>
+    </div>
+    
+    <a id="add-btn" href="#" target="_blank" class="btn btn-warning">➕ إضافة منتج جديد</a>
   </div>
 
   <div id="list-screen">
-      <button class="btn btn-secondary" onclick="resetScanner()">🔙 عودة للكاميرا</button>
-      <h3 id="category-title" style="text-align:center; margin-top:10px;"></h3>
-      <div id="list-content"></div>
+      <button class="btn btn-secondary" onclick="resetScanner()">🔙 عودة</button>
+      <h3 id="category-title" style="text-align:center; margin-top:15px; color:white;"></h3>
+      <div id="list-content" style="color:white;"></div>
   </div>
 
   <div id="result-screen" class="result-box">
     <img id="p_img" src="" class="product-img" onerror="this.style.display='none'" onclick="openImageModal(this.src)">
-    <p style="font-size:12px; color:#888; margin-top:-5px;">(اضغط على الصورة للتكبير)</p>
-    
+    <p style="font-size:12px; color:#888;">(اضغط للتكبير)</p>
     <div id="p_cat" class="category-tag"></div>
     <div id="p_name" class="name"></div>
     <div id="p_price" class="price"></div>
-    <hr style="border:0; border-top:1px solid #eee; margin: 15px 0;">
-    <button class="btn btn-primary" onclick="resetScanner()">بحث جديد</button>
+    <hr style="border:0; border-top:1px solid #444; margin: 20px 0;">
+    <button class="btn btn-primary" onclick="resetScanner()">بحث آخر</button>
   </div>
 
 </div>
 
 <script>
     // ============================================================
-    // 🔴🔴 ضع روابطك هنا 🔴🔴
+    // 🔴🔴 الروابط 🔴🔴
     // ============================================================
-    
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKotb6frhhZzBOkKyvUu0V1x06UkENSEkdtSn52yfc7OG030tDMxwjjjEX8tV1UGgpNzMTuObGRur3/pub?gid=0&single=true&output=csv"; 
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
     const LOGO_URL = "https://e.top4top.io/p_36206u8ei1.png"; 
-
     // ============================================================
 
-    // إعداد الشعار
-    if(LOGO_URL && LOGO_URL !== "") {
-        document.getElementById('company-logo').src = LOGO_URL;
-    } else {
-        document.getElementById('company-logo').style.display = 'none';
-    }
+    if(LOGO_URL && LOGO_URL !== "") { document.getElementById('company-logo').src = LOGO_URL; } 
+    else { document.getElementById('company-logo').style.display = 'none'; }
 
-    // --- وظائف تكبير الصورة ---
-    function openImageModal(src) {
-        var modal = document.getElementById("imageModal");
-        var modalImg = document.getElementById("img01");
-        modal.style.display = "block";
-        modalImg.src = src;
-    }
-    function closeImageModal() {
-        document.getElementById("imageModal").style.display = "none";
-    }
+    function openImageModal(src) { var modal = document.getElementById("imageModal"); var modalImg = document.getElementById("img01"); modal.style.display = "block"; modalImg.src = src; }
+    function closeImageModal() { document.getElementById("imageModal").style.display = "none"; }
 
-    var productsDB = {}; 
-    var categoriesSet = new Set();
-    var html5QrcodeScanner;
+    var productsDB = {}; var categoriesSet = new Set(); var html5QrcodeScanner;
     const statusDiv = document.getElementById('status');
     document.getElementById('add-btn').href = GOOGLE_FORM_URL;
 
     function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
     function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
-
     function updateCategoriesMenu() {
-        let container = document.getElementById('categories-container');
-        container.innerHTML = "";
+        let container = document.getElementById('categories-container'); container.innerHTML = "";
         let sortedCats = Array.from(categoriesSet).sort();
-        if(sortedCats.length === 0) { container.innerHTML = "<a href='#'>لا توجد أقسام</a>"; return; }
+        if(sortedCats.length === 0) { container.innerHTML = "<a href='#'>فارغ</a>"; return; }
         sortedCats.forEach(cat => {
-            let link = document.createElement('a');
-            link.href = "#"; link.innerText = cat;
-            link.onclick = function() { showCategoryProducts(cat); closeNav(); };
-            container.appendChild(link);
+            let link = document.createElement('a'); link.href = "#"; link.innerText = cat;
+            link.onclick = function() { showCategoryProducts(cat); closeNav(); }; container.appendChild(link);
         });
     }
 
     function showCategoryProducts(catName) {
-        document.getElementById('scan-screen').style.display = 'none';
-        document.getElementById('result-screen').style.display = 'none';
+        document.getElementById('scan-screen').style.display = 'none'; document.getElementById('result-screen').style.display = 'none';
         document.getElementById('list-screen').style.display = 'block';
-        document.getElementById('category-title').innerText = "قسم: " + catName;
-        let listDiv = document.getElementById('list-content');
-        listDiv.innerHTML = "";
+        document.getElementById('category-title').innerText = catName;
+        let listDiv = document.getElementById('list-content'); listDiv.innerHTML = "";
         for (let code in productsDB) {
             let p = productsDB[code];
             if (p.category === catName) {
-                let div = document.createElement('div');
-                div.className = 'list-item';
-                div.innerHTML = `<span class="list-name">${p.name}</span><span class="list-price">${p.price} ج.م</span>`;
-                div.onclick = function() { showResultScreen(p); };
-                listDiv.appendChild(div);
+                let div = document.createElement('div'); div.className = 'suggestion-item';
+                div.innerHTML = `<span>${p.name}</span><span style="color:#2ecc71">${p.price} ج.م</span>`;
+                div.onclick = function() { showResultScreen(p); }; listDiv.appendChild(div);
             }
         }
     }
 
     async function fetchProducts() {
-      showStatus("جاري التحديث...", "loading");
+      showStatus("🔄 تحديث...", "loading");
       try {
         const response = await fetch(SHEET_CSV_URL, { cache: "no-store" });
         if (!response.ok) throw new Error("Network error");
-        const data = await response.text();
-        localStorage.setItem('offline_products_csv', data);
-        parseCSV(data);
-        showStatus("تم التحديث ✅", "loading");
-        setTimeout(() => { statusDiv.style.display = 'none'; }, 1000);
+        const data = await response.text(); localStorage.setItem('offline_products_csv', data); parseCSV(data);
+        showStatus("متصل ✅", "loading"); setTimeout(() => { statusDiv.style.display = 'none'; }, 1000);
       } catch (error) {
         const cachedData = localStorage.getItem('offline_products_csv');
-        if (cachedData) { parseCSV(cachedData); showStatus("⚠️ وضع الأوفلاين", "loading"); }
-        else { showStatus("❌ خطأ بالإنترنت", "error"); }
+        if (cachedData) { parseCSV(cachedData); showStatus("⚠️ أوفلاين", "loading"); }
+        else { showStatus("❌ خطأ نت", "error"); }
       }
     }
 
     function parseCSV(csvText) {
-      const rows = csvText.split('\n');
-      productsDB = {}; categoriesSet.clear();
+      const rows = csvText.split('\n'); productsDB = {}; categoriesSet.clear();
       for (let i = 1; i < rows.length; i++) {
         const row = rows[i].split(','); 
         if (row.length >= 4) {
           const code = clean(row[1]); const name = clean(row[2]); 
           let rawPrice = clean(row[3]).replace(/[^0-9.]/g, '');
-          const img = row[4] ? clean(row[4]) : ""; 
-          const cat = row[5] ? clean(row[5]) : "عام"; 
-          if(code) {
-              productsDB[code] = { name: name, price: rawPrice, img: img, category: cat };
-              categoriesSet.add(cat);
-          }
+          const img = row[4] ? clean(row[4]) : ""; const cat = row[5] ? clean(row[5]) : "عام"; 
+          if(code) { productsDB[code] = { name: name, price: rawPrice, img: img, category: cat }; categoriesSet.add(cat); }
         }
       }
       updateCategoriesMenu();
     }
 
     function clean(text) { return text ? text.replace(/"/g, '').trim() : ""; }
-
     function suggestProducts() {
         let inputVal = document.getElementById('search-input').value.toLowerCase().trim();
-        let listDiv = document.getElementById('suggestions');
-        listDiv.innerHTML = ""; 
+        let listDiv = document.getElementById('suggestions'); listDiv.innerHTML = ""; 
         if (inputVal.length < 1) { listDiv.style.display = "none"; return; }
         let matchCount = 0;
         for (let code in productsDB) {
             let p = productsDB[code];
             if (p.name.toLowerCase().includes(inputVal) || code.includes(inputVal)) {
-                let item = document.createElement('div');
-                item.className = 'suggestion-item';
-                item.innerHTML = `<span class="s-name">${p.name}</span><span class="s-price">${p.price} ج.م</span>`;
+                let item = document.createElement('div'); item.className = 'suggestion-item';
+                item.innerHTML = `<span>${p.name}</span><span style="color:#2ecc71">${p.price} ج.م</span>`;
                 item.onclick = function() { showResultScreen(p); document.getElementById('search-input').value = ""; listDiv.style.display = "none"; };
-                listDiv.appendChild(item);
-                matchCount++;
-                if(matchCount >= 10) break;
+                listDiv.appendChild(item); matchCount++; if(matchCount >= 10) break;
             }
         }
         listDiv.style.display = (matchCount > 0) ? "block" : "none";
@@ -238,32 +247,21 @@
     function onScanSuccess(decodedText, decodedResult) {
       if(html5QrcodeScanner) html5QrcodeScanner.clear();
       if (productsDB[decodedText]) { showResultScreen(productsDB[decodedText]); }
-      else {
-        if(confirm("غير مسجل: " + decodedText + "\nإضافة؟")) { window.open(GOOGLE_FORM_URL, '_blank'); resetScanner(); }
-        else { resetScanner(); }
-      }
+      else { if(confirm("غير مسجل: " + decodedText + "\nإضافة؟")) { window.open(GOOGLE_FORM_URL, '_blank'); resetScanner(); } else { resetScanner(); } }
     }
 
     function showResultScreen(product) {
-      document.getElementById('scan-screen').style.display = 'none';
-      document.getElementById('list-screen').style.display = 'none';
+      document.getElementById('scan-screen').style.display = 'none'; document.getElementById('list-screen').style.display = 'none';
       document.getElementById('result-screen').style.display = 'block';
-      document.getElementById('p_cat').innerText = product.category;
-      document.getElementById('p_name').innerText = product.name;
+      document.getElementById('p_cat').innerText = product.category; document.getElementById('p_name').innerText = product.name;
       document.getElementById('p_price').innerText = product.price + " ج.م";
       const imgElem = document.getElementById('p_img');
-      if(product.img && product.img.startsWith('http')) { 
-          imgElem.src = product.img; 
-          imgElem.style.display = 'inline-block'; 
-      }
-      else { imgElem.style.display = 'none'; }
+      if(product.img && product.img.startsWith('http')) { imgElem.src = product.img; imgElem.style.display = 'inline-block'; } else { imgElem.style.display = 'none'; }
     }
 
     function resetScanner() {
-      document.getElementById('result-screen').style.display = 'none';
-      document.getElementById('list-screen').style.display = 'none';
-      document.getElementById('scan-screen').style.display = 'block';
-      document.getElementById('suggestions').style.display = "none";
+      document.getElementById('result-screen').style.display = 'none'; document.getElementById('list-screen').style.display = 'none';
+      document.getElementById('scan-screen').style.display = 'block'; document.getElementById('suggestions').style.display = "none";
       startCamera();
     }
 
@@ -272,16 +270,9 @@
       html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250, videoConstraints: { facingMode: "environment" } });
       html5QrcodeScanner.render(onScanSuccess);
     }
-
-    function showStatus(text, type) {
-        statusDiv.innerText = text;
-        statusDiv.className = "status-msg " + type;
-        statusDiv.style.display = 'block';
-    }
-
+    
+    function showStatus(text, type) { statusDiv.innerText = text; statusDiv.className = "status-msg " + type; statusDiv.style.display = 'block'; }
     fetchProducts().then(() => { startCamera(); });
-
 </script>
-
 </body>
 </html>
