@@ -7,98 +7,104 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>تطبيق الشركة الاحترافي</title>
+<title>تطبيق الشركة</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
-  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; background-color: #1a1a1a; margin: 0; color: white; }
-  .container { max-width: 600px; margin: 10px auto; background: #222; padding: 15px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; min-height: 90vh; border: 1px solid #333; }
+  /* --- 🎨 الألوان الأساسية: أزرق وأبيض --- */
+  :root {
+      --primary-color: #0056b3; /* أزرق غامق */
+      --secondary-color: #007bff; /* أزرق فاتح */
+      --bg-color: #eef2f5; /* رمادي فاتح جداً للخلفية */
+      --card-bg: #ffffff; /* أبيض للكروت */
+      --text-color: #333333; /* رمادي غامق للنصوص */
+      --border-color: #dde1e7; /* لون الحدود */
+  }
+
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; background-color: var(--bg-color); margin: 0; color: var(--text-color); }
+  
+  /* الحاوية الرئيسية (الكارت الأبيض) */
+  .container { 
+      max-width: 600px; margin: 15px auto; 
+      background: var(--card-bg); padding: 20px; 
+      border-radius: 20px; 
+      box-shadow: 0 5px 25px rgba(0,0,0,0.05); /* ظل خفيف جداً */
+      position: relative; min-height: 90vh; 
+  }
   
   /* الشعار */
-  .app-logo { max-width: 140px; max-height: 70px; display: block; margin: 0 auto 15px auto; object-fit: contain; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
+  .app-logo { max-width: 140px; max-height: 80px; display: block; margin: 0 auto 10px auto; object-fit: contain; }
 
-  /* القائمة الجانبية */
-  .menu-btn { position: absolute; top: 15px; right: 15px; font-size: 26px; cursor: pointer; background: none; border: none; color: #fff; z-index: 100; text-shadow: 0 0 10px black; }
-  .sidenav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background-color: #111; overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; border-left: 1px solid #333; }
-  .sidenav a { padding: 12px 15px 12px 32px; text-decoration: none; font-size: 18px; color: #ccc; display: block; transition: 0.3s; border-bottom: 1px solid #222; margin-right: 5px; }
-  .sidenav a:hover { color: #fff; background: #007bff; }
-  .sidenav .closebtn { position: absolute; top: 0; right: 25px; font-size: 36px; margin-left: 50px; border: none; background: none; }
+  /* زر القائمة */
+  .menu-btn { position: absolute; top: 20px; right: 20px; font-size: 28px; cursor: pointer; background: none; border: none; color: var(--primary-color); z-index: 100; }
   
-  /* البحث */
+  /* القائمة الجانبية (أزرق غامق) */
+  .sidenav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background-color: var(--primary-color); overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
+  .sidenav a { padding: 15px 20px 15px 32px; text-decoration: none; font-size: 18px; color: white; display: block; transition: 0.3s; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .sidenav a:hover { background-color: rgba(255,255,255,0.1); padding-right: 30px; }
+  .sidenav .closebtn { position: absolute; top: 0; right: 25px; font-size: 36px; margin-left: 50px; border: none; color: white; }
+  
+  /* مربع البحث */
   .search-wrapper { position: relative; margin-bottom: 20px; }
-  .search-input { width: 100%; padding: 14px; background: #333; border: 2px solid #444; color: white; border-radius: 12px; font-size: 16px; box-sizing: border-box; outline: none; transition: 0.3s; }
-  .search-input:focus { border-color: #007bff; box-shadow: 0 0 15px rgba(0,123,255,0.3); }
-  .suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: #333; border: 1px solid #444; border-radius: 0 0 12px 12px; z-index: 1000; max-height: 250px; overflow-y: auto; display: none; }
-  .suggestion-item { padding: 15px; border-bottom: 1px solid #444; text-align: right; cursor: pointer; display: flex; justify-content: space-between; color: white; }
-  .suggestion-item:hover { background-color: #444; }
+  .search-input { 
+      width: 100%; padding: 14px; 
+      background: #f8f9fa; border: 2px solid var(--border-color); 
+      color: var(--text-color); border-radius: 12px; font-size: 16px; 
+      box-sizing: border-box; outline: none; transition: 0.3s; 
+  }
+  .search-input:focus { border-color: var(--secondary-color); background: white; box-shadow: 0 0 0 4px rgba(0,123,255,0.1); }
+  
+  .suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border-color); border-radius: 0 0 12px 12px; z-index: 1000; max-height: 250px; overflow-y: auto; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+  .suggestion-item { padding: 15px; border-bottom: 1px solid #f0f0f0; text-align: right; cursor: pointer; display: flex; justify-content: space-between; color: var(--text-color); }
+  .suggestion-item:hover { background-color: #f0f7ff; }
 
-  /* --- 📷 تصميم الماسح الجديد (الاحترافي) --- */
-  .scanner-wrapper { position: relative; width: 100%; height: 300px; margin-bottom: 20px; border-radius: 15px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.8); border: 2px solid #444; }
+  /* --- 📷 تصميم الماسح (إطار أزرق) --- */
+  .scanner-wrapper { position: relative; width: 100%; height: 300px; margin-bottom: 20px; border-radius: 15px; overflow: hidden; border: 3px solid var(--secondary-color); background: black; }
   #reader { width: 100%; height: 100%; object-fit: cover; }
   
-  /* خط الليزر المتحرك */
+  /* خط الليزر */
   .laser-beam {
-      position: absolute; width: 100%; height: 2px; background: red;
-      box-shadow: 0 0 15px red, 0 0 30px red;
-      top: 0; left: 0; z-index: 10;
-      animation: scan-anim 2s infinite ease-in-out;
-      opacity: 0.8;
-      pointer-events: none; /* للسماح بالضغط من خلاله */
+      position: absolute; width: 100%; height: 2px; background: #ff0000;
+      box-shadow: 0 0 15px #ff0000; top: 0; left: 0; z-index: 10;
+      animation: scan-anim 2s infinite ease-in-out; opacity: 0.8; pointer-events: none;
   }
-  @keyframes scan-anim {
-      0% { top: 10%; opacity: 0; }
-      50% { opacity: 1; }
-      100% { top: 90%; opacity: 0; }
-  }
+  @keyframes scan-anim { 0% { top: 10%; opacity: 0; } 50% { opacity: 1; } 100% { top: 90%; opacity: 0; } }
 
-  /* إطار الزوايا (Viewfinder) */
-  .scan-overlay {
-      position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 10px;
-      pointer-events: none;
-      box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
-  }
-  .scan-overlay::before, .scan-overlay::after {
-      content: ''; position: absolute; width: 30px; height: 30px;
-      border-color: #007bff; border-style: solid; border-width: 0;
-      transition: 0.3s;
-  }
-  /* الزوايا العلوية */
+  /* إطار الزوايا (أبيض ليكون واضحاً فوق الكاميرا) */
+  .scan-overlay { position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 10px; pointer-events: none; }
+  .scan-overlay::before, .scan-overlay::after { content: ''; position: absolute; width: 30px; height: 30px; border-color: white; border-style: solid; border-width: 0; }
   .scan-overlay::before { top: -2px; left: -2px; border-top-width: 4px; border-left-width: 4px; border-radius: 8px 0 0 0; }
   .scan-overlay::after { top: -2px; right: -2px; border-top-width: 4px; border-right-width: 4px; border-radius: 0 8px 0 0; }
-  /* الزوايا السفلية (عناصر إضافية) */
   .scan-corners-bottom { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-  .scan-corners-bottom::before, .scan-corners-bottom::after {
-      content: ''; position: absolute; width: 30px; height: 30px;
-      border-color: #007bff; border-style: solid; border-width: 0;
-  }
+  .scan-corners-bottom::before, .scan-corners-bottom::after { content: ''; position: absolute; width: 30px; height: 30px; border-color: white; border-style: solid; border-width: 0; }
   .scan-corners-bottom::before { bottom: -2px; left: -2px; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 8px; }
   .scan-corners-bottom::after { bottom: -2px; right: -2px; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 8px 0; }
 
   /* النتائج */
   #list-screen, .result-box { display: none; text-align: right; }
-  .result-box { text-align: center; background: #333; padding: 20px; border-radius: 15px; }
-  .product-img { width: 100%; max-width: 200px; height: 200px; object-fit: contain; border-radius: 10px; margin-bottom: 15px; border: 1px solid #555; background: white; cursor: pointer; }
+  .result-box { text-align: center; background: #f8faff; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; }
+  .product-img { width: 100%; max-width: 200px; height: 200px; object-fit: contain; border-radius: 10px; margin-bottom: 15px; border: 1px solid #ddd; background: white; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
   
   /* شاشة التكبير */
-  .modal { display: none; position: fixed; z-index: 5000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.95); }
-  .modal-content { margin: auto; display: block; width: 95%; max-width: 700px; object-fit: contain; border: 2px solid white; border-radius: 10px; }
+  .modal { display: none; position: fixed; z-index: 5000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); }
+  .modal-content { margin: auto; display: block; width: 90%; max-width: 700px; border: 3px solid white; border-radius: 10px; }
   .close-zoom { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; }
 
-  .price { font-size: 36px; color: #2ecc71; font-weight: bold; margin: 10px 0; text-shadow: 0 0 10px rgba(46, 204, 113, 0.3); }
-  .name { font-size: 24px; font-weight: bold; color: white; margin-bottom: 5px; }
-  .category-tag { background: #444; padding: 6px 12px; border-radius: 20px; font-size: 13px; color: #ccc; display: inline-block; margin-bottom: 10px; border: 1px solid #555; }
+  .price { font-size: 36px; color: var(--primary-color); font-weight: bold; margin: 10px 0; }
+  .name { font-size: 24px; font-weight: bold; color: var(--text-color); margin-bottom: 5px; }
+  .category-tag { background: #eef2f5; padding: 6px 15px; border-radius: 20px; font-size: 13px; color: #666; display: inline-block; margin-bottom: 10px; font-weight: bold; }
   
   /* الأزرار */
-  .btn { display: block; width: 100%; padding: 14px; margin-top: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; }
-  .btn-primary { background: linear-gradient(45deg, #007bff, #0056b3); box-shadow: 0 4px 15px rgba(0,123,255,0.4); }
-  .btn-warning { background: linear-gradient(45deg, #f1c40f, #f39c12); color: #222; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4); }
-  .btn-secondary { background: #555; color: #ccc; }
+  .btn { display: block; width: 100%; padding: 14px; margin-top: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+  .btn-primary { background-color: var(--secondary-color); }
+  .btn-primary:hover { background-color: var(--primary-color); }
+  
+  .btn-warning { background-color: #ffc107; color: #333; }
+  .btn-secondary { background: #6c757d; color: white; }
   
   .status-msg { margin: 10px 0; font-size: 14px; padding: 10px; border-radius: 8px; display: none; }
-  .loading { background-color: #333; color: #ccc; border: 1px solid #444; }
-  .offline { background-color: #856404; color: #fff; border: 1px solid #ffeeba; }
-  .error { background-color: #721c24; color: #fff; }
+  .loading { background-color: #e2f0fb; color: var(--primary-color); border: 1px solid #b8daff; }
+  .offline { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+  .error { background-color: #f8d7da; color: #721c24; }
 </style>
 </head>
 <body>
@@ -107,7 +113,7 @@
 
 <div id="mySidenav" class="sidenav">
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-  <h3 style="color:white; padding-right:15px; border-bottom:1px solid #444; padding-bottom:15px;">الأقسام</h3>
+  <h3 style="color:white; padding-right:20px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:15px; margin-top:0;">الأقسام</h3>
   <div id="categories-container"></div>
 </div>
 
@@ -117,18 +123,18 @@
 
   <div id="scan-screen">
     <img id="company-logo" src="" class="app-logo" alt="Logo" onerror="this.style.display='none'">
-    <h2 style="color:white; font-weight:300;">ماسح المنتجات</h2>
+    <h2 style="color:var(--primary-color); margin-top:0;">ماسح المنتجات</h2>
     <div id="status" class="status-msg loading">جاري التحميل...</div>
 
     <div class="search-wrapper">
-        <input type="text" id="search-input" class="search-input" placeholder="🔍 بحث سريع..." onkeyup="suggestProducts()" autocomplete="off">
+        <input type="text" id="search-input" class="search-input" placeholder="🔍 ابحث بالاسم أو الباركود..." onkeyup="suggestProducts()" autocomplete="off">
         <div id="suggestions" class="suggestions-list"></div>
     </div>
 
     <div class="scanner-wrapper">
         <div id="reader"></div>
-        <div class="laser-beam"></div> <div class="scan-overlay"> <div class="scan-corners-bottom"></div>
-        </div>
+        <div class="laser-beam"></div>
+        <div class="scan-overlay"><div class="scan-corners-bottom"></div></div>
     </div>
     
     <a id="add-btn" href="#" target="_blank" class="btn btn-warning">➕ إضافة منتج جديد</a>
@@ -136,17 +142,17 @@
 
   <div id="list-screen">
       <button class="btn btn-secondary" onclick="resetScanner()">🔙 عودة</button>
-      <h3 id="category-title" style="text-align:center; margin-top:15px; color:white;"></h3>
-      <div id="list-content" style="color:white;"></div>
+      <h3 id="category-title" style="text-align:center; margin-top:15px; color:var(--text-color);"></h3>
+      <div id="list-content"></div>
   </div>
 
   <div id="result-screen" class="result-box">
     <img id="p_img" src="" class="product-img" onerror="this.style.display='none'" onclick="openImageModal(this.src)">
-    <p style="font-size:12px; color:#888;">(اضغط للتكبير)</p>
+    <p style="font-size:12px; color:#999;">(اضغط للتكبير)</p>
     <div id="p_cat" class="category-tag"></div>
     <div id="p_name" class="name"></div>
     <div id="p_price" class="price"></div>
-    <hr style="border:0; border-top:1px solid #444; margin: 20px 0;">
+    <hr style="border:0; border-top:1px solid #eee; margin: 20px 0;">
     <button class="btn btn-primary" onclick="resetScanner()">بحث آخر</button>
   </div>
 
@@ -192,7 +198,7 @@
             let p = productsDB[code];
             if (p.category === catName) {
                 let div = document.createElement('div'); div.className = 'suggestion-item';
-                div.innerHTML = `<span>${p.name}</span><span style="color:#2ecc71">${p.price} ج.م</span>`;
+                div.innerHTML = `<span>${p.name}</span><span style="color:var(--primary-color); font-weight:bold;">${p.price} ج.م</span>`;
                 div.onclick = function() { showResultScreen(p); }; listDiv.appendChild(div);
             }
         }
@@ -236,7 +242,7 @@
             let p = productsDB[code];
             if (p.name.toLowerCase().includes(inputVal) || code.includes(inputVal)) {
                 let item = document.createElement('div'); item.className = 'suggestion-item';
-                item.innerHTML = `<span>${p.name}</span><span style="color:#2ecc71">${p.price} ج.م</span>`;
+                item.innerHTML = `<span>${p.name}</span><span style="color:var(--primary-color)">${p.price} ج.م</span>`;
                 item.onclick = function() { showResultScreen(p); document.getElementById('search-input').value = ""; listDiv.style.display = "none"; };
                 listDiv.appendChild(item); matchCount++; if(matchCount >= 10) break;
             }
