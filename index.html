@@ -3,40 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تطبيق المنتجات الشامل</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+
+<title>تطبيق المنتجات الذكي</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
   body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 10px; background-color: #f0f2f5; margin: 0; }
-  .container { max-width: 600px; margin: 0 auto; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+  .container { max-width: 600px; margin: 0 auto; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
   
-  /* مربع البحث */
-  .search-box { display: flex; margin-bottom: 15px; gap: 5px; }
-  .search-input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+  /* --- تنسيق البحث الجديد --- */
+  .search-wrapper { position: relative; margin-bottom: 15px; }
+  .search-input { width: 100%; padding: 12px; border: 2px solid #007bff; border-radius: 8px; font-size: 16px; box-sizing: border-box; outline: none; }
   
+  /* قائمة الاقتراحات */
+  .suggestions-list { 
+      position: absolute; 
+      top: 100%; left: 0; right: 0; 
+      background: white; 
+      border: 1px solid #ddd; 
+      border-radius: 0 0 8px 8px; 
+      z-index: 1000; 
+      max-height: 250px; 
+      overflow-y: auto; 
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      display: none; /* مخفية افتراضياً */
+  }
+  .suggestion-item { padding: 12px; border-bottom: 1px solid #eee; text-align: right; cursor: pointer; display: flex; justify-content: space-between; }
+  .suggestion-item:hover { background-color: #f1f8ff; }
+  .s-name { font-weight: bold; color: #333; }
+  .s-price { color: #28a745; font-weight: bold; }
+
   /* الكاميرا */
   #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-bottom: 15px; border: 2px solid #ddd; min-height: 250px; background: #eee; }
   
-  /* النصوص والنتائج */
+  /* النتائج */
   h2 { color: #333; margin-bottom: 10px; font-size: 20px; }
   .result-box { display: none; text-align: center; padding: 20px 0; }
   .product-img { width: 100%; max-width: 200px; height: 200px; object-fit: contain; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee; }
   .price { font-size: 32px; color: #28a745; font-weight: bold; margin: 10px 0; }
   .name { font-size: 22px; font-weight: bold; color: #333; margin-bottom: 5px; }
   
-  /* قائمة البحث */
-  #list-screen { display: none; text-align: right; }
-  .list-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-  .list-item:hover { background-color: #f9f9f9; }
-  .list-name { font-weight: bold; color: #333; }
-  .list-price { color: #28a745; font-weight: bold; }
-
   /* الأزرار */
   .btn { display: block; width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; text-decoration: none; box-sizing: border-box; }
-  .btn-primary { background-color: #007bff; color: white; } /* أزرق */
-  .btn-search { background-color: #6f42c1; color: white; width: auto; padding: 0 20px; } /* بنفسجي */
-  .btn-warning { background-color: #ffc107; color: #333; } /* أصفر */
-  .btn-secondary { background-color: #6c757d; color: white; margin-bottom: 10px; } /* رمادي */
-
+  .btn-primary { background-color: #007bff; color: white; }
+  .btn-warning { background-color: #ffc107; color: #333; }
+  
   /* رسائل التنبيه */
   .status-msg { margin: 10px 0; font-size: 14px; padding: 8px; border-radius: 5px; display: none; }
   .loading { background-color: #e2e6ea; color: #333; }
@@ -52,9 +65,9 @@
     <h2>ماسح المنتجات</h2>
     <div id="status" class="status-msg loading">جاري تحميل البيانات...</div>
 
-    <div class="search-box">
-        <input type="text" id="search-txt" class="search-input" placeholder="اسم المنتج أو الباركود...">
-        <button onclick="manualSearch()" class="btn btn-search">بحث</button>
+    <div class="search-wrapper">
+        <input type="text" id="search-input" class="search-input" placeholder="اكتب اسم المنتج أو الباركود..." onkeyup="suggestProducts()" autocomplete="off">
+        <div id="suggestions" class="suggestions-list"></div>
     </div>
 
     <div id="reader"></div> 
@@ -62,18 +75,12 @@
     <a id="add-btn" href="#" target="_blank" class="btn btn-warning">+ إضافة منتج جديد</a>
   </div>
 
-  <div id="list-screen">
-      <button class="btn btn-secondary" onclick="resetScanner()">🔙 عودة للكاميرا</button>
-      <h3 style="text-align:center;">نتائج البحث</h3>
-      <div id="list-content"></div>
-  </div>
-
   <div id="result-screen" class="result-box">
     <img id="p_img" src="" class="product-img" onerror="this.style.display='none'">
     <div id="p_name" class="name"></div>
     <div id="p_price" class="price"></div>
     <hr style="border:0; border-top:1px solid #eee; margin: 15px 0;">
-    <button class="btn btn-primary" onclick="resetScanner()">مسح/بحث آخر</button>
+    <button class="btn btn-primary" onclick="resetScanner()">بحث جديد</button>
   </div>
 
 </div>
@@ -94,59 +101,53 @@
 
     document.getElementById('add-btn').href = GOOGLE_FORM_URL;
 
-    // --- دالة البحث اليدوي الجديدة ---
-    function manualSearch() {
-        let query = document.getElementById('search-txt').value.trim().toLowerCase();
-        if(!query) return;
+    // --- 🔎 دالة الاقتراحات الذكية (Autocomplete) ---
+    function suggestProducts() {
+        let inputVal = document.getElementById('search-input').value.toLowerCase().trim();
+        let listDiv = document.getElementById('suggestions');
+        listDiv.innerHTML = ""; // مسح القائمة القديمة
 
-        let foundItems = [];
+        if (inputVal.length < 1) { // لو الخانة فاضية نخفي القائمة
+            listDiv.style.display = "none";
+            return;
+        }
 
-        // البحث داخل قاعدة البيانات
+        let matchCount = 0;
+        
+        // البحث في المنتجات
         for (let code in productsDB) {
-            let product = productsDB[code];
-            // التحقق هل الباركود يطابق أو الاسم يحتوي على كلمة البحث
-            if (code.includes(query) || product.name.toLowerCase().includes(query)) {
-                foundItems.push({ code: code, ...product }); // إضافة المنتج للقائمة
+            let p = productsDB[code];
+            // البحث بالاسم أو الباركود
+            if (p.name.toLowerCase().includes(inputVal) || code.includes(inputVal)) {
+                
+                let item = document.createElement('div');
+                item.className = 'suggestion-item';
+                item.innerHTML = `
+                    <span class="s-name">${p.name}</span>
+                    <span class="s-price">${p.price} ج.م</span>
+                `;
+                // عند الضغط على الاقتراح
+                item.onclick = function() {
+                    showResultScreen(p); // عرض المنتج
+                    document.getElementById('search-input').value = ""; // تفريغ الخانة
+                    listDiv.style.display = "none"; // إخفاء القائمة
+                };
+
+                listDiv.appendChild(item);
+                matchCount++;
+
+                if(matchCount >= 10) break; // عرض أول 10 نتائج فقط لتجنب البطء
             }
         }
 
-        if (foundItems.length === 0) {
-            alert("لم يتم العثور على منتج بهذا الاسم أو الباركود");
-        } else if (foundItems.length === 1) {
-            // إذا وجدنا منتجاً واحداً فقط، نعرضه فوراً
-            showResultScreen(foundItems[0]);
+        if (matchCount > 0) {
+            listDiv.style.display = "block";
         } else {
-            // إذا وجدنا أكثر من منتج، نعرض قائمة
-            showListScreen(foundItems);
+            listDiv.style.display = "none";
         }
     }
 
-    // عرض قائمة النتائج
-    function showListScreen(items) {
-        document.getElementById('scan-screen').style.display = 'none';
-        document.getElementById('result-screen').style.display = 'none';
-        document.getElementById('list-screen').style.display = 'block';
-        
-        // إيقاف الكاميرا مؤقتاً
-        if(html5QrcodeScanner) html5QrcodeScanner.clear();
-
-        const listDiv = document.getElementById('list-content');
-        listDiv.innerHTML = ""; // تنظيف القائمة
-
-        items.forEach(item => {
-            let div = document.createElement('div');
-            div.className = 'list-item';
-            div.innerHTML = `
-                <span class="list-name">${item.name}</span>
-                <span class="list-price">${item.price} ج.م</span>
-            `;
-            // عند الضغط على عنصر في القائمة، اعرض تفاصيله
-            div.onclick = function() { showResultScreen(item); };
-            listDiv.appendChild(div);
-        });
-    }
-
-    // جلب البيانات
+    // --- دالة تحميل البيانات ---
     async function fetchProducts() {
       showStatus("جاري التحديث...", "loading");
       try {
@@ -174,9 +175,9 @@
       for (let i = 1; i < rows.length; i++) {
         const row = rows[i].split(','); 
         if (row.length >= 4) {
-          const code = clean(row[1]); // العمود 1: باركود
-          const name = clean(row[2]); // العمود 2: اسم
-          const price = clean(row[3]); // العمود 3: سعر
+          const code = clean(row[1]); 
+          const name = clean(row[2]); 
+          const price = clean(row[3]); 
           const img = row[4] ? clean(row[4]) : ""; 
           if(code) productsDB[code] = { name: name, price: price, img: img };
         }
@@ -202,7 +203,6 @@
 
     function showResultScreen(product) {
       document.getElementById('scan-screen').style.display = 'none';
-      document.getElementById('list-screen').style.display = 'none';
       document.getElementById('result-screen').style.display = 'block';
       
       document.getElementById('p_name').innerText = product.name;
@@ -219,9 +219,8 @@
 
     function resetScanner() {
       document.getElementById('result-screen').style.display = 'none';
-      document.getElementById('list-screen').style.display = 'none';
       document.getElementById('scan-screen').style.display = 'block';
-      document.getElementById('search-txt').value = ""; // تفريغ خانة البحث
+      document.getElementById('suggestions').style.display = "none"; // إخفاء القائمة
       startCamera();
     }
 
