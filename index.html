@@ -13,22 +13,13 @@
   body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; background-color: #f0f2f5; margin: 0; }
   .container { max-width: 600px; margin: 10px auto; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; min-height: 90vh; }
   
-  /* --- 🖼️ تنسيق الشعار (اللوجو) --- */
-  .app-logo {
-      max-width: 150px; /* العرض الأقصى للشعار */
-      max-height: 80px; /* الارتفاع الأقصى */
-      display: block;
-      margin: 0 auto 10px auto; /* توسيط الصورة */
-      object-fit: contain;
-  }
+  /* الشعار */
+  .app-logo { max-width: 150px; max-height: 80px; display: block; margin: 0 auto 10px auto; object-fit: contain; }
 
-  /* زر القائمة */
-  .menu-btn { position: absolute; top: 15px; right: 15px; font-size: 24px; cursor: pointer; background: none; border: none; color: #333; z-index: 100; }
-  
   /* القائمة الجانبية */
+  .menu-btn { position: absolute; top: 15px; right: 15px; font-size: 24px; cursor: pointer; background: none; border: none; color: #333; z-index: 100; }
   .sidenav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background-color: #333; overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; }
   .sidenav a { padding: 8px 8px 8px 32px; text-decoration: none; font-size: 18px; color: #f1f1f1; display: block; transition: 0.3s; border-bottom: 1px solid #444; margin-right: 10px; }
-  .sidenav a:hover { color: #f1f1f1; background: #555; }
   .sidenav .closebtn { position: absolute; top: 0; right: 25px; font-size: 36px; margin-left: 50px; border: none; }
   
   /* البحث */
@@ -36,17 +27,21 @@
   .search-input { width: 100%; padding: 12px; border: 2px solid #007bff; border-radius: 8px; font-size: 16px; box-sizing: border-box; outline: none; }
   .suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 0 0 8px 8px; z-index: 1000; max-height: 250px; overflow-y: auto; display: none; }
   .suggestion-item { padding: 12px; border-bottom: 1px solid #eee; text-align: right; cursor: pointer; display: flex; justify-content: space-between; }
-  .suggestion-item:hover { background-color: #f1f8ff; }
-
-  /* الكاميرا */
-  #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-bottom: 15px; border: 2px solid #ddd; min-height: 250px; background: #eee; }
   
-  /* القوائم والنتائج */
+  /* الكاميرا والنتائج */
+  #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-bottom: 15px; border: 2px solid #ddd; min-height: 250px; background: #eee; }
   #list-screen, .result-box { display: none; text-align: right; }
   #list-screen .list-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
   .result-box { text-align: center; }
   
-  .product-img { width: 100%; max-width: 200px; height: 200px; object-fit: contain; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee; }
+  /* --- 🖼️ تنسيق الصورة (قابلة للضغط) --- */
+  .product-img { width: 100%; max-width: 200px; height: 200px; object-fit: contain; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee; cursor: pointer; }
+  
+  /* --- 🔍 تنسيق شاشة التكبير (Modal) --- */
+  .modal { display: none; position: fixed; z-index: 5000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); }
+  .modal-content { margin: auto; display: block; width: 90%; max-width: 700px; max-height: 80vh; object-fit: contain; }
+  .close-zoom { position: absolute; top: 15px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; }
+
   .price { font-size: 32px; color: #28a745; font-weight: bold; margin: 10px 0; }
   .name { font-size: 22px; font-weight: bold; color: #333; margin-bottom: 5px; }
   .category-tag { background: #eee; padding: 5px 10px; border-radius: 15px; font-size: 12px; color: #666; margin-bottom: 10px; display: inline-block; }
@@ -63,6 +58,11 @@
 </head>
 <body>
 
+<div id="imageModal" class="modal" onclick="closeImageModal()">
+  <span class="close-zoom">&times;</span>
+  <img class="modal-content" id="img01">
+</div>
+
 <div id="mySidenav" class="sidenav">
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
   <h3 style="color:white; padding-right:10px; border-bottom:1px solid #555; padding-bottom:10px;">الأقسام</h3>
@@ -74,9 +74,7 @@
   <button class="menu-btn" onclick="openNav()">☰</button>
 
   <div id="scan-screen">
-    
     <img id="company-logo" src="" class="app-logo" alt="Logo" onerror="this.style.display='none'">
-    
     <h2 style="margin-top:5px;">ماسح المنتجات</h2>
     <div id="status" class="status-msg loading">جاري التحميل...</div>
 
@@ -96,7 +94,9 @@
   </div>
 
   <div id="result-screen" class="result-box">
-    <img id="p_img" src="" class="product-img" onerror="this.style.display='none'">
+    <img id="p_img" src="" class="product-img" onerror="this.style.display='none'" onclick="openImageModal(this.src)">
+    <p style="font-size:12px; color:#888; margin-top:-5px;">(اضغط على الصورة للتكبير)</p>
+    
     <div id="p_cat" class="category-tag"></div>
     <div id="p_name" class="name"></div>
     <div id="p_price" class="price"></div>
@@ -108,13 +108,11 @@
 
 <script>
     // ============================================================
-    // 🔴🔴 منطقة التعديل: ضع روابطك هنا 🔴🔴
+    // 🔴🔴 ضع روابطك هنا 🔴🔴
     // ============================================================
     
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKotb6frhhZzBOkKyvUu0V1x06UkENSEkdtSn52yfc7OG030tDMxwjjjEX8tV1UGgpNzMTuObGRur3/pub?gid=0&single=true&output=csv"; 
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
-    
-    // 🖼️ ضع رابط الشعار المباشر هنا (يجب أن ينتهي بـ .jpg أو .png)
     const LOGO_URL = "https://e.top4top.io/p_36206u8ei1.png"; 
 
     // ============================================================
@@ -124,6 +122,17 @@
         document.getElementById('company-logo').src = LOGO_URL;
     } else {
         document.getElementById('company-logo').style.display = 'none';
+    }
+
+    // --- وظائف تكبير الصورة ---
+    function openImageModal(src) {
+        var modal = document.getElementById("imageModal");
+        var modalImg = document.getElementById("img01");
+        modal.style.display = "block";
+        modalImg.src = src;
+    }
+    function closeImageModal() {
+        document.getElementById("imageModal").style.display = "none";
     }
 
     var productsDB = {}; 
@@ -243,7 +252,10 @@
       document.getElementById('p_name').innerText = product.name;
       document.getElementById('p_price').innerText = product.price + " ج.م";
       const imgElem = document.getElementById('p_img');
-      if(product.img && product.img.startsWith('http')) { imgElem.src = product.img; imgElem.style.display = 'inline-block'; }
+      if(product.img && product.img.startsWith('http')) { 
+          imgElem.src = product.img; 
+          imgElem.style.display = 'inline-block'; 
+      }
       else { imgElem.style.display = 'none'; }
     }
 
