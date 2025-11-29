@@ -84,7 +84,7 @@
     const statusDiv = document.getElementById('status');
 
     // إعداد زر الإضافة
-    document.getElementById('add-btn').href = GOOGLE_FORM_URL;
+    document.getElementById('p_price').innerText = product.price + " ج.م";
 
     // --- 1. دالة جلب البيانات (الذكية) ---
     async function fetchProducts() {
@@ -217,3 +217,4 @@
 </body>
 
 </html>
+
