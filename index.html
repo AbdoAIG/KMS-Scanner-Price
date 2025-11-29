@@ -100,6 +100,7 @@
             if (p.name.toLowerCase().includes(inputVal) || code.includes(inputVal)) {
                 let item = document.createElement('div');
                 item.className = 'suggestion-item';
+                // هنا يتم عرض السعر في قائمة البحث
                 item.innerHTML = `<span class="s-name">${p.name}</span><span class="s-price">${p.price} ج.م</span>`;
                 item.onclick = function() { showResultScreen(p); document.getElementById('search-input').value = ""; listDiv.style.display = "none"; };
                 listDiv.appendChild(item);
@@ -134,8 +135,16 @@
       for (let i = 1; i < rows.length; i++) {
         const row = rows[i].split(','); 
         if (row.length >= 4) {
-          const code = clean(row[1]); const name = clean(row[2]); const price = clean(row[3]); const img = row[4] ? clean(row[4]) : ""; 
-          if(code) productsDB[code] = { name: name, price: price, img: img };
+          const code = clean(row[1]); 
+          const name = clean(row[2]); 
+          
+          // 🔴 التعديل هنا: تنظيف السعر من علامة $ أو أي رموز أخرى
+          let rawPrice = clean(row[3]);
+          rawPrice = rawPrice.replace('$', '').replace('ج.م', '').replace('EGP', '').trim();
+          
+          const img = row[4] ? clean(row[4]) : ""; 
+          
+          if(code) productsDB[code] = { name: name, price: rawPrice, img: img };
         }
       }
     }
@@ -155,7 +164,10 @@
       document.getElementById('scan-screen').style.display = 'none';
       document.getElementById('result-screen').style.display = 'block';
       document.getElementById('p_name').innerText = product.name;
+      
+      // 🔴 التعديل هنا: عرض السعر النظيف + ج.م
       document.getElementById('p_price').innerText = product.price + " ج.م";
+      
       const imgElem = document.getElementById('p_img');
       if(product.img && product.img.startsWith('http')) { imgElem.src = product.img; imgElem.style.display = 'inline-block'; }
       else { imgElem.style.display = 'none'; }
@@ -168,20 +180,9 @@
       startCamera();
     }
 
-    // --- 📷 هنا التعديل السحري للكاميرا الخلفية ---
     function startCamera() {
       document.getElementById('reader').innerHTML = "";
-      
-      // إعدادات الكاميرا: إجبار الكاميرا الخلفية (environment)
-      html5QrcodeScanner = new Html5QrcodeScanner(
-          "reader", 
-          { 
-              fps: 10, 
-              qrbox: 250,
-              videoConstraints: { facingMode: "environment" } // هذا السطر هو السر
-          }
-      );
-      
+      html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250, videoConstraints: { facingMode: "environment" } });
       html5QrcodeScanner.render(onScanSuccess);
     }
 
