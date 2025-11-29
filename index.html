@@ -131,10 +131,12 @@
         
         if (row.length >= 3) {
           // تنظيف البيانات من علامات التنصيص والمسافات الزائدة
-          const code = clean(row[0]); 
-          const name = clean(row[1]);
-          const price = clean(row[2]);
-          const img = row[3] ? clean(row[3]) : "";
+          // التعديل الجديد بعد ظهور عمود Timestamp
+          // row[0] أصبح هو الوقت، لذا نتجاهله ونبدأ من 1
+          const code = clean(row[1]);  // الباركود أصبح في العمود الثاني
+          const name = clean(row[2]);  // الاسم
+          const price = clean(row[3]); // السعر
+          const img = row[4] ? clean(row[4]) : ""; // الصورة
           
           if(code) {
             productsDB[code] = { name: name, price: price, img: img };
