@@ -7,26 +7,33 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>تطبيق المخزن الشامل</title>
+<title>تطبيق الشركة</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
   body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; background-color: #f0f2f5; margin: 0; }
   .container { max-width: 600px; margin: 10px auto; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; min-height: 90vh; }
   
-  /* --- ☰ زر القائمة الجانبية --- */
+  /* --- 🖼️ تنسيق الشعار (اللوجو) --- */
+  .app-logo {
+      max-width: 150px; /* العرض الأقصى للشعار */
+      max-height: 80px; /* الارتفاع الأقصى */
+      display: block;
+      margin: 0 auto 10px auto; /* توسيط الصورة */
+      object-fit: contain;
+  }
+
+  /* زر القائمة */
   .menu-btn { position: absolute; top: 15px; right: 15px; font-size: 24px; cursor: pointer; background: none; border: none; color: #333; z-index: 100; }
   
-  /* --- القائمة الجانبية (Sidebar) --- */
+  /* القائمة الجانبية */
   .sidenav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background-color: #333; overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; }
   .sidenav a { padding: 8px 8px 8px 32px; text-decoration: none; font-size: 18px; color: #f1f1f1; display: block; transition: 0.3s; border-bottom: 1px solid #444; margin-right: 10px; }
   .sidenav a:hover { color: #f1f1f1; background: #555; }
   .sidenav .closebtn { position: absolute; top: 0; right: 25px; font-size: 36px; margin-left: 50px; border: none; }
   
-  /* مربع البحث */
-  .search-wrapper { position: relative; margin-bottom: 15px; margin-top: 40px; } /* مسافة عشان زر القائمة */
+  /* البحث */
+  .search-wrapper { position: relative; margin-bottom: 15px; }
   .search-input { width: 100%; padding: 12px; border: 2px solid #007bff; border-radius: 8px; font-size: 16px; box-sizing: border-box; outline: none; }
-  
-  /* قائمة الاقتراحات */
   .suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 0 0 8px 8px; z-index: 1000; max-height: 250px; overflow-y: auto; display: none; }
   .suggestion-item { padding: 12px; border-bottom: 1px solid #eee; text-align: right; cursor: pointer; display: flex; justify-content: space-between; }
   .suggestion-item:hover { background-color: #f1f8ff; }
@@ -34,14 +41,11 @@
   /* الكاميرا */
   #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-bottom: 15px; border: 2px solid #ddd; min-height: 250px; background: #eee; }
   
-  /* شاشة القائمة (عند اختيار قسم) */
-  #list-screen { display: none; text-align: right; }
-  .list-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-  .list-name { font-weight: bold; color: #333; }
-  .list-price { color: #28a745; font-weight: bold; }
-
-  /* النتائج */
-  .result-box { display: none; text-align: center; padding: 20px 0; }
+  /* القوائم والنتائج */
+  #list-screen, .result-box { display: none; text-align: right; }
+  #list-screen .list-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .result-box { text-align: center; }
+  
   .product-img { width: 100%; max-width: 200px; height: 200px; object-fit: contain; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee; }
   .price { font-size: 32px; color: #28a745; font-weight: bold; margin: 10px 0; }
   .name { font-size: 22px; font-weight: bold; color: #333; margin-bottom: 5px; }
@@ -62,8 +66,7 @@
 <div id="mySidenav" class="sidenav">
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
   <h3 style="color:white; padding-right:10px; border-bottom:1px solid #555; padding-bottom:10px;">الأقسام</h3>
-  <div id="categories-container">
-    </div>
+  <div id="categories-container"></div>
 </div>
 
 <div class="container">
@@ -71,7 +74,10 @@
   <button class="menu-btn" onclick="openNav()">☰</button>
 
   <div id="scan-screen">
-    <h2>ماسح المنتجات</h2>
+    
+    <img id="company-logo" src="" class="app-logo" alt="Logo" onerror="this.style.display='none'">
+    
+    <h2 style="margin-top:5px;">ماسح المنتجات</h2>
     <div id="status" class="status-msg loading">جاري التحميل...</div>
 
     <div class="search-wrapper">
@@ -102,38 +108,41 @@
 
 <script>
     // ============================================================
-    // 🔴🔴 ضع روابطك هنا 🔴🔴
+    // 🔴🔴 منطقة التعديل: ضع روابطك هنا 🔴🔴
     // ============================================================
+    
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKotb6frhhZzBOkKyvUu0V1x06UkENSEkdtSn52yfc7OG030tDMxwjjjEX8tV1UGgpNzMTuObGRur3/pub?gid=0&single=true&output=csv"; 
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
+    
+    // 🖼️ ضع رابط الشعار المباشر هنا (يجب أن ينتهي بـ .jpg أو .png)
+    const LOGO_URL = "https://e.top4top.io/p_36206u8ei1.png"; 
+
     // ============================================================
 
+    // إعداد الشعار
+    if(LOGO_URL && LOGO_URL !== "") {
+        document.getElementById('company-logo').src = LOGO_URL;
+    } else {
+        document.getElementById('company-logo').style.display = 'none';
+    }
+
     var productsDB = {}; 
-    var categoriesSet = new Set(); // لتخزين أسماء الأقسام
+    var categoriesSet = new Set();
     var html5QrcodeScanner;
     const statusDiv = document.getElementById('status');
     document.getElementById('add-btn').href = GOOGLE_FORM_URL;
 
-    // --- وظائف القائمة الجانبية ---
     function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
     function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
 
     function updateCategoriesMenu() {
         let container = document.getElementById('categories-container');
         container.innerHTML = "";
-        
-        // تحويل الأقسام لمصفوفة وترتيبها
         let sortedCats = Array.from(categoriesSet).sort();
-        
-        if(sortedCats.length === 0) {
-            container.innerHTML = "<a href='#'>لا توجد أقسام</a>";
-            return;
-        }
-
+        if(sortedCats.length === 0) { container.innerHTML = "<a href='#'>لا توجد أقسام</a>"; return; }
         sortedCats.forEach(cat => {
             let link = document.createElement('a');
-            link.href = "#";
-            link.innerText = cat;
+            link.href = "#"; link.innerText = cat;
             link.onclick = function() { showCategoryProducts(cat); closeNav(); };
             container.appendChild(link);
         });
@@ -143,12 +152,9 @@
         document.getElementById('scan-screen').style.display = 'none';
         document.getElementById('result-screen').style.display = 'none';
         document.getElementById('list-screen').style.display = 'block';
-        
         document.getElementById('category-title').innerText = "قسم: " + catName;
         let listDiv = document.getElementById('list-content');
         listDiv.innerHTML = "";
-
-        // البحث عن كل المنتجات في هذا القسم
         for (let code in productsDB) {
             let p = productsDB[code];
             if (p.category === catName) {
@@ -161,7 +167,6 @@
         }
     }
 
-    // --- تحميل البيانات ---
     async function fetchProducts() {
       showStatus("جاري التحديث...", "loading");
       try {
@@ -181,37 +186,30 @@
 
     function parseCSV(csvText) {
       const rows = csvText.split('\n');
-      productsDB = {}; 
-      categoriesSet.clear();
-
+      productsDB = {}; categoriesSet.clear();
       for (let i = 1; i < rows.length; i++) {
         const row = rows[i].split(','); 
         if (row.length >= 4) {
-          const code = clean(row[1]); 
-          const name = clean(row[2]); 
-          let rawPrice = clean(row[3]).replace(/[^0-9.]/g, ''); // تنظيف السعر
+          const code = clean(row[1]); const name = clean(row[2]); 
+          let rawPrice = clean(row[3]).replace(/[^0-9.]/g, '');
           const img = row[4] ? clean(row[4]) : ""; 
-          // 🔴 قراءة القسم من العمود السادس (index 5)
           const cat = row[5] ? clean(row[5]) : "عام"; 
-          
           if(code) {
               productsDB[code] = { name: name, price: rawPrice, img: img, category: cat };
               categoriesSet.add(cat);
           }
         }
       }
-      updateCategoriesMenu(); // تحديث القائمة بعد جلب البيانات
+      updateCategoriesMenu();
     }
 
     function clean(text) { return text ? text.replace(/"/g, '').trim() : ""; }
 
-    // --- بحث ---
     function suggestProducts() {
         let inputVal = document.getElementById('search-input').value.toLowerCase().trim();
         let listDiv = document.getElementById('suggestions');
         listDiv.innerHTML = ""; 
         if (inputVal.length < 1) { listDiv.style.display = "none"; return; }
-
         let matchCount = 0;
         for (let code in productsDB) {
             let p = productsDB[code];
@@ -228,7 +226,6 @@
         listDiv.style.display = (matchCount > 0) ? "block" : "none";
     }
 
-    // --- كاميرا ونتائج ---
     function onScanSuccess(decodedText, decodedResult) {
       if(html5QrcodeScanner) html5QrcodeScanner.clear();
       if (productsDB[decodedText]) { showResultScreen(productsDB[decodedText]); }
@@ -242,11 +239,9 @@
       document.getElementById('scan-screen').style.display = 'none';
       document.getElementById('list-screen').style.display = 'none';
       document.getElementById('result-screen').style.display = 'block';
-      
       document.getElementById('p_cat').innerText = product.category;
       document.getElementById('p_name').innerText = product.name;
       document.getElementById('p_price').innerText = product.price + " ج.م";
-      
       const imgElem = document.getElementById('p_img');
       if(product.img && product.img.startsWith('http')) { imgElem.src = product.img; imgElem.style.display = 'inline-block'; }
       else { imgElem.style.display = 'none'; }
