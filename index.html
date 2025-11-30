@@ -14,7 +14,7 @@
   :root {
       --primary-color: #0056b3; 
       --secondary-color: #007bff; 
-      --scanner-color: #00d2ff; /* 🆕 لون السكانر الجديد (سماوي مضيء) */
+      --scanner-color: #00d2ff; /* لون النيون السماوي */
       --bg-color: #eef2f5; 
       --card-bg: #ffffff; 
       --text-color: #333333; 
@@ -47,15 +47,15 @@
   .suggestion-thumb { width: 40px; height: 40px; object-fit: contain; border-radius: 6px; border: 1px solid #eee; background: #fff; margin-left: 10px; }
   .prod-info-flex { display: flex; align-items: center; }
 
-  /* 🔴🔴 تصميم الماسح الجديد (المضيء) 🔴🔴 */
+  /* 🔴🔴 تصميم الماسح الجديد (الأبيض المضيء) 🔴🔴 */
   .scanner-wrapper { 
       position: relative; width: 100%; height: 300px; margin-bottom: 20px; 
       border-radius: 20px; overflow: hidden; 
-      background: black; 
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      border: 2px solid #333;
+      background: #ffffff; /* ✅ الخلفية بيضاء الآن */
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border: 3px solid var(--secondary-color); /* ✅ الإطار أزرق ليتماشى مع الأبيض */
   }
-  #reader { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+  #reader { width: 100%; height: 100%; object-fit: cover; }
   
   /* الليزر */
   .laser-beam { 
@@ -68,16 +68,16 @@
   }
   @keyframes scan-anim { 0% { top: 10%; opacity: 0; } 50% { opacity: 1; } 100% { top: 90%; opacity: 0; } }
   
-  /* الزوايا المضيئة */
+  /* الزوايا المضيئة (بقيت كما هي لأنها تبدو جيدة على الأبيض) */
   .scan-overlay { 
       position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px; 
       border-radius: 15px; pointer-events: none; 
-      box-shadow: inset 0 0 30px rgba(0, 210, 255, 0.2); /* إضاءة داخلية */
+      box-shadow: inset 0 0 30px rgba(0, 210, 255, 0.1); 
   }
   .scan-overlay::before, .scan-overlay::after { 
       content: ''; position: absolute; width: 40px; height: 40px; 
       border-color: var(--scanner-color); border-style: solid; border-width: 0; 
-      filter: drop-shadow(0 0 5px var(--scanner-color)); /* توهج */
+      filter: drop-shadow(0 0 5px var(--scanner-color));
   }
   .scan-overlay::before { top: 0; left: 0; border-top-width: 4px; border-left-width: 4px; border-radius: 12px 0 0 0; }
   .scan-overlay::after { top: 0; right: 0; border-top-width: 4px; border-right-width: 4px; border-radius: 0 12px 0 0; }
@@ -177,7 +177,7 @@
     // ============================================================
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKotb6frhhZzBOkKyvUu0V1x06UkENSEkdtSn52yfc7OG030tDMxwjjjEX8tV1UGgpNzMTuObGRur3/pub?gid=0&single=true&output=csv"; 
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
-    const LOGO_URL = "https://kamalsaad.com/themes/theme_front/assets/images/KMS"; 
+    const LOGO_URL = "https://kamalsaad.com/themes/theme_front/assets/images/KMS LOGO FINAL.png"; 
     // ============================================================
 
     if(LOGO_URL && LOGO_URL !== "") { document.getElementById('company-logo').src = LOGO_URL; } 
@@ -279,9 +279,7 @@
     function showResultScreen(product) {
       document.getElementById('scan-screen').style.display = 'none'; document.getElementById('list-screen').style.display = 'none';
       document.getElementById('result-screen').style.display = 'block';
-      document.getElementById('p_cat').innerText = product.category; 
-      document.getElementById('p_name').innerText = product.name;
-      document.getElementById('p_code').innerText = product.code;
+      document.getElementById('p_cat').innerText = product.category; document.getElementById('p_name').innerText = product.name; document.getElementById('p_code').innerText = product.code;
       const imgElem = document.getElementById('p_img');
       if(product.img && product.img.startsWith('http')) { imgElem.src = product.img; imgElem.style.display = 'inline-block'; } else { imgElem.style.display = 'none'; }
       let priceHTML = `<table class="prices-table"><thead><tr><th>الوحدة</th><th>السعر</th></tr></thead><tbody>`;
