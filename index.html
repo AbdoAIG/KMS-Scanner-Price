@@ -64,27 +64,45 @@
   .scan-corners-bottom::before { bottom: -2px; left: -2px; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 8px; }
   .scan-corners-bottom::after { bottom: -2px; right: -2px; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 8px 0; }
 
-  /* النتائج */
+  /* --- 📝 تصميم عرض التفاصيل الجديد --- */
   #list-screen, .result-box { display: none; text-align: right; }
-  .result-box { text-align: center; background: #f8faff; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; }
-  .product-img { width: 100%; max-width: 200px; height: 200px; object-fit: contain; border-radius: 10px; margin-bottom: 15px; border: 1px solid #ddd; background: white; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+  .result-box { text-align: center; background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; }
   
-  .price { font-size: 36px; color: var(--primary-color); font-weight: bold; margin: 10px 0; }
-  .name { font-size: 24px; font-weight: bold; color: var(--text-color); margin-bottom: 5px; }
-  .category-tag { background: #eef2f5; padding: 6px 15px; border-radius: 20px; font-size: 13px; color: #666; display: inline-block; margin-bottom: 10px; font-weight: bold; }
-  
-  /* 🔴 تصميم رقم الباركود الجديد */
-  .barcode-display { 
-      font-family: 'Courier New', monospace; 
-      font-size: 18px; 
-      color: #777; 
-      background: #eee; 
-      padding: 5px 15px; 
-      border-radius: 5px; 
-      display: inline-block; 
-      margin-top: 5px; 
-      letter-spacing: 1px;
+  .product-img { width: 100%; max-width: 200px; height: 200px; object-fit: contain; border-radius: 10px; margin-bottom: 20px; border: 1px solid #eee; background: white; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+  /* صف التفاصيل */
+  .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+  }
+  .detail-label {
+      color: var(--primary-color);
       font-weight: bold;
+      font-size: 16px;
+      margin-left: 10px;
+  }
+  .detail-value {
+      color: #333;
+      font-weight: 500;
+      font-size: 18px;
+  }
+  /* تمييز السعر */
+  .price-value {
+      color: #28a745;
+      font-size: 22px;
+      font-weight: bold;
+  }
+  /* تمييز الباركود */
+  .barcode-value {
+      font-family: monospace;
+      letter-spacing: 1px;
+      background: #eee;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 16px;
   }
 
   /* التكبير */
@@ -145,14 +163,32 @@
 
   <div id="result-screen" class="result-box">
     <img id="p_img" src="" class="product-img" onerror="this.style.display='none'" onclick="openImageModal(this.src)">
-    <p style="font-size:12px; color:#999;">(اضغط للتكبير)</p>
+    <p style="font-size:12px; color:#999; margin-top:-10px; margin-bottom:20px;">(اضغط للتكبير)</p>
     
-    <div id="p_cat" class="category-tag"></div>
-    <div id="p_name" class="name"></div>
-    
-    <div id="p_code" class="barcode-display"></div>
-    
-    <div id="p_price" class="price"></div>
+    <div style="text-align: right;">
+        
+        <div class="detail-row">
+            <span class="detail-label">الصنف (القسم):</span>
+            <span id="p_cat" class="detail-value"></span>
+        </div>
+
+        <div class="detail-row">
+            <span class="detail-label">اسم المنتج:</span>
+            <span id="p_name" class="detail-value"></span>
+        </div>
+
+        <div class="detail-row">
+            <span class="detail-label">رقم الباركود:</span>
+            <span id="p_code" class="detail-value barcode-value"></span>
+        </div>
+
+        <div class="detail-row" style="border-bottom:none; margin-top:10px;">
+            <span class="detail-label">السعر:</span>
+            <span id="p_price" class="detail-value price-value"></span>
+        </div>
+
+    </div>
+
     <hr style="border:0; border-top:1px solid #eee; margin: 20px 0;">
     <button class="btn btn-primary" onclick="resetScanner()">بحث آخر</button>
   </div>
@@ -228,7 +264,6 @@
           let rawPrice = clean(row[3]).replace(/[^0-9.]/g, '');
           const img = row[4] ? clean(row[4]) : ""; const cat = row[5] ? clean(row[5]) : "عام"; 
           if(code) { 
-              // 🔴 حفظ الكود داخل المنتج
               productsDB[code] = { code: code, name: name, price: rawPrice, img: img, category: cat }; 
               categoriesSet.add(cat); 
           }
@@ -264,12 +299,13 @@
     function showResultScreen(product) {
       document.getElementById('scan-screen').style.display = 'none'; document.getElementById('list-screen').style.display = 'none';
       document.getElementById('result-screen').style.display = 'block';
-      document.getElementById('p_cat').innerText = product.category; document.getElementById('p_name').innerText = product.name;
       
-      // 🔴 إظهار رقم الباركود
+      // تعبئة البيانات في الخانات الجديدة
+      document.getElementById('p_cat').innerText = product.category; 
+      document.getElementById('p_name').innerText = product.name;
       document.getElementById('p_code').innerText = product.code;
-
       document.getElementById('p_price').innerText = product.price + " ج.م";
+      
       const imgElem = document.getElementById('p_img');
       if(product.img && product.img.startsWith('http')) { imgElem.src = product.img; imgElem.style.display = 'inline-block'; } else { imgElem.style.display = 'none'; }
     }
