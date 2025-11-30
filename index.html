@@ -7,10 +7,9 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>تطبيق الشركة</title>
+<title>تطبيق الجملة والقطاعي</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
-  /* --- 🎨 الألوان الأساسية --- */
   :root {
       --primary-color: #0056b3; 
       --secondary-color: #007bff; 
@@ -33,22 +32,17 @@
   /* الشعار */
   .app-logo { max-width: 140px; max-height: 80px; display: block; margin: 0 auto 10px auto; object-fit: contain; }
 
-  /* زر القائمة */
-  .menu-btn { position: absolute; top: 20px; right: 20px; font-size: 28px; cursor: pointer; background: none; border: none; color: var(--primary-color); z-index: 100; }
-  
   /* القائمة الجانبية */
+  .menu-btn { position: absolute; top: 20px; right: 20px; font-size: 28px; cursor: pointer; background: none; border: none; color: var(--primary-color); z-index: 100; }
   .sidenav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background-color: var(--primary-color); overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
   .sidenav a { padding: 15px 20px 15px 32px; text-decoration: none; font-size: 18px; color: white; display: block; transition: 0.3s; border-bottom: 1px solid rgba(255,255,255,0.1); }
-  .sidenav a:hover { background-color: rgba(255,255,255,0.1); padding-right: 30px; }
   .sidenav .closebtn { position: absolute; top: 0; right: 25px; font-size: 36px; margin-left: 50px; border: none; color: white; }
   
   /* البحث */
   .search-wrapper { position: relative; margin-bottom: 20px; }
   .search-input { width: 100%; padding: 14px; background: #f8f9fa; border: 2px solid var(--border-color); color: var(--text-color); border-radius: 12px; font-size: 16px; box-sizing: border-box; outline: none; transition: 0.3s; }
-  .search-input:focus { border-color: var(--secondary-color); background: white; box-shadow: 0 0 0 4px rgba(0,123,255,0.1); }
   .suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border-color); border-radius: 0 0 12px 12px; z-index: 1000; max-height: 250px; overflow-y: auto; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
   .suggestion-item { padding: 15px; border-bottom: 1px solid #f0f0f0; text-align: right; cursor: pointer; display: flex; justify-content: space-between; color: var(--text-color); }
-  .suggestion-item:hover { background-color: #f0f7ff; }
 
   /* الماسح */
   .scanner-wrapper { position: relative; width: 100%; height: 300px; margin-bottom: 20px; border-radius: 15px; overflow: hidden; border: 3px solid var(--secondary-color); background: black; }
@@ -56,54 +50,30 @@
   .laser-beam { position: absolute; width: 100%; height: 2px; background: #ff0000; box-shadow: 0 0 15px #ff0000; top: 0; left: 0; z-index: 10; animation: scan-anim 2s infinite ease-in-out; opacity: 0.8; pointer-events: none; }
   @keyframes scan-anim { 0% { top: 10%; opacity: 0; } 50% { opacity: 1; } 100% { top: 90%; opacity: 0; } }
   .scan-overlay { position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 10px; pointer-events: none; }
-  .scan-overlay::before, .scan-overlay::after { content: ''; position: absolute; width: 30px; height: 30px; border-color: white; border-style: solid; border-width: 0; }
-  .scan-overlay::before { top: -2px; left: -2px; border-top-width: 4px; border-left-width: 4px; border-radius: 8px 0 0 0; }
-  .scan-overlay::after { top: -2px; right: -2px; border-top-width: 4px; border-right-width: 4px; border-radius: 0 8px 0 0; }
   .scan-corners-bottom { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-  .scan-corners-bottom::before, .scan-corners-bottom::after { content: ''; position: absolute; width: 30px; height: 30px; border-color: white; border-style: solid; border-width: 0; }
-  .scan-corners-bottom::before { bottom: -2px; left: -2px; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 8px; }
-  .scan-corners-bottom::after { bottom: -2px; right: -2px; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 8px 0; }
 
-  /* --- 📝 تصميم عرض التفاصيل الجديد --- */
+  /* النتائج والتفاصيل */
   #list-screen, .result-box { display: none; text-align: right; }
   .result-box { text-align: center; background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; }
+  .product-img { width: 100%; max-width: 200px; height: 200px; object-fit: contain; border-radius: 10px; margin-bottom: 15px; border: 1px solid #eee; background: white; cursor: pointer; }
   
-  .product-img { width: 100%; max-width: 200px; height: 200px; object-fit: contain; border-radius: 10px; margin-bottom: 20px; border: 1px solid #eee; background: white; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+  .name { font-size: 22px; font-weight: bold; color: var(--text-color); margin-bottom: 5px; }
+  .category-tag { background: #eef2f5; padding: 6px 15px; border-radius: 20px; font-size: 13px; color: #666; display: inline-block; margin-bottom: 10px; font-weight: bold; }
+  .barcode-display { font-family: 'Courier New', monospace; font-size: 16px; color: #555; background: #f8f9fa; padding: 4px 10px; border-radius: 4px; display: inline-block; margin-bottom: 15px; border: 1px solid #eee; }
 
-  /* صف التفاصيل */
-  .detail-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid #eee;
+  /* 🔴 جدول الأسعار الجديد */
+  .prices-table {
+      width: 100%;
+      margin-top: 15px;
+      border-collapse: collapse;
+      background: #fdfdfd;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #eee;
   }
-  .detail-label {
-      color: var(--primary-color);
-      font-weight: bold;
-      font-size: 16px;
-      margin-left: 10px;
-  }
-  .detail-value {
-      color: #333;
-      font-weight: 500;
-      font-size: 18px;
-  }
-  /* تمييز السعر */
-  .price-value {
-      color: #28a745;
-      font-size: 22px;
-      font-weight: bold;
-  }
-  /* تمييز الباركود */
-  .barcode-value {
-      font-family: monospace;
-      letter-spacing: 1px;
-      background: #eee;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 16px;
-  }
+  .prices-table th { background: var(--secondary-color); color: white; padding: 10px; font-size: 14px; }
+  .prices-table td { padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; color: #333; }
+  .prices-table td.price-val { color: #28a745; font-size: 18px; }
 
   /* التكبير */
   .modal { display: none; position: fixed; z-index: 5000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); }
@@ -118,8 +88,6 @@
   
   .status-msg { margin: 10px 0; font-size: 14px; padding: 10px; border-radius: 8px; display: none; }
   .loading { background-color: #e2f0fb; color: var(--primary-color); border: 1px solid #b8daff; }
-  .offline { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-  .error { background-color: #f8d7da; color: #721c24; }
 </style>
 </head>
 <body>
@@ -133,7 +101,6 @@
 </div>
 
 <div class="container">
-  
   <button class="menu-btn" onclick="openNav()">☰</button>
 
   <div id="scan-screen">
@@ -142,7 +109,7 @@
     <div id="status" class="status-msg loading">جاري التحميل...</div>
 
     <div class="search-wrapper">
-        <input type="text" id="search-input" class="search-input" placeholder="🔍 ابحث بالاسم أو الباركود..." onkeyup="suggestProducts()" autocomplete="off">
+        <input type="text" id="search-input" class="search-input" placeholder="🔍 بحث بالاسم أو الباركود..." onkeyup="suggestProducts()" autocomplete="off">
         <div id="suggestions" class="suggestions-list"></div>
     </div>
 
@@ -163,31 +130,12 @@
 
   <div id="result-screen" class="result-box">
     <img id="p_img" src="" class="product-img" onerror="this.style.display='none'" onclick="openImageModal(this.src)">
-    <p style="font-size:12px; color:#999; margin-top:-10px; margin-bottom:20px;">(اضغط للتكبير)</p>
     
-    <div style="text-align: right;">
-        
-        <div class="detail-row">
-            <span class="detail-label">الصنف (القسم):</span>
-            <span id="p_cat" class="detail-value"></span>
-        </div>
+    <div id="p_cat" class="category-tag"></div>
+    <div id="p_name" class="name"></div>
+    <div id="p_code" class="barcode-display"></div>
 
-        <div class="detail-row">
-            <span class="detail-label">اسم المنتج:</span>
-            <span id="p_name" class="detail-value"></span>
-        </div>
-
-        <div class="detail-row">
-            <span class="detail-label">رقم الباركود:</span>
-            <span id="p_code" class="detail-value barcode-value"></span>
-        </div>
-
-        <div class="detail-row" style="border-bottom:none; margin-top:10px;">
-            <span class="detail-label">السعر:</span>
-            <span id="p_price" class="detail-value price-value"></span>
-        </div>
-
-    </div>
+    <div id="prices-container"></div>
 
     <hr style="border:0; border-top:1px solid #eee; margin: 20px 0;">
     <button class="btn btn-primary" onclick="resetScanner()">بحث آخر</button>
@@ -235,19 +183,20 @@
             let p = productsDB[code];
             if (p.category === catName) {
                 let div = document.createElement('div'); div.className = 'suggestion-item';
-                div.innerHTML = `<span>${p.name}</span><span style="color:var(--primary-color); font-weight:bold;">${p.price} ج.م</span>`;
+                // عرض السعر الأول فقط في القائمة المختصرة
+                div.innerHTML = `<span>${p.name}</span><span style="color:var(--primary-color); font-weight:bold;">${p.price1} ج.م</span>`;
                 div.onclick = function() { showResultScreen(p); }; listDiv.appendChild(div);
             }
         }
     }
 
     async function fetchProducts() {
-      showStatus("🔄 تحديث...", "loading");
+      showStatus("🔄 تحديث الأسعار...", "loading");
       try {
         const response = await fetch(SHEET_CSV_URL, { cache: "no-store" });
         if (!response.ok) throw new Error("Network error");
         const data = await response.text(); localStorage.setItem('offline_products_csv', data); parseCSV(data);
-        showStatus("متصل ✅", "loading"); setTimeout(() => { statusDiv.style.display = 'none'; }, 1000);
+        showStatus("تم التحديث ✅", "loading"); setTimeout(() => { statusDiv.style.display = 'none'; }, 1000);
       } catch (error) {
         const cachedData = localStorage.getItem('offline_products_csv');
         if (cachedData) { parseCSV(cachedData); showStatus("⚠️ أوفلاين", "loading"); }
@@ -259,12 +208,20 @@
       const rows = csvText.split('\n'); productsDB = {}; categoriesSet.clear();
       for (let i = 1; i < rows.length; i++) {
         const row = rows[i].split(','); 
-        if (row.length >= 4) {
-          const code = clean(row[1]); const name = clean(row[2]); 
-          let rawPrice = clean(row[3]).replace(/[^0-9.]/g, '');
-          const img = row[4] ? clean(row[4]) : ""; const cat = row[5] ? clean(row[5]) : "عام"; 
+        if (row.length >= 7) { // نتأكد من وجود أعمدة كافية
+          const code = clean(row[1]); 
+          const name = clean(row[2]); 
+          
+          // قراءة 3 أسعار مختلفة
+          let p1 = cleanPrice(row[3]); // قطعة
+          let p2 = cleanPrice(row[4]); // دستة
+          let p3 = cleanPrice(row[5]); // كرتونة
+          
+          const img = row[6] ? clean(row[6]) : ""; // الصورة في العمود G
+          const cat = row[7] ? clean(row[7]) : "عام"; // القسم في العمود H
+          
           if(code) { 
-              productsDB[code] = { code: code, name: name, price: rawPrice, img: img, category: cat }; 
+              productsDB[code] = { code: code, name: name, price1: p1, price2: p2, price3: p3, img: img, category: cat }; 
               categoriesSet.add(cat); 
           }
         }
@@ -273,6 +230,8 @@
     }
 
     function clean(text) { return text ? text.replace(/"/g, '').trim() : ""; }
+    function cleanPrice(text) { return text ? text.replace(/"/g, '').replace(/[^0-9.]/g, '').trim() : ""; }
+
     function suggestProducts() {
         let inputVal = document.getElementById('search-input').value.toLowerCase().trim();
         let listDiv = document.getElementById('suggestions'); listDiv.innerHTML = ""; 
@@ -282,7 +241,7 @@
             let p = productsDB[code];
             if (p.name.toLowerCase().includes(inputVal) || code.includes(inputVal)) {
                 let item = document.createElement('div'); item.className = 'suggestion-item';
-                item.innerHTML = `<span>${p.name}</span><span style="color:var(--primary-color)">${p.price} ج.م</span>`;
+                item.innerHTML = `<span>${p.name}</span><span style="color:var(--primary-color)">${p.price1} ج.م</span>`;
                 item.onclick = function() { showResultScreen(p); document.getElementById('search-input').value = ""; listDiv.style.display = "none"; };
                 listDiv.appendChild(item); matchCount++; if(matchCount >= 10) break;
             }
@@ -300,14 +259,22 @@
       document.getElementById('scan-screen').style.display = 'none'; document.getElementById('list-screen').style.display = 'none';
       document.getElementById('result-screen').style.display = 'block';
       
-      // تعبئة البيانات في الخانات الجديدة
       document.getElementById('p_cat').innerText = product.category; 
       document.getElementById('p_name').innerText = product.name;
       document.getElementById('p_code').innerText = product.code;
-      document.getElementById('p_price').innerText = product.price + " ج.م";
       
       const imgElem = document.getElementById('p_img');
       if(product.img && product.img.startsWith('http')) { imgElem.src = product.img; imgElem.style.display = 'inline-block'; } else { imgElem.style.display = 'none'; }
+
+      // 🔴 بناء جدول الأسعار ديناميكياً
+      let priceHTML = `<table class="prices-table"><thead><tr><th>الوحدة</th><th>السعر</th></tr></thead><tbody>`;
+      
+      if(product.price1) priceHTML += `<tr><td>قطعة</td><td class="price-val">${product.price1} ج.م</td></tr>`;
+      if(product.price2) priceHTML += `<tr><td>دستة</td><td class="price-val">${product.price2} ج.م</td></tr>`;
+      if(product.price3) priceHTML += `<tr><td>كرتونة</td><td class="price-val">${product.price3} ج.م</td></tr>`;
+      
+      priceHTML += `</tbody></table>`;
+      document.getElementById('prices-container').innerHTML = priceHTML;
     }
 
     function resetScanner() {
