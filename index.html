@@ -10,6 +10,7 @@
 <title>تطبيق الشركة المتكامل</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
+  /* --- 🎨 الألوان والتصميم --- */
   :root {
       --primary-color: #0056b3; 
       --secondary-color: #007bff; 
@@ -20,7 +21,7 @@
       --border-color: #e0e0e0; 
   }
 
-  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; background-color: var(--bg-color); margin: 0; color: var(--text-color); }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; background-color: var(--bg-color); margin: 0; color: var(--text-color); user-select: none; /* منع تحديد النصوص للسرعة */ }
   
   .container { 
       max-width: 600px; margin: 10px auto; 
@@ -28,7 +29,7 @@
       border-radius: 20px; 
       box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
       position: relative; min-height: 90vh; 
-      padding-bottom: 70px; /* مسافة للزر العائم */
+      padding-bottom: 70px; 
   }
   
   .app-logo { max-width: 140px; max-height: 80px; display: block; margin: 0 auto 10px auto; object-fit: contain; }
@@ -49,7 +50,6 @@
 
   /* أزرار الفلترة */
   .sub-cats-container { display: flex; overflow-x: auto; white-space: nowrap; padding: 10px 5px; gap: 8px; margin-bottom: 15px; scrollbar-width: none; }
-  .sub-cats-container::-webkit-scrollbar { display: none; }
   .sub-cat-btn { background: #f0f0f0; color: #555; border: 1px solid #ddd; padding: 8px 16px; border-radius: 20px; font-size: 14px; cursor: pointer; transition: 0.2s; }
   .sub-cat-btn.active { background: var(--secondary-color); color: white; border-color: var(--secondary-color); font-weight: bold; }
 
@@ -80,27 +80,9 @@
   .prices-table td { padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; color: #333; text-align: center; }
   .prices-table td.price-val { color: #28a745; font-size: 18px; }
 
-  /* 🔴 زر الرجوع العائم 🔴 */
-  #back-fab {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      width: 55px;
-      height: 55px;
-      background-color: #444;
-      color: white;
-      border-radius: 50%;
-      border: none;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      font-size: 24px;
-      cursor: pointer;
-      z-index: 2000;
-      display: none; /* مخفي افتراضياً */
-      align-items: center;
-      justify-content: center;
-  }
-  #back-fab:hover { background-color: #222; }
-
+  /* زر الرجوع */
+  #back-fab { position: fixed; bottom: 20px; left: 20px; width: 55px; height: 55px; background-color: #444; color: white; border-radius: 50%; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size: 24px; cursor: pointer; z-index: 2000; display: none; align-items: center; justify-content: center; }
+  
   /* التكبير والأزرار */
   .modal { display: none; position: fixed; z-index: 5000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); }
   .modal-content { margin: auto; display: block; width: 90%; max-width: 700px; border: 3px solid white; border-radius: 10px; }
@@ -183,13 +165,39 @@
     if(LOGO_URL && LOGO_URL !== "") { document.getElementById('company-logo').src = LOGO_URL; } 
     else { document.getElementById('company-logo').style.display = 'none'; }
 
+    // --- 🔊 وظيفة الصوت والاهتزاز الجديدة 🔊 ---
+    var audioCtx = null;
+    function playScanSound() {
+        // 1. الاهتزاز (Android support)
+        if (navigator.vibrate) {
+            navigator.vibrate(200); // اهتزاز لمدة 200 مللي ثانية
+        }
+
+        // 2. الصوت (Web Audio API)
+        try {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.type = 'square'; // نوع الموجة (صوت إلكتروني)
+            oscillator.frequency.setValueAtTime(800, audioCtx.currentTime); // التردد
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); // مستوى الصوت
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.1); // مدة الصوت (0.1 ثانية)
+        } catch(e) {
+            console.log("Audio not supported or blocked");
+        }
+    }
+
     function openImageModal(src) { var modal = document.getElementById("imageModal"); var modalImg = document.getElementById("img01"); modal.style.display = "block"; modalImg.src = src; }
     function closeImageModal() { document.getElementById("imageModal").style.display = "none"; }
 
     var productsDB = {}; var categoriesSet = new Set(); var html5QrcodeScanner;
     const statusDiv = document.getElementById('status');
-    
-    // 🔴 متغير لتتبع الشاشة السابقة
     var lastScreen = "scan-screen"; 
 
     document.getElementById('add-btn').href = GOOGLE_FORM_URL;
@@ -207,9 +215,7 @@
     }
 
     function showCategoryProducts(catName) {
-        lastScreen = "scan-screen"; // القائمة دائماً الرجوع منها للكاميرا
-        updateBackButton();
-
+        lastScreen = "scan-screen"; updateBackButton();
         document.getElementById('scan-screen').style.display = 'none'; 
         document.getElementById('result-screen').style.display = 'none';
         document.getElementById('list-screen').style.display = 'block';
@@ -246,7 +252,6 @@
             let div = document.createElement('div'); div.className = 'suggestion-item';
             let imgTag = (p.img && p.img.startsWith('http')) ? `<img src="${p.img}" class="suggestion-thumb">` : '';
             div.innerHTML = `<div class="prod-info-flex">${imgTag}<span>${p.name}</span></div><span style="color:var(--primary-color); font-weight:bold;">${p.price1} ج.م</span>`;
-            // نمرر مصدر الضغط (قائمة)
             div.onclick = function() { showResultScreen(p, 'list-screen'); }; 
             listDiv.appendChild(div);
         });
@@ -301,7 +306,6 @@
                 let item = document.createElement('div'); item.className = 'suggestion-item';
                 let imgTag = (p.img && p.img.startsWith('http')) ? `<img src="${p.img}" class="suggestion-thumb">` : '';
                 item.innerHTML = `<div class="prod-info-flex">${imgTag}<span>${p.name}</span></div><span style="color:var(--primary-color)">${p.price1} ج.م</span>`;
-                // البحث يأتي من الشاشة الرئيسية دائماً
                 item.onclick = function() { showResultScreen(p, 'scan-screen'); document.getElementById('search-input').value = ""; listDiv.style.display = "none"; };
                 listDiv.appendChild(item); matchCount++; if(matchCount >= 10) break;
             }
@@ -311,16 +315,16 @@
 
     function onScanSuccess(decodedText, decodedResult) {
       if(html5QrcodeScanner) html5QrcodeScanner.clear();
-      // المسح يأتي من الشاشة الرئيسية
+      
+      // 🔊 تشغيل الصوت والاهتزاز عند النجاح
+      playScanSound();
+
       if (productsDB[decodedText]) { showResultScreen(productsDB[decodedText], 'scan-screen'); }
       else { if(confirm("غير مسجل: " + decodedText + "\nإضافة؟")) { window.open(GOOGLE_FORM_URL, '_blank'); resetScanner(); } else { resetScanner(); } }
     }
 
-    // 🔴 تم تعديل الدالة لتقبل المصدر (source)
     function showResultScreen(product, source = 'scan-screen') {
-        lastScreen = source; // حفظ المكان الذي جئنا منه
-        updateBackButton();
-
+        lastScreen = source; updateBackButton();
         document.getElementById('scan-screen').style.display = 'none'; document.getElementById('list-screen').style.display = 'none';
         document.getElementById('result-screen').style.display = 'block';
         document.getElementById('p_cat').innerText = product.category; 
@@ -337,39 +341,23 @@
         document.getElementById('prices-container').innerHTML = priceHTML;
     }
 
-    // 🔴 وظيفة زر الرجوع الذكي
     function goBack() {
         if(document.getElementById('result-screen').style.display === 'block') {
-            // نحن في شاشة النتائج، نعود للمصدر المحفوظ
             if(lastScreen === 'list-screen') {
-                document.getElementById('result-screen').style.display = 'none';
-                document.getElementById('list-screen').style.display = 'block';
-                updateBackButton(); // زر الرجوع يظل موجوداً لأننا في القائمة
-            } else {
-                resetScanner(); // العودة للرئيسية
-            }
-        } else if(document.getElementById('list-screen').style.display === 'block') {
-            // نحن في القائمة، نعود للرئيسية
-            resetScanner();
-        }
+                document.getElementById('result-screen').style.display = 'none'; document.getElementById('list-screen').style.display = 'block'; updateBackButton();
+            } else { resetScanner(); }
+        } else if(document.getElementById('list-screen').style.display === 'block') { resetScanner(); }
     }
 
-    // إظهار/إخفاء زر الرجوع
     function updateBackButton() {
         let btn = document.getElementById('back-fab');
-        // إذا الكاميرا ظاهرة، نخفي الزر. غير ذلك نظهره.
-        if(document.getElementById('scan-screen').style.display === 'block') {
-            btn.style.display = 'none';
-        } else {
-            btn.style.display = 'flex';
-        }
+        if(document.getElementById('scan-screen').style.display === 'block') { btn.style.display = 'none'; } else { btn.style.display = 'flex'; }
     }
 
     function resetScanner() {
         document.getElementById('result-screen').style.display = 'none'; document.getElementById('list-screen').style.display = 'none';
         document.getElementById('scan-screen').style.display = 'block'; document.getElementById('suggestions').style.display = "none";
-        updateBackButton(); // تحديث حالة الزر
-        startCamera();
+        updateBackButton(); startCamera();
     }
 
     function startCamera() {
