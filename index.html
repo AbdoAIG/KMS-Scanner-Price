@@ -10,7 +10,6 @@
 <title>تطبيق الشركة المتكامل</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
-  /* --- 🎨 الألوان والتصميم --- */
   :root {
       --primary-color: #0056b3; 
       --secondary-color: #007bff; 
@@ -21,7 +20,7 @@
       --border-color: #e0e0e0; 
   }
 
-  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; background-color: var(--bg-color); margin: 0; color: var(--text-color); user-select: none; /* منع تحديد النصوص للسرعة */ }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; background-color: var(--bg-color); margin: 0; color: var(--text-color); user-select: none; }
   
   .container { 
       max-width: 600px; margin: 10px auto; 
@@ -29,7 +28,8 @@
       border-radius: 20px; 
       box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
       position: relative; min-height: 90vh; 
-      padding-bottom: 70px; 
+      padding-bottom: 50px; 
+      display: flex; flex-direction: column;
   }
   
   .app-logo { max-width: 140px; max-height: 80px; display: block; margin: 0 auto 10px auto; object-fit: contain; }
@@ -93,6 +93,20 @@
   .btn-secondary { background: #6c757d; color: white; }
   .status-msg { margin: 10px 0; font-size: 14px; padding: 10px; border-radius: 8px; display: none; }
   .loading { background-color: #e2f0fb; color: var(--primary-color); border: 1px solid #b8daff; }
+
+  /* 🔴 تصميم توقيع المصمم (الفوتر) 🔴 */
+  .designer-footer {
+      margin-top: auto; /* يدفعه للأسفل */
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      font-size: 13px;
+      color: #777;
+      text-align: center;
+  }
+  .designer-footer span {
+      color: var(--primary-color);
+      font-weight: bold;
+  }
 </style>
 </head>
 <body>
@@ -151,46 +165,42 @@
     <button class="btn btn-primary" onclick="goBack()">رجوع</button>
   </div>
 
+  <div class="designer-footer">
+      تصميم وتطوير: <span id="designer-name"></span>
+  </div>
+
 </div>
 
 <script>
     // ============================================================
-    // 🔴🔴 الروابط 🔴🔴
+    // 🔴🔴 الروابط + اسم المصمم 🔴🔴
     // ============================================================
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKotb6frhhZzBOkKyvUu0V1x06UkENSEkdtSn52yfc7OG030tDMxwjjjEX8tV1UGgpNzMTuObGRur3/pub?gid=0&single=true&output=csv"; 
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
     const LOGO_URL = "https://kamalsaad.com/themes/theme_front/assets/images/KMS LOGO FINAL.png"; 
+    
+    // 🖌️ اكتب اسمك هنا ليظهر في أسفل التطبيق
+    const DESIGNER_NAME = "عبدالرحمن ابراهيم";
     // ============================================================
 
     if(LOGO_URL && LOGO_URL !== "") { document.getElementById('company-logo').src = LOGO_URL; } 
     else { document.getElementById('company-logo').style.display = 'none'; }
 
-    // --- 🔊 وظيفة الصوت والاهتزاز الجديدة 🔊 ---
+    // وضع اسم المصمم
+    document.getElementById('designer-name').innerText = DESIGNER_NAME;
+
     var audioCtx = null;
     function playScanSound() {
-        // 1. الاهتزاز (Android support)
-        if (navigator.vibrate) {
-            navigator.vibrate(200); // اهتزاز لمدة 200 مللي ثانية
-        }
-
-        // 2. الصوت (Web Audio API)
+        if (navigator.vibrate) { navigator.vibrate(200); }
         try {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
-            
-            oscillator.type = 'square'; // نوع الموجة (صوت إلكتروني)
-            oscillator.frequency.setValueAtTime(800, audioCtx.currentTime); // التردد
-            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); // مستوى الصوت
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 0.1); // مدة الصوت (0.1 ثانية)
-        } catch(e) {
-            console.log("Audio not supported or blocked");
-        }
+            oscillator.type = 'square'; oscillator.frequency.setValueAtTime(800, audioCtx.currentTime); 
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); 
+            oscillator.connect(gainNode); gainNode.connect(audioCtx.destination);
+            oscillator.start(); oscillator.stop(audioCtx.currentTime + 0.1); 
+        } catch(e) {}
     }
 
     function openImageModal(src) { var modal = document.getElementById("imageModal"); var modalImg = document.getElementById("img01"); modal.style.display = "block"; modalImg.src = src; }
@@ -315,10 +325,7 @@
 
     function onScanSuccess(decodedText, decodedResult) {
       if(html5QrcodeScanner) html5QrcodeScanner.clear();
-      
-      // 🔊 تشغيل الصوت والاهتزاز عند النجاح
       playScanSound();
-
       if (productsDB[decodedText]) { showResultScreen(productsDB[decodedText], 'scan-screen'); }
       else { if(confirm("غير مسجل: " + decodedText + "\nإضافة؟")) { window.open(GOOGLE_FORM_URL, '_blank'); resetScanner(); } else { resetScanner(); } }
     }
