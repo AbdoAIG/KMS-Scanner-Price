@@ -35,12 +35,7 @@
   .app-logo { max-width: 140px; max-height: 80px; display: block; margin: 0 auto 10px auto; object-fit: contain; }
 
   /* زر التحديث */
-  .refresh-btn {
-      background: none; border: 1px solid var(--secondary-color);
-      color: var(--secondary-color); padding: 5px 15px;
-      border-radius: 20px; font-size: 12px; cursor: pointer;
-      margin-bottom: 10px; display: inline-block;
-  }
+  .refresh-btn { background: none; border: 1px solid var(--secondary-color); color: var(--secondary-color); padding: 5px 15px; border-radius: 20px; font-size: 12px; cursor: pointer; margin-bottom: 10px; display: inline-block; }
   .refresh-btn:active { background: var(--secondary-color); color: white; }
 
   /* القائمة الجانبية */
@@ -89,13 +84,30 @@
   .prices-table td { padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; color: #333; text-align: center; }
   .prices-table td.price-val { color: #28a745; font-size: 18px; }
 
-  /* زر الرجوع الأزرق */
+  /* زر الرجوع */
   #back-fab { position: fixed; bottom: 20px; left: 20px; width: 55px; height: 55px; background-color: var(--secondary-color); color: white; border-radius: 50%; border: none; box-shadow: 0 4px 15px rgba(0,123,255,0.4); font-size: 28px; cursor: pointer; z-index: 2000; display: none; align-items: center; justify-content: center; transition: transform 0.2s; }
   #back-fab:active { transform: scale(0.9); }
 
+  /* التكبير */
   .modal { display: none; position: fixed; z-index: 5000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); }
   .modal-content { margin: auto; display: block; width: 90%; max-width: 700px; border: 3px solid white; border-radius: 10px; }
   .close-zoom { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; }
+  
+  /* 🔴🔴 نافذة الفورم الداخلية 🔴🔴 */
+  .form-modal { 
+      display: none; position: fixed; z-index: 4000; 
+      left: 0; top: 0; width: 100%; height: 100%; 
+      background-color: white; 
+  }
+  .form-iframe { width: 100%; height: 100%; border: none; }
+  .close-form-btn { 
+      position: absolute; top: 10px; left: 10px; 
+      background: red; color: white; border: none; 
+      padding: 10px 20px; border-radius: 5px; 
+      font-size: 16px; cursor: pointer; z-index: 4001; 
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+
   .btn { display: block; width: 100%; padding: 14px; margin-top: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
   .btn-primary { background-color: var(--secondary-color); }
   .btn-warning { background-color: #ffc107; color: #333; }
@@ -109,6 +121,11 @@
 <body>
 
 <div id="imageModal" class="modal" onclick="closeImageModal()"><span class="close-zoom">&times;</span><img class="modal-content" id="img01"></div>
+
+<div id="formModal" class="form-modal">
+    <button class="close-form-btn" onclick="closeFormModal()">✖ إغلاق وعودة</button>
+    <iframe id="googleFormIframe" class="form-iframe" src=""></iframe>
+</div>
 
 <div id="mySidenav" class="sidenav">
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
@@ -176,14 +193,24 @@
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
     const LOGO_URL = "https://kamalsaad.com/themes/theme_front/assets/images/KMS LOGO FINAL.png"; 
     const DESIGNER_NAME = "عبدالرحمن ابراهيم";
-    
-    // 👇👇 رقم الحقل من جوجل فورم (المهم جداً) 👇👇
-    const BARCODE_ENTRY_ID = "1811127320"; // مثال: 1811127320
+    const BARCODE_ENTRY_ID = "1811127320"; 
     // ============================================================
 
     if(LOGO_URL && LOGO_URL !== "") { document.getElementById('company-logo').src = LOGO_URL; } 
     else { document.getElementById('company-logo').style.display = 'none'; }
     document.getElementById('designer-name').innerText = DESIGNER_NAME;
+
+    // --- وظائف الفورم الداخلي (Modal) ---
+    function openFormModal(url) {
+        document.getElementById('googleFormIframe').src = url;
+        document.getElementById('formModal').style.display = 'block';
+    }
+    
+    function closeFormModal() {
+        document.getElementById('formModal').style.display = 'none';
+        document.getElementById('googleFormIframe').src = ""; // تنظيف
+        resetScanner(); // إعادة تشغيل الكاميرا عند العودة
+    }
 
     var audioCtx = null;
     function playScanSound() {
@@ -206,8 +233,10 @@
     const statusDiv = document.getElementById('status');
     var lastScreen = "scan-screen"; 
 
-    // لن نستخدم الرابط المباشر هنا، سنقوم ببنائه ديناميكياً
-    // document.getElementById('add-btn').href = GOOGLE_FORM_URL;
+    // زر الإضافة اليدوية يفتح داخل المودال الآن
+    document.getElementById('add-btn').onclick = function() {
+        openFormModal(GOOGLE_FORM_URL);
+    };
 
     function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
     function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
@@ -334,12 +363,11 @@
           showResultScreen(productsDB[cleanCode], 'scan-screen'); 
       } else { 
           if(confirm("المنتج غير مسجل: " + cleanCode + "\nهل تريد إضافته؟")) { 
-              // 🔴🔴 صناعة رابط الملء التلقائي هنا 🔴🔴
               let separator = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
               let finalLink = GOOGLE_FORM_URL + separator + "usp=pp_url&entry." + BARCODE_ENTRY_ID + "=" + cleanCode;
               
-              window.open(finalLink, '_blank'); 
-              resetScanner(); 
+              // 🔴 فتح الفورم في النافذة الداخلية (Modal)
+              openFormModal(finalLink);
           } else { 
               resetScanner(); 
           } 
@@ -392,11 +420,6 @@
       }, 300);
     }
     
-    // زر الإضافة اليدوية (بدون سكان)
-    document.getElementById('add-btn').onclick = function() {
-        window.open(GOOGLE_FORM_URL, '_blank');
-    };
-
     function showStatus(text, type) { statusDiv.innerText = text; statusDiv.className = "status-msg " + type; statusDiv.style.display = 'block'; }
     fetchProducts().then(() => { startCamera(); });
 </script>
