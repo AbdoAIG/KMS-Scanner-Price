@@ -156,12 +156,12 @@
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKotb6frhhZzBOkKyvUu0V1x06UkENSEkdtSn52yfc7OG030tDMxwjjjEX8tV1UGgpNzMTuObGRur3/pub?gid=0&single=true&output=csv"; 
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
     const LOGO_URL = "https://kamalsaad.com/themes/theme_front/assets/images/KMS LOGO FINAL.png"; 
-    const DESIGNER_NAME = "عبدالرحمن ابراهيم";
+    const DESIGNER_NAME = "عبدالرحمن ابراهبم";
     
     // 👇👇 أرقام الحقول للملء التلقائي والتعديل 👇👇
     const BARCODE_ENTRY_ID = "1811127320"; 
-    const NAME_ENTRY_ID = "198039627"; // (اختياري)
-    const PRICE1_ENTRY_ID = "1964075675"; // (اختياري)
+    const NAME_ENTRY_ID = "198039627"; 
+    const PRICE1_ENTRY_ID = "1964075675"; 
     // ============================================================
 
     if(LOGO_URL && LOGO_URL !== "") { document.getElementById('company-logo').src = LOGO_URL; } 
@@ -249,13 +249,12 @@
     }
 
     async function fetchProducts(force = false) {
-      showStatus("🔄 جاري التحديث...", "loading");
+      showStatus("🔄 جاري التحميل...", "loading");
       
-      // 🔴🔴 منطق السرعة (Fast Boot) 🔴🔴
       if (!navigator.onLine) { loadFromCache(); return; }
       
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 ثواني فقط
+      const timeoutId = setTimeout(() => controller.abort(), 3000); 
 
       let fetchUrl = SHEET_CSV_URL;
       if(force) { fetchUrl += "&t=" + new Date().getTime(); }
@@ -276,7 +275,7 @@
 
     function loadFromCache() {
         const cachedData = localStorage.getItem('offline_products_csv');
-        if (cachedData) { parseCSV(cachedData); showStatus("⚠️ وضع الأوفلاين (سريع)", "loading"); setTimeout(() => { statusDiv.style.display = 'none'; }, 2000); }
+        if (cachedData) { parseCSV(cachedData); showStatus("⚠️ وضع الأوفلاين", "loading"); setTimeout(() => { statusDiv.style.display = 'none'; }, 2000); }
         else { showStatus("❌ لا يوجد إنترنت ولا بيانات", "error"); }
     }
 
@@ -295,7 +294,6 @@
       for (let i = 1; i < rows.length; i++) {
         if(!rows[i].trim()) continue;
         const row = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-        
         if (row.length >= 11) { 
           const localCode = sanitizeBarcode(row[2]); 
           const globalCode = sanitizeBarcode(row[3]); 
@@ -313,7 +311,6 @@
           if(globalCode) tempMap.set(globalCode, productData);
         }
       }
-      
       productsList = Array.from(tempMap.values());
       productsList = [...new Set(productsList)];
       productsList.forEach(p => categoriesSet.add(p.category));
@@ -361,7 +358,6 @@
     async function onScanSuccess(decodedText, decodedResult) {
       playScanSound();
       try { if(html5QrcodeScanner) { await html5QrcodeScanner.clear(); } } catch(e) {}
-      
       let cleanCode = sanitizeBarcode(decodedText);
       let foundProduct = findProductInDB(cleanCode);
 
@@ -383,14 +379,11 @@
         let codeToEdit = currentProduct.code2 || currentProduct.code1;
         let nameToEdit = currentProduct.name;
         let priceToEdit = currentProduct.price1;
-
         let separator = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
         let finalLink = GOOGLE_FORM_URL + separator + "usp=pp_url";
-        
         if(BARCODE_ENTRY_ID) finalLink += "&entry." + BARCODE_ENTRY_ID + "=" + codeToEdit;
         if(NAME_ENTRY_ID) finalLink += "&entry." + NAME_ENTRY_ID + "=" + encodeURIComponent(nameToEdit);
         if(PRICE1_ENTRY_ID) finalLink += "&entry." + PRICE1_ENTRY_ID + "=" + priceToEdit;
-
         openFormModal(finalLink);
     }
 
@@ -434,6 +427,7 @@
         updateBackButton(); startCamera();
     }
 
+    // 🔴🔴 تشغيل الكاميرا فوراً في النهاية 🔴🔴
     function startCamera() {
       document.getElementById('reader').innerHTML = "";
       setTimeout(() => {
@@ -442,9 +436,17 @@
       }, 300);
     }
     
-    document.getElementById('add-btn').onclick = function() { openFormModal(GOOGLE_FORM_URL); };
-    function showStatus(text, type) { statusDiv.innerText = text; statusDiv.className = "status-msg " + type; statusDiv.style.display = 'block'; }
-    fetchProducts().then(() => { startCamera(); });
+    // تشغيل التطبيق (بدون انتظار التحديث)
+    (async function initApp() {
+        try {
+            await fetchProducts(); // حاول تحميل البيانات
+        } catch(e) {
+            console.log("Fetch failed, continuing...");
+        } finally {
+            startCamera(); // شغل الكاميرا في كل الأحوال
+        }
+    })();
+
 </script>
 </body>
 </html>
