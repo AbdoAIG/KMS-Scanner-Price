@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>تطبيق المخزن المزدوج</title>
+<title>تطبيق المخزن الذكي</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
   :root {
@@ -121,8 +121,8 @@
     // ============================================================
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKotb6frhhZzBOkKyvUu0V1x06UkENSEkdtSn52yfc7OG030tDMxwjjjEX8tV1UGgpNzMTuObGRur3/pub?gid=0&single=true&output=csv"; 
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
-    const LOGO_URL = "https://kamalsaad.com/themes/theme_front/assets/images/KMS LOGO FINAL.png"; 
-    const DESIGNER_NAME = "عبدالرحمن ابراهيم";
+    const LOGO_URL = "ضع_رابط_الشعار_هنا"; 
+    const DESIGNER_NAME = "اسم المصمم هنا";
     const BARCODE_ENTRY_ID = "1811127320"; 
     // ============================================================
 
@@ -200,7 +200,6 @@
         let listDiv = document.getElementById('list-content'); listDiv.innerHTML = "";
         if(items.length === 0) { listDiv.innerHTML = "<p style='text-align:center; color:#999;'>لا توجد منتجات</p>"; return; }
         
-        // إزالة التكرار
         let uniqueItems = []; let seenNames = new Set();
         items.forEach(p => { if(!seenNames.has(p.name)){ seenNames.add(p.name); uniqueItems.push(p); } });
 
@@ -236,23 +235,32 @@
       }
     }
 
-    // 🔴🔴 دالة القراءة المصححة (تأخذ C و D) 🔴🔴
     function parseCSV(csvText) {
       const rows = csvText.split('\n'); productsDB = {}; categoriesSet.clear();
       for (let i = 1; i < rows.length; i++) {
         if(!rows[i].trim()) continue;
         const row = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-        
         if (row.length >= 11) { 
-          // ⚠️ انتبه هنا: العمود C هو index 2، والعمود D هو index 3
-          const localCode = clean(row[2]).replace(/\s/g, ''); 
-          const globalCode = clean(row[3]).replace(/\s/g, ''); 
-          
+          // 🔴🔴 القراءة بوضع "تنظيف قوي" 🔴🔴
+          const code1Raw = clean(row[1]).replace(/[^0-9a-zA-Z]/g, ''); // C
+          const code2Raw = clean(row[2]).replace(/[^0-9a-zA-Z]/g, ''); // D (تم التعديل: 2 و 3 هما C و D)
           const name = clean(row[4]); 
+          
+          // تأكد من الاندكس الصحيح:
+          // A=0, B=1, C=2, D=3, E=4
+          
           let p1 = cleanPrice(row[5]); let p2 = cleanPrice(row[6]); let p3 = cleanPrice(row[7]); 
-          const img = row[8] ? clean(row[8]) : ""; 
-          const cat = row[9] ? clean(row[9]) : "عام"; 
-          const sub = row[10] ? clean(row[10]) : ""; 
+          const img = row[8] ? clean(row[8]) : ""; const cat = row[9] ? clean(row[9]) : "عام"; const sub = row[10] ? clean(row[10]) : ""; 
+
+          // استخدام الباركود الفعلي من العمود الصحيح
+          // انتبه: المصفوفة تبدأ من 0.
+          // row[0] = A (فارغ)
+          // row[1] = B (تجاهل)
+          // row[2] = C (Local)
+          // row[3] = D (Global)
+          
+          const localCode = clean(row[2]).replace(/\s/g, '');
+          const globalCode = clean(row[3]).replace(/\s/g, '');
 
           let productData = { 
               code1: localCode, 
@@ -260,15 +268,9 @@
               name: name, price1: p1, price2: p2, price3: p3, img: img, category: cat, subcategory: sub 
           };
 
-          // 🔴🔴 تسجيل المنتج بكل مفتاح ممكن 🔴🔴
-          if(localCode && localCode !== "") { 
-              productsDB[localCode] = productData; 
-              categoriesSet.add(cat); 
-          }
-          if(globalCode && globalCode !== "") { 
-              productsDB[globalCode] = productData; 
-              categoriesSet.add(cat); 
-          }
+          // تسجيل المفاتيح في الذاكرة
+          if(localCode && localCode.length > 1) { productsDB[localCode] = productData; categoriesSet.add(cat); }
+          if(globalCode && globalCode.length > 1) { productsDB[globalCode] = productData; categoriesSet.add(cat); }
         }
       }
       updateCategoriesMenu();
@@ -306,20 +308,34 @@
       try { if(html5QrcodeScanner) { await html5QrcodeScanner.clear(); } } catch(e) {}
       let cleanCode = decodedText.trim();
       
-      // البحث المباشر
-      if (productsDB[cleanCode]) { return showResultScreen(productsDB[cleanCode], 'scan-screen'); }
-      // محاولة إضافة صفر 
-      if (productsDB["0" + cleanCode]) { return showResultScreen(productsDB["0" + cleanCode], 'scan-screen'); }
-      // محاولة حذف صفر
-      if (cleanCode.startsWith("0") && productsDB[cleanCode.substring(1)]) { return showResultScreen(productsDB[cleanCode.substring(1)], 'scan-screen'); }
+      // 🔴🔴 خوارزمية البحث الذكية 🔴🔴
+      let foundProduct = null;
 
-      if(confirm("المنتج غير مسجل: " + cleanCode + "\nهل تريد إضافته؟")) { 
-          let separator = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
-          let finalLink = GOOGLE_FORM_URL + separator + "usp=pp_url&entry." + BARCODE_ENTRY_ID + "=" + cleanCode;
-          openFormModal(finalLink);
+      // 1. بحث مباشر
+      if(productsDB[cleanCode]) foundProduct = productsDB[cleanCode];
+      
+      // 2. بحث بحذف صفر من اليسار (0123 -> 123)
+      else if(cleanCode.startsWith('0') && productsDB[cleanCode.substring(1)]) {
+          foundProduct = productsDB[cleanCode.substring(1)];
+      }
+      
+      // 3. بحث بإضافة صفر لليسار (123 -> 0123)
+      else if(productsDB['0' + cleanCode]) {
+          foundProduct = productsDB['0' + cleanCode];
+      }
+
+      if (foundProduct) { 
+          showResultScreen(foundProduct, 'scan-screen'); 
       } else { 
-          resetScanner(); 
-      } 
+          // رسالة خطأ توضح ماذا قرأ السكانر بالضبط للمساعدة في التشخيص
+          if(confirm("المنتج غير مسجل!\n(الكود المقروء: " + cleanCode + ")\nهل تريد إضافته؟")) { 
+              let separator = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
+              let finalLink = GOOGLE_FORM_URL + separator + "usp=pp_url&entry." + BARCODE_ENTRY_ID + "=" + cleanCode;
+              openFormModal(finalLink);
+          } else { 
+              resetScanner(); 
+          } 
+      }
     }
 
     function showResultScreen(product, source = 'scan-screen') {
@@ -330,7 +346,6 @@
         document.getElementById('p_subcat').innerText = product.subcategory || "-"; 
         document.getElementById('p_name').innerText = product.name; 
         
-        // عرض الكودين C و D
         document.getElementById('p_code_local').innerText = product.code1 || "-";
         document.getElementById('p_code_global').innerText = product.code2 || "-";
 
