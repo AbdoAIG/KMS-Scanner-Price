@@ -88,25 +88,13 @@
   #back-fab { position: fixed; bottom: 20px; left: 20px; width: 55px; height: 55px; background-color: var(--secondary-color); color: white; border-radius: 50%; border: none; box-shadow: 0 4px 15px rgba(0,123,255,0.4); font-size: 28px; cursor: pointer; z-index: 2000; display: none; align-items: center; justify-content: center; transition: transform 0.2s; }
   #back-fab:active { transform: scale(0.9); }
 
-  /* التكبير */
   .modal { display: none; position: fixed; z-index: 5000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); }
   .modal-content { margin: auto; display: block; width: 90%; max-width: 700px; border: 3px solid white; border-radius: 10px; }
   .close-zoom { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; }
   
-  /* 🔴🔴 نافذة الفورم الداخلية 🔴🔴 */
-  .form-modal { 
-      display: none; position: fixed; z-index: 4000; 
-      left: 0; top: 0; width: 100%; height: 100%; 
-      background-color: white; 
-  }
+  .form-modal { display: none; position: fixed; z-index: 4000; left: 0; top: 0; width: 100%; height: 100%; background-color: white; }
   .form-iframe { width: 100%; height: 100%; border: none; }
-  .close-form-btn { 
-      position: absolute; top: 10px; left: 10px; 
-      background: red; color: white; border: none; 
-      padding: 10px 20px; border-radius: 5px; 
-      font-size: 16px; cursor: pointer; z-index: 4001; 
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-  }
+  .close-form-btn { position: absolute; top: 10px; left: 10px; background: red; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; cursor: pointer; z-index: 4001; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
 
   .btn { display: block; width: 100%; padding: 14px; margin-top: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
   .btn-primary { background-color: var(--secondary-color); }
@@ -200,17 +188,8 @@
     else { document.getElementById('company-logo').style.display = 'none'; }
     document.getElementById('designer-name').innerText = DESIGNER_NAME;
 
-    // --- وظائف الفورم الداخلي (Modal) ---
-    function openFormModal(url) {
-        document.getElementById('googleFormIframe').src = url;
-        document.getElementById('formModal').style.display = 'block';
-    }
-    
-    function closeFormModal() {
-        document.getElementById('formModal').style.display = 'none';
-        document.getElementById('googleFormIframe').src = ""; // تنظيف
-        resetScanner(); // إعادة تشغيل الكاميرا عند العودة
-    }
+    function openFormModal(url) { document.getElementById('googleFormIframe').src = url; document.getElementById('formModal').style.display = 'block'; }
+    function closeFormModal() { document.getElementById('formModal').style.display = 'none'; document.getElementById('googleFormIframe').src = ""; resetScanner(); }
 
     var audioCtx = null;
     function playScanSound() {
@@ -233,10 +212,7 @@
     const statusDiv = document.getElementById('status');
     var lastScreen = "scan-screen"; 
 
-    // زر الإضافة اليدوية يفتح داخل المودال الآن
-    document.getElementById('add-btn').onclick = function() {
-        openFormModal(GOOGLE_FORM_URL);
-    };
+    document.getElementById('add-btn').onclick = function() { openFormModal(GOOGLE_FORM_URL); };
 
     function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
     function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
@@ -317,17 +293,29 @@
       }
     }
 
+    // 🔴🔴 دالة قراءة CSV بالتوزيع الجديد للأعمدة 🔴🔴
     function parseCSV(csvText) {
       const rows = csvText.split('\n'); productsDB = {}; categoriesSet.clear();
       for (let i = 1; i < rows.length; i++) {
         if(!rows[i].trim()) continue;
         const row = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-        if (row.length >= 8) { 
-          const code = clean(row[1]).replace(/\s/g, ''); 
-          const name = clean(row[2]); 
-          let p1 = cleanPrice(row[3]); let p2 = cleanPrice(row[4]); let p3 = cleanPrice(row[5]); 
-          const img = row[6] ? clean(row[6]) : ""; const cat = row[7] ? clean(row[7]) : "عام"; const sub = row[8] ? clean(row[8]) : ""; 
-          if(code) { productsDB[code] = { code: code, name: name, price1: p1, price2: p2, price3: p3, img: img, category: cat, subcategory: sub }; categoriesSet.add(cat); }
+        
+        // الآن نتأكد أننا نقرأ حتى العمود 10 (index 9)
+        if (row.length >= 10) { 
+          const code = clean(row[1]).replace(/\s/g, ''); // B
+          const localCode = clean(row[2]).replace(/\s/g, ''); // C (المحلي)
+          const name = clean(row[3]); // D
+          let p1 = cleanPrice(row[4]); // E
+          let p2 = cleanPrice(row[5]); // F
+          let p3 = cleanPrice(row[6]); // G
+          const img = row[7] ? clean(row[7]) : ""; // H
+          const cat = row[8] ? clean(row[8]) : "عام"; // I
+          const sub = row[9] ? clean(row[9]) : ""; // J
+
+          let productData = { code: code, localCode: localCode, name: name, price1: p1, price2: p2, price3: p3, img: img, category: cat, subcategory: sub };
+
+          if(code) { productsDB[code] = productData; categoriesSet.add(cat); }
+          if(localCode) { productsDB[localCode] = productData; }
         }
       }
       updateCategoriesMenu();
@@ -348,6 +336,8 @@
                 let imgTag = (p.img && p.img.startsWith('http')) ? `<img src="${p.img}" class="suggestion-thumb">` : '';
                 item.innerHTML = `<div class="prod-info-flex">${imgTag}<span>${p.name}</span></div><span style="color:var(--primary-color)">${p.price1} ج.م</span>`;
                 item.onclick = function() { showResultScreen(p, 'scan-screen'); document.getElementById('search-input').value = ""; listDiv.style.display = "none"; };
+                
+                if(listDiv.lastChild && listDiv.lastChild.innerHTML.includes(p.name)) continue;
                 listDiv.appendChild(item); matchCount++; if(matchCount >= 10) break;
             }
         }
@@ -365,8 +355,6 @@
           if(confirm("المنتج غير مسجل: " + cleanCode + "\nهل تريد إضافته؟")) { 
               let separator = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
               let finalLink = GOOGLE_FORM_URL + separator + "usp=pp_url&entry." + BARCODE_ENTRY_ID + "=" + cleanCode;
-              
-              // 🔴 فتح الفورم في النافذة الداخلية (Modal)
               openFormModal(finalLink);
           } else { 
               resetScanner(); 
