@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>تطبيق المخزن (الماسح الشامل)</title>
+<title>تطبيق المخزن (الماسح النظيف)</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
   :root {
@@ -154,9 +154,9 @@
     // ============================================================
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKotb6frhhZzBOkKyvUu0V1x06UkENSEkdtSn52yfc7OG030tDMxwjjjEX8tV1UGgpNzMTuObGRur3/pub?gid=0&single=true&output=csv"; 
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
-    const LOGO_URL = "https://kamalsaad.com/themes/theme_front/assets/images/KMS LOGO FINAL.png"; 
+    const LOGO_URL = "ضع_رابط_الشعار_هنا"; 
     const DESIGNER_NAME = "اسم المصمم هنا";
-    const BARCODE_ENTRY_ID = "1811127320"; 
+    const BARCODE_ENTRY_ID = "ضع_رقم_الـ_Entry_هنا"; 
     // ============================================================
 
     if(LOGO_URL && LOGO_URL !== "") { document.getElementById('company-logo').src = LOGO_URL; } 
@@ -181,7 +181,7 @@
     function openImageModal(src) { var modal = document.getElementById("imageModal"); var modalImg = document.getElementById("img01"); modal.style.display = "block"; modalImg.src = src; }
     function closeImageModal() { document.getElementById("imageModal").style.display = "none"; }
 
-    var productsList = []; // 🔴 هنا نخزن المصفوفة بدلاً من الأوبجكت
+    var productsList = []; 
     var categoriesSet = new Set(); 
     var html5QrcodeScanner;
     const statusDiv = document.getElementById('status');
@@ -211,7 +211,6 @@
         listDiv.innerHTML = ""; subCatDiv.innerHTML = "";
 
         let subCatsInThisCat = new Set(); 
-        // الفلترة من المصفوفة
         let productsInThisCat = productsList.filter(p => p.category === catName);
         
         productsInThisCat.forEach(p => {
@@ -233,7 +232,11 @@
     function renderList(items) {
         let listDiv = document.getElementById('list-content'); listDiv.innerHTML = "";
         if(items.length === 0) { listDiv.innerHTML = "<p style='text-align:center; color:#999;'>لا توجد منتجات</p>"; return; }
-        items.forEach(p => {
+        
+        let uniqueItems = []; let seenNames = new Set();
+        items.forEach(p => { if(!seenNames.has(p.name)){ seenNames.add(p.name); uniqueItems.push(p); } });
+
+        uniqueItems.forEach(p => {
             let div = document.createElement('div'); div.className = 'suggestion-item';
             let imgTag = (p.img && p.img.startsWith('http')) ? `<img src="${p.img}" class="suggestion-thumb">` : '';
             div.innerHTML = `<div class="prod-info-flex">${imgTag}<span>${p.name}</span></div><span style="color:var(--primary-color); font-weight:bold;">${p.price1} ج.م</span>`;
@@ -265,16 +268,26 @@
       }
     }
 
-    // 🔴🔴 تخزين المصفوفة بدلاً من كائنات 🔴🔴
+    // 🔴🔴 1. دالة تنظيف الباركود القوية 🔴🔴
+    function sanitizeBarcode(text) {
+        if(!text) return "";
+        let clean = text.replace(/"/g, ''); // إزالة علامات التنصيص
+        clean = clean.replace(/,/g, '');    // إزالة الفواصل
+        clean = clean.replace(/\s/g, '');   // إزالة المسافات
+        clean = clean.replace(/[^a-zA-Z0-9]/g, ''); // إبقاء الأرقام والحروف فقط
+        return clean;
+    }
+
     function parseCSV(csvText) {
       const rows = csvText.split('\n'); productsList = []; categoriesSet.clear();
       for (let i = 1; i < rows.length; i++) {
         if(!rows[i].trim()) continue;
         const row = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
         if (row.length >= 11) { 
-          // تنظيف
-          const localCode = clean(row[2]).replace(/\s/g, ''); 
-          const globalCode = clean(row[3]).replace(/\s/g, ''); 
+          // 🔴🔴 استخدام التنظيف القوي هنا 🔴🔴
+          const localCode = sanitizeBarcode(row[2]); 
+          const globalCode = sanitizeBarcode(row[3]); 
+          
           const name = clean(row[4]); 
           let p1 = cleanPrice(row[5]); let p2 = cleanPrice(row[6]); let p3 = cleanPrice(row[7]); 
           const img = row[8] ? clean(row[8]) : ""; const cat = row[9] ? clean(row[9]) : "عام"; const sub = row[10] ? clean(row[10]) : ""; 
@@ -285,9 +298,11 @@
               name: name, price1: p1, price2: p2, price3: p3, img: img, category: cat, subcategory: sub 
           };
 
-          // إضافة للمصفوفة
-          productsList.push(productData);
-          categoriesSet.add(cat);
+          // إضافة للمصفوفة فقط إذا كان هناك باركود صالح
+          if(localCode || globalCode) {
+              productsList.push(productData);
+              categoriesSet.add(cat);
+          }
         }
       }
       updateCategoriesMenu();
@@ -296,22 +311,24 @@
     function clean(text) { return text ? text.replace(/"/g, '').trim() : ""; }
     function cleanPrice(text) { if(!text) return ""; return text.replace(/"/g, '').replace('ج.م', '').replace('$', '').trim(); }
 
-    // 🔴🔴 البحث في المصفوفة (Loops) 🔴🔴
     function suggestProducts() {
         let inputVal = document.getElementById('search-input').value.toLowerCase().trim();
         let listDiv = document.getElementById('suggestions'); listDiv.innerHTML = ""; 
         if (inputVal.length < 1) { listDiv.style.display = "none"; return; }
-        
         let matchCount = 0;
-        
+        let seenNames = new Set(); 
+
         for (let i = 0; i < productsList.length; i++) {
             let p = productsList[i];
-            // بحث شامل (اسم، محلي، دولي)
             if (p.name.toLowerCase().includes(inputVal) || (p.code1 && p.code1.includes(inputVal)) || (p.code2 && p.code2.includes(inputVal))) {
+                if(seenNames.has(p.name)) continue; 
+                seenNames.add(p.name);
+
                 let item = document.createElement('div'); item.className = 'suggestion-item';
                 let imgTag = (p.img && p.img.startsWith('http')) ? `<img src="${p.img}" class="suggestion-thumb">` : '';
                 item.innerHTML = `<div class="prod-info-flex">${imgTag}<span>${p.name}</span></div><span style="color:var(--primary-color)">${p.price1} ج.م</span>`;
                 item.onclick = function() { showResultScreen(p, 'scan-screen'); document.getElementById('search-input').value = ""; listDiv.style.display = "none"; };
+                
                 listDiv.appendChild(item); matchCount++; if(matchCount >= 10) break;
             }
         }
@@ -320,19 +337,16 @@
 
     // 🔴🔴 البحث عن المنتج عند المسح (دالة خاصة) 🔴🔴
     function findProductInDB(scannedCode) {
-        // 1. تنظيف
-        let code = scannedCode.replace(/["\s]/g, '').trim();
+        // تنظيف الكود الممسوح بنفس الطريقة القوية
+        let code = sanitizeBarcode(scannedCode);
         
-        // 2. تدوير على المصفوفة
         for(let i=0; i<productsList.length; i++) {
             let p = productsList[i];
             // مطابقة تامة
             if(p.code1 === code || p.code2 === code) return p;
             
-            // محاولات ذكية
-            // إذا كان المحلي يساوي الكود بدون أصفار
+            // محاولات ذكية (بدون أصفار)
             if(p.code1 === code.replace(/^0+/, '')) return p;
-            // إذا كان الدولي يساوي الكود بدون أصفار
             if(p.code2 === code.replace(/^0+/, '')) return p;
         }
         return null;
@@ -342,15 +356,14 @@
       playScanSound();
       try { if(html5QrcodeScanner) { await html5QrcodeScanner.clear(); } } catch(e) {}
       
-      let cleanCode = decodedText.trim();
-      let foundProduct = findProductInDB(cleanCode);
+      let foundProduct = findProductInDB(decodedText);
 
       if (foundProduct) { 
           showResultScreen(foundProduct, 'scan-screen'); 
       } else { 
-          if(confirm("المنتج غير مسجل: " + cleanCode + "\nهل تريد إضافته؟")) { 
+          if(confirm("المنتج غير مسجل: " + decodedText + "\nهل تريد إضافته؟")) { 
               let separator = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
-              let finalLink = GOOGLE_FORM_URL + separator + "usp=pp_url&entry." + BARCODE_ENTRY_ID + "=" + cleanCode;
+              let finalLink = GOOGLE_FORM_URL + separator + "usp=pp_url&entry." + BARCODE_ENTRY_ID + "=" + sanitizeBarcode(decodedText);
               openFormModal(finalLink);
           } else { 
               resetScanner(); 
