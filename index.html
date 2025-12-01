@@ -78,7 +78,7 @@
   .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
   .detail-label { color: var(--primary-color); font-weight: bold; font-size: 15px; margin-left: 10px; }
   .detail-value { color: #333; font-weight: 600; font-size: 16px; }
-  .barcode-style { font-family: monospace; background: #eee; padding: 2px 8px; border-radius: 4px; letter-spacing: 1px; font-size: 14px; }
+  .barcode-style { font-family: monospace; background: #eee; padding: 2px 8px; border-radius: 4px; letter-spacing: 1px; }
   .prices-table { width: 100%; margin-top: 20px; border-collapse: collapse; background: #fdfdfd; border-radius: 10px; overflow: hidden; border: 1px solid #eee; }
   .prices-table th { background: var(--secondary-color); color: white; padding: 10px; font-size: 14px; }
   .prices-table td { padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; color: #333; text-align: center; }
@@ -161,7 +161,6 @@
         <div class="detail-row"> <span class="detail-label">القسم:</span> <span id="p_cat" class="detail-value"></span> </div>
         <div class="detail-row"> <span class="detail-label">الفرع:</span> <span id="p_subcat" class="detail-value"></span> </div>
         <div class="detail-row"> <span class="detail-label">المنتج:</span> <span id="p_name" class="detail-value"></span> </div>
-        
         <div class="detail-row"> <span class="detail-label">الباركود الدولي:</span> <span id="p_code" class="detail-value barcode-style"></span> </div>
         <div class="detail-row"> <span class="detail-label">الباركود المحلي:</span> <span id="p_local_code" class="detail-value barcode-style"></span> </div>
     </div>
@@ -300,18 +299,18 @@
       for (let i = 1; i < rows.length; i++) {
         if(!rows[i].trim()) continue;
         const row = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-        
-        // التأكد من قراءة 10 أعمدة
         if (row.length >= 10) { 
           const code = clean(row[1]).replace(/\s/g, ''); 
-          const localCode = clean(row[2]).replace(/\s/g, ''); // العمود الثالث = المحلي
+          const localCode = clean(row[2]).replace(/\s/g, ''); 
           const name = clean(row[3]); 
           let p1 = cleanPrice(row[4]); let p2 = cleanPrice(row[5]); let p3 = cleanPrice(row[6]); 
           const img = row[7] ? clean(row[7]) : ""; const cat = row[8] ? clean(row[8]) : "عام"; const sub = row[9] ? clean(row[9]) : ""; 
 
           let productData = { code: code, localCode: localCode, name: name, price1: p1, price2: p2, price3: p3, img: img, category: cat, subcategory: sub };
 
+          // حفظ الباركود الدولي
           if(code) { productsDB[code] = productData; categoriesSet.add(cat); }
+          // حفظ الباركود المحلي (للبحث فقط)
           if(localCode) { productsDB[localCode] = productData; }
         }
       }
@@ -328,13 +327,16 @@
         let matchCount = 0;
         for (let code in productsDB) {
             let p = productsDB[code];
+            // البحث يشمل الآن الباركود الدولي والمحلي والاسم
             if (p.name.toLowerCase().includes(inputVal) || code.includes(inputVal)) {
                 let item = document.createElement('div'); item.className = 'suggestion-item';
                 let imgTag = (p.img && p.img.startsWith('http')) ? `<img src="${p.img}" class="suggestion-thumb">` : '';
                 item.innerHTML = `<div class="prod-info-flex">${imgTag}<span>${p.name}</span></div><span style="color:var(--primary-color)">${p.price1} ج.م</span>`;
                 item.onclick = function() { showResultScreen(p, 'scan-screen'); document.getElementById('search-input').value = ""; listDiv.style.display = "none"; };
                 
+                // منع التكرار (لأن المنتج قد يكون له مفتاحين)
                 if(listDiv.lastChild && listDiv.lastChild.innerHTML.includes(p.name)) continue;
+
                 listDiv.appendChild(item); matchCount++; if(matchCount >= 10) break;
             }
         }
@@ -346,17 +348,23 @@
       try { if(html5QrcodeScanner) { await html5QrcodeScanner.clear(); } } catch(e) {}
       let cleanCode = decodedText.trim();
       
-      if (productsDB[cleanCode]) { 
-          showResultScreen(productsDB[cleanCode], 'scan-screen'); 
+      // البحث المباشر
+      if (productsDB[cleanCode]) { return showResultScreen(productsDB[cleanCode], 'scan-screen'); }
+      
+      // المحاولة الذكية (إضافة صفر)
+      if (productsDB["0" + cleanCode]) { return showResultScreen(productsDB["0" + cleanCode], 'scan-screen'); }
+
+      // المحاولة الذكية (حذف صفر)
+      if (cleanCode.startsWith("0") && productsDB[cleanCode.substring(1)]) { return showResultScreen(productsDB[cleanCode.substring(1)], 'scan-screen'); }
+
+      // إذا فشل الكل
+      if(confirm("المنتج غير مسجل: " + cleanCode + "\nهل تريد إضافته؟")) { 
+          let separator = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
+          let finalLink = GOOGLE_FORM_URL + separator + "usp=pp_url&entry." + BARCODE_ENTRY_ID + "=" + cleanCode;
+          openFormModal(finalLink);
       } else { 
-          if(confirm("المنتج غير مسجل: " + cleanCode + "\nهل تريد إضافته؟")) { 
-              let separator = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
-              let finalLink = GOOGLE_FORM_URL + separator + "usp=pp_url&entry." + BARCODE_ENTRY_ID + "=" + cleanCode;
-              openFormModal(finalLink);
-          } else { 
-              resetScanner(); 
-          } 
-      }
+          resetScanner(); 
+      } 
     }
 
     function showResultScreen(product, source = 'scan-screen') {
@@ -368,7 +376,6 @@
         document.getElementById('p_name').innerText = product.name; 
         
         document.getElementById('p_code').innerText = product.code;
-        // 🔴 تعبئة الباركود المحلي
         document.getElementById('p_local_code').innerText = product.localCode || "-";
 
         const imgElem = document.getElementById('p_img');
@@ -409,6 +416,11 @@
       }, 300);
     }
     
+    // زر الإضافة اليدوية (بدون سكان)
+    document.getElementById('add-btn').onclick = function() {
+        window.open(GOOGLE_FORM_URL, '_blank');
+    };
+
     function showStatus(text, type) { statusDiv.innerText = text; statusDiv.className = "status-msg " + type; statusDiv.style.display = 'block'; }
     fetchProducts().then(() => { startCamera(); });
 </script>
