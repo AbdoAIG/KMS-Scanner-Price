@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>تطبيق الشركة الاحترافي</title>
+<title>تطبيق المخزن (الماسح الشامل)</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
   :root {
@@ -138,7 +138,6 @@
         <div class="detail-row"> <span class="detail-label">القسم:</span> <span id="p_cat" class="detail-value"></span> </div>
         <div class="detail-row"> <span class="detail-label">الفرع:</span> <span id="p_subcat" class="detail-value"></span> </div>
         <div class="detail-row"> <span class="detail-label">المنتج:</span> <span id="p_name" class="detail-value"></span> </div>
-        
         <div class="detail-row"> <span class="detail-label">باركود (C):</span> <span id="p_code_local" class="detail-value barcode-style"></span> </div>
         <div class="detail-row"> <span class="detail-label">باركود (D):</span> <span id="p_code_global" class="detail-value barcode-style"></span> </div>
     </div>
@@ -156,7 +155,7 @@
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKotb6frhhZzBOkKyvUu0V1x06UkENSEkdtSn52yfc7OG030tDMxwjjjEX8tV1UGgpNzMTuObGRur3/pub?gid=0&single=true&output=csv"; 
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
     const LOGO_URL = "https://kamalsaad.com/themes/theme_front/assets/images/KMS LOGO FINAL.png"; 
-    const DESIGNER_NAME = "عبدالرحمن ابراهيم";
+    const DESIGNER_NAME = "اسم المصمم هنا";
     const BARCODE_ENTRY_ID = "1811127320"; 
     // ============================================================
 
@@ -182,7 +181,9 @@
     function openImageModal(src) { var modal = document.getElementById("imageModal"); var modalImg = document.getElementById("img01"); modal.style.display = "block"; modalImg.src = src; }
     function closeImageModal() { document.getElementById("imageModal").style.display = "none"; }
 
-    var productsDB = {}; var categoriesSet = new Set(); var html5QrcodeScanner;
+    var productsList = []; // 🔴 هنا نخزن المصفوفة بدلاً من الأوبجكت
+    var categoriesSet = new Set(); 
+    var html5QrcodeScanner;
     const statusDiv = document.getElementById('status');
     var lastScreen = "scan-screen"; 
 
@@ -209,14 +210,13 @@
         let listDiv = document.getElementById('list-content'); let subCatDiv = document.getElementById('subcategories-filter');
         listDiv.innerHTML = ""; subCatDiv.innerHTML = "";
 
-        let subCatsInThisCat = new Set(); let productsInThisCat = [];
-        for (let code in productsDB) {
-            let p = productsDB[code];
-            if (p.category === catName) {
-                productsInThisCat.push(p);
-                if(p.subcategory) subCatsInThisCat.add(p.subcategory);
-            }
-        }
+        let subCatsInThisCat = new Set(); 
+        // الفلترة من المصفوفة
+        let productsInThisCat = productsList.filter(p => p.category === catName);
+        
+        productsInThisCat.forEach(p => {
+            if(p.subcategory) subCatsInThisCat.add(p.subcategory);
+        });
 
         if(subCatsInThisCat.size > 0) {
             let allBtn = document.createElement('button'); allBtn.innerText = "الكل"; allBtn.className = "sub-cat-btn active";
@@ -233,11 +233,7 @@
     function renderList(items) {
         let listDiv = document.getElementById('list-content'); listDiv.innerHTML = "";
         if(items.length === 0) { listDiv.innerHTML = "<p style='text-align:center; color:#999;'>لا توجد منتجات</p>"; return; }
-        
-        let uniqueItems = []; let seenNames = new Set();
-        items.forEach(p => { if(!seenNames.has(p.name)){ seenNames.add(p.name); uniqueItems.push(p); } });
-
-        uniqueItems.forEach(p => {
+        items.forEach(p => {
             let div = document.createElement('div'); div.className = 'suggestion-item';
             let imgTag = (p.img && p.img.startsWith('http')) ? `<img src="${p.img}" class="suggestion-thumb">` : '';
             div.innerHTML = `<div class="prod-info-flex">${imgTag}<span>${p.name}</span></div><span style="color:var(--primary-color); font-weight:bold;">${p.price1} ج.م</span>`;
@@ -269,23 +265,19 @@
       }
     }
 
-    // 🔴🔴 دالة قراءة CSV مع التنظيف القوي 🔴🔴
+    // 🔴🔴 تخزين المصفوفة بدلاً من كائنات 🔴🔴
     function parseCSV(csvText) {
-      const rows = csvText.split('\n'); productsDB = {}; categoriesSet.clear();
+      const rows = csvText.split('\n'); productsList = []; categoriesSet.clear();
       for (let i = 1; i < rows.length; i++) {
         if(!rows[i].trim()) continue;
         const row = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-        
         if (row.length >= 11) { 
-          // ⚠️ تنظيف قوي جداً (يحذف أي شيء غير الأرقام والحروف الإنجليزية)
-          const localCode = clean(row[2]).replace(/[^0-9a-zA-Z]/g, ''); 
-          const globalCode = clean(row[3]).replace(/[^0-9a-zA-Z]/g, ''); 
-          
+          // تنظيف
+          const localCode = clean(row[2]).replace(/\s/g, ''); 
+          const globalCode = clean(row[3]).replace(/\s/g, ''); 
           const name = clean(row[4]); 
           let p1 = cleanPrice(row[5]); let p2 = cleanPrice(row[6]); let p3 = cleanPrice(row[7]); 
-          const img = row[8] ? clean(row[8]) : ""; 
-          const cat = row[9] ? clean(row[9]) : "عام"; 
-          const sub = row[10] ? clean(row[10]) : ""; 
+          const img = row[8] ? clean(row[8]) : ""; const cat = row[9] ? clean(row[9]) : "عام"; const sub = row[10] ? clean(row[10]) : ""; 
 
           let productData = { 
               code1: localCode, 
@@ -293,9 +285,9 @@
               name: name, price1: p1, price2: p2, price3: p3, img: img, category: cat, subcategory: sub 
           };
 
-          // ⚠️ حفظ المفاتيح بعد تنظيفها تماماً
-          if(localCode && localCode.length > 0) { productsDB[localCode] = productData; categoriesSet.add(cat); }
-          if(globalCode && globalCode.length > 0) { productsDB[globalCode] = productData; categoriesSet.add(cat); }
+          // إضافة للمصفوفة
+          productsList.push(productData);
+          categoriesSet.add(cat);
         }
       }
       updateCategoriesMenu();
@@ -304,51 +296,66 @@
     function clean(text) { return text ? text.replace(/"/g, '').trim() : ""; }
     function cleanPrice(text) { if(!text) return ""; return text.replace(/"/g, '').replace('ج.م', '').replace('$', '').trim(); }
 
+    // 🔴🔴 البحث في المصفوفة (Loops) 🔴🔴
     function suggestProducts() {
         let inputVal = document.getElementById('search-input').value.toLowerCase().trim();
         let listDiv = document.getElementById('suggestions'); listDiv.innerHTML = ""; 
         if (inputVal.length < 1) { listDiv.style.display = "none"; return; }
+        
         let matchCount = 0;
-        let seenNames = new Set(); 
-
-        for (let code in productsDB) {
-            let p = productsDB[code];
-            if (p.name.toLowerCase().includes(inputVal) || code.includes(inputVal)) {
-                if(seenNames.has(p.name)) continue; 
-                seenNames.add(p.name);
-
+        
+        for (let i = 0; i < productsList.length; i++) {
+            let p = productsList[i];
+            // بحث شامل (اسم، محلي، دولي)
+            if (p.name.toLowerCase().includes(inputVal) || (p.code1 && p.code1.includes(inputVal)) || (p.code2 && p.code2.includes(inputVal))) {
                 let item = document.createElement('div'); item.className = 'suggestion-item';
                 let imgTag = (p.img && p.img.startsWith('http')) ? `<img src="${p.img}" class="suggestion-thumb">` : '';
                 item.innerHTML = `<div class="prod-info-flex">${imgTag}<span>${p.name}</span></div><span style="color:var(--primary-color)">${p.price1} ج.م</span>`;
                 item.onclick = function() { showResultScreen(p, 'scan-screen'); document.getElementById('search-input').value = ""; listDiv.style.display = "none"; };
-                
                 listDiv.appendChild(item); matchCount++; if(matchCount >= 10) break;
             }
         }
         listDiv.style.display = (matchCount > 0) ? "block" : "none";
     }
 
+    // 🔴🔴 البحث عن المنتج عند المسح (دالة خاصة) 🔴🔴
+    function findProductInDB(scannedCode) {
+        // 1. تنظيف
+        let code = scannedCode.replace(/["\s]/g, '').trim();
+        
+        // 2. تدوير على المصفوفة
+        for(let i=0; i<productsList.length; i++) {
+            let p = productsList[i];
+            // مطابقة تامة
+            if(p.code1 === code || p.code2 === code) return p;
+            
+            // محاولات ذكية
+            // إذا كان المحلي يساوي الكود بدون أصفار
+            if(p.code1 === code.replace(/^0+/, '')) return p;
+            // إذا كان الدولي يساوي الكود بدون أصفار
+            if(p.code2 === code.replace(/^0+/, '')) return p;
+        }
+        return null;
+    }
+
     async function onScanSuccess(decodedText, decodedResult) {
       playScanSound();
       try { if(html5QrcodeScanner) { await html5QrcodeScanner.clear(); } } catch(e) {}
       
-      // ⚠️ تنظيف الكود المقروء أيضاً بنفس الطريقة القوية
-      let cleanCode = decodedText.replace(/[^0-9a-zA-Z]/g, '');
-      
-      // خوارزمية البحث
-      if (productsDB[cleanCode]) { return showResultScreen(productsDB[cleanCode], 'scan-screen'); }
-      // محاولة إضافة صفر
-      if (productsDB["0" + cleanCode]) { return showResultScreen(productsDB["0" + cleanCode], 'scan-screen'); }
-      // محاولة حذف صفر
-      if (cleanCode.startsWith("0") && productsDB[cleanCode.substring(1)]) { return showResultScreen(productsDB[cleanCode.substring(1)], 'scan-screen'); }
+      let cleanCode = decodedText.trim();
+      let foundProduct = findProductInDB(cleanCode);
 
-      if(confirm("المنتج غير مسجل: " + cleanCode + "\nهل تريد إضافته؟")) { 
-          let separator = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
-          let finalLink = GOOGLE_FORM_URL + separator + "usp=pp_url&entry." + BARCODE_ENTRY_ID + "=" + cleanCode;
-          openFormModal(finalLink);
+      if (foundProduct) { 
+          showResultScreen(foundProduct, 'scan-screen'); 
       } else { 
-          resetScanner(); 
-      } 
+          if(confirm("المنتج غير مسجل: " + cleanCode + "\nهل تريد إضافته؟")) { 
+              let separator = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
+              let finalLink = GOOGLE_FORM_URL + separator + "usp=pp_url&entry." + BARCODE_ENTRY_ID + "=" + cleanCode;
+              openFormModal(finalLink);
+          } else { 
+              resetScanner(); 
+          } 
+      }
     }
 
     function showResultScreen(product, source = 'scan-screen') {
