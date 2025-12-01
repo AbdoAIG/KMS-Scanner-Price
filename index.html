@@ -200,6 +200,7 @@
         let listDiv = document.getElementById('list-content'); listDiv.innerHTML = "";
         if(items.length === 0) { listDiv.innerHTML = "<p style='text-align:center; color:#999;'>لا توجد منتجات</p>"; return; }
         
+        // إزالة التكرار
         let uniqueItems = []; let seenNames = new Set();
         items.forEach(p => { if(!seenNames.has(p.name)){ seenNames.add(p.name); uniqueItems.push(p); } });
 
@@ -235,32 +236,39 @@
       }
     }
 
-    // 🔴🔴 دالة القراءة المعدلة (تأخذ من العمودين C و D) 🔴🔴
+    // 🔴🔴 دالة القراءة المصححة (تأخذ C و D) 🔴🔴
     function parseCSV(csvText) {
       const rows = csvText.split('\n'); productsDB = {}; categoriesSet.clear();
       for (let i = 1; i < rows.length; i++) {
         if(!rows[i].trim()) continue;
         const row = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
         
-        // الآن نقرأ حتى العمود 11 (الفرع)
         if (row.length >= 11) { 
-          // العمود C (index 2) = الباركود المحلي
+          // ⚠️ انتبه هنا: العمود C هو index 2، والعمود D هو index 3
           const localCode = clean(row[2]).replace(/\s/g, ''); 
-          // العمود D (index 3) = الباركود الدولي
           const globalCode = clean(row[3]).replace(/\s/g, ''); 
-          // العمود E = الاسم
-          const name = clean(row[4]); 
           
+          const name = clean(row[4]); 
           let p1 = cleanPrice(row[5]); let p2 = cleanPrice(row[6]); let p3 = cleanPrice(row[7]); 
           const img = row[8] ? clean(row[8]) : ""; 
           const cat = row[9] ? clean(row[9]) : "عام"; 
           const sub = row[10] ? clean(row[10]) : ""; 
 
-          let productData = { code1: localCode, code2: globalCode, name: name, price1: p1, price2: p2, price3: p3, img: img, category: cat, subcategory: sub };
+          let productData = { 
+              code1: localCode, 
+              code2: globalCode, 
+              name: name, price1: p1, price2: p2, price3: p3, img: img, category: cat, subcategory: sub 
+          };
 
-          // تخزين المنتج بالمفتاحين
-          if(localCode) { productsDB[localCode] = productData; categoriesSet.add(cat); }
-          if(globalCode) { productsDB[globalCode] = productData; categoriesSet.add(cat); }
+          // 🔴🔴 تسجيل المنتج بكل مفتاح ممكن 🔴🔴
+          if(localCode && localCode !== "") { 
+              productsDB[localCode] = productData; 
+              categoriesSet.add(cat); 
+          }
+          if(globalCode && globalCode !== "") { 
+              productsDB[globalCode] = productData; 
+              categoriesSet.add(cat); 
+          }
         }
       }
       updateCategoriesMenu();
