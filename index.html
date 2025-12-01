@@ -89,24 +89,10 @@
   .prices-table td { padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; color: #333; text-align: center; }
   .prices-table td.price-val { color: #28a745; font-size: 18px; }
 
-  /* 🔴 زر الرجوع الجديد (أزرق) 🔴 */
-  #back-fab { 
-      position: fixed; 
-      bottom: 20px; left: 20px; 
-      width: 55px; height: 55px; 
-      background-color: var(--secondary-color); /* أصبح أزرق */
-      color: white; 
-      border-radius: 50%; border: none; 
-      box-shadow: 0 4px 15px rgba(0,123,255,0.4); 
-      font-size: 28px; cursor: pointer; 
-      z-index: 2000; 
-      display: none; /* يتم التحكم به بالجافاسكريبت */
-      align-items: center; justify-content: center;
-      transition: transform 0.2s;
-  }
+  /* زر الرجوع الأزرق */
+  #back-fab { position: fixed; bottom: 20px; left: 20px; width: 55px; height: 55px; background-color: var(--secondary-color); color: white; border-radius: 50%; border: none; box-shadow: 0 4px 15px rgba(0,123,255,0.4); font-size: 28px; cursor: pointer; z-index: 2000; display: none; align-items: center; justify-content: center; transition: transform 0.2s; }
   #back-fab:active { transform: scale(0.9); }
 
-  /* التكبير والأزرار */
   .modal { display: none; position: fixed; z-index: 5000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); }
   .modal-content { margin: auto; display: block; width: 90%; max-width: 700px; border: 3px solid white; border-radius: 10px; }
   .close-zoom { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; }
@@ -184,12 +170,15 @@
 
 <script>
     // ============================================================
-    // 🔴🔴 إعدادات التطبيق 🔴🔴
+    // 🔴🔴 البيانات المطلوبة 🔴🔴
     // ============================================================
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKotb6frhhZzBOkKyvUu0V1x06UkENSEkdtSn52yfc7OG030tDMxwjjjEX8tV1UGgpNzMTuObGRur3/pub?gid=0&single=true&output=csv"; 
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
     const LOGO_URL = "https://kamalsaad.com/themes/theme_front/assets/images/KMS LOGO FINAL.png"; 
     const DESIGNER_NAME = "عبدالرحمن ابراهيم";
+    
+    // 👇👇 رقم الحقل من جوجل فورم (المهم جداً) 👇👇
+    const BARCODE_ENTRY_ID = "1811127320"; // مثال: 1811127320
     // ============================================================
 
     if(LOGO_URL && LOGO_URL !== "") { document.getElementById('company-logo').src = LOGO_URL; } 
@@ -217,7 +206,8 @@
     const statusDiv = document.getElementById('status');
     var lastScreen = "scan-screen"; 
 
-    document.getElementById('add-btn').href = GOOGLE_FORM_URL;
+    // لن نستخدم الرابط المباشر هنا، سنقوم ببنائه ديناميكياً
+    // document.getElementById('add-btn').href = GOOGLE_FORM_URL;
 
     function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
     function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
@@ -260,7 +250,6 @@
             });
         }
         renderList(productsInThisCat);
-        // تأكيد تحديث الزر بعد الرسم
         updateBackButton();
     }
 
@@ -340,10 +329,20 @@
       playScanSound();
       try { if(html5QrcodeScanner) { await html5QrcodeScanner.clear(); } } catch(e) {}
       let cleanCode = decodedText.trim();
-      if (productsDB[cleanCode]) { showResultScreen(productsDB[cleanCode], 'scan-screen'); } 
-      else { 
-          if(confirm("المنتج غير مسجل: " + cleanCode + "\nهل تريد إضافته؟")) { window.open(GOOGLE_FORM_URL, '_blank'); resetScanner(); } 
-          else { resetScanner(); } 
+      
+      if (productsDB[cleanCode]) { 
+          showResultScreen(productsDB[cleanCode], 'scan-screen'); 
+      } else { 
+          if(confirm("المنتج غير مسجل: " + cleanCode + "\nهل تريد إضافته؟")) { 
+              // 🔴🔴 صناعة رابط الملء التلقائي هنا 🔴🔴
+              let separator = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
+              let finalLink = GOOGLE_FORM_URL + separator + "usp=pp_url&entry." + BARCODE_ENTRY_ID + "=" + cleanCode;
+              
+              window.open(finalLink, '_blank'); 
+              resetScanner(); 
+          } else { 
+              resetScanner(); 
+          } 
       }
     }
 
@@ -363,8 +362,6 @@
         if(product.price3) priceHTML += `<tr><td>كرتونة</td><td class="price-val">${product.price3} ج.م</td></tr>`;
         priceHTML += `</tbody></table>`;
         document.getElementById('prices-container').innerHTML = priceHTML;
-        
-        // تأكيد تحديث الزر بعد الرسم
         updateBackButton();
     }
 
@@ -376,15 +373,9 @@
         } else if(document.getElementById('list-screen').style.display === 'block') { resetScanner(); }
     }
 
-    // 🔴 منطق إظهار الزر المحسن 🔴
     function updateBackButton() {
         let btn = document.getElementById('back-fab');
-        // إذا الكاميرا ظاهرة، نخفي الزر. في أي حالة أخرى، نظهره.
-        if(document.getElementById('scan-screen').style.display === 'block') { 
-            btn.style.display = 'none'; 
-        } else { 
-            btn.style.display = 'flex'; 
-        }
+        if(document.getElementById('scan-screen').style.display === 'block') { btn.style.display = 'none'; } else { btn.style.display = 'flex'; }
     }
 
     function resetScanner() {
@@ -401,6 +392,11 @@
       }, 300);
     }
     
+    // زر الإضافة اليدوية (بدون سكان)
+    document.getElementById('add-btn').onclick = function() {
+        window.open(GOOGLE_FORM_URL, '_blank');
+    };
+
     function showStatus(text, type) { statusDiv.innerText = text; statusDiv.className = "status-msg " + type; statusDiv.style.display = 'block'; }
     fetchProducts().then(() => { startCamera(); });
 </script>
