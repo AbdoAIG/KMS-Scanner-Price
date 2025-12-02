@@ -7,40 +7,30 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>تطبيق المخزن الشامل</title>
+<title>تطبيق الشركة المتكامل</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
-  /* --- 🎨 الألوان --- */
   :root {
-      --primary-color: #0056b3; 
-      --secondary-color: #007bff; 
-      --bg-color: #f4f7f6; 
-      --card-bg: #ffffff; 
-      --text-color: #333333; 
-      --border-color: #e0e0e0; 
+      --primary-color: #0056b3; --secondary-color: #007bff; --scanner-color: #00d2ff;
+      --bg-color: #f4f7f6; --card-bg: #ffffff; --text-color: #333333; --border-color: #e0e0e0; 
   }
 
   body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; background-color: var(--bg-color); margin: 0; color: var(--text-color); user-select: none; }
   
   .container { 
-      max-width: 600px; margin: 10px auto; 
-      background: var(--card-bg); padding: 15px; 
-      border-radius: 20px; 
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-      position: relative; min-height: 90vh; 
-      padding-bottom: 70px; 
-      display: flex; flex-direction: column;
+      max-width: 600px; margin: 10px auto; background: var(--card-bg); padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; min-height: 90vh; padding-bottom: 70px; display: flex; flex-direction: column;
   }
   
   .app-logo { max-width: 140px; max-height: 80px; display: block; margin: 0 auto 10px auto; object-fit: contain; }
 
-  /* القائمة الجانبية */
+  .refresh-btn { background: none; border: 1px solid var(--secondary-color); color: var(--secondary-color); padding: 5px 15px; border-radius: 20px; font-size: 12px; cursor: pointer; margin-bottom: 10px; display: inline-block; }
+  .refresh-btn:active { background: var(--secondary-color); color: white; }
+
   .menu-btn { position: absolute; top: 20px; right: 20px; font-size: 28px; cursor: pointer; background: none; border: none; color: var(--primary-color); z-index: 100; }
   .sidenav { height: 100%; width: 0; position: fixed; z-index: 3000; top: 0; right: 0; background-color: var(--primary-color); overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; box-shadow: -5px 0 15px rgba(0,0,0,0.2); }
   .sidenav a { padding: 15px 20px 15px 32px; text-decoration: none; font-size: 18px; color: white; display: block; transition: 0.3s; border-bottom: 1px solid rgba(255,255,255,0.1); }
   .sidenav .closebtn { position: absolute; top: 0; right: 25px; font-size: 36px; margin-left: 50px; border: none; color: white; }
   
-  /* البحث */
   .search-wrapper { position: relative; margin-bottom: 15px; }
   .search-input { width: 100%; padding: 12px; background: #fff; border: 2px solid var(--border-color); color: var(--text-color); border-radius: 12px; font-size: 16px; box-sizing: border-box; outline: none; transition: 0.3s; }
   .suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border-color); border-radius: 0 0 12px 12px; z-index: 1000; max-height: 250px; overflow-y: auto; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
@@ -48,19 +38,22 @@
   .suggestion-thumb { width: 40px; height: 40px; object-fit: contain; border-radius: 6px; border: 1px solid #eee; background: #fff; margin-left: 10px; }
   .prod-info-flex { display: flex; align-items: center; }
 
-  /* 🔴 الكاميرا (كاملة وبدون إطار) 🔴 */
-  .scanner-wrapper { 
-      position: relative; width: 100%; height: 400px; /* زيادة الطول */
-      margin-bottom: 20px; border-radius: 20px; overflow: hidden; 
-      background: #000; 
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-      border: 2px solid var(--secondary-color); 
-  }
-  #reader { width: 100%; height: 100%; object-fit: cover; }
-  
-  /* تم إزالة .scan-overlay و .laser-beam لجعل الرؤية مفتوحة */
+  .sub-cats-container { display: flex; overflow-x: auto; white-space: nowrap; padding: 10px 5px; gap: 8px; margin-bottom: 15px; scrollbar-width: none; }
+  .sub-cat-btn { background: #f0f0f0; color: #555; border: 1px solid #ddd; padding: 8px 16px; border-radius: 20px; font-size: 14px; cursor: pointer; transition: 0.2s; }
+  .sub-cat-btn.active { background: var(--secondary-color); color: white; border-color: var(--secondary-color); font-weight: bold; }
 
-  /* النتائج */
+  /* الكاميرا والزووم */
+  .scanner-wrapper { position: relative; width: 100%; height: 350px; margin-bottom: 10px; border-radius: 20px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 2px solid var(--secondary-color); }
+  #reader { width: 100%; height: 100%; object-fit: cover; }
+  /* مؤشر ليزر خفيف للمساعدة في التوجيه */
+  .laser-beam { position: absolute; top: 50%; left: 10%; right: 10%; height: 2px; background: rgba(255, 0, 0, 0.5); z-index: 10; pointer-events: none; box-shadow: 0 0 10px red; }
+
+  /* 🔴 شريط الزووم الجديد 🔴 */
+  .zoom-controls { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; padding: 0 20px; }
+  .zoom-label { font-size: 14px; color: #777; font-weight: bold; }
+  input[type=range] { -webkit-appearance: none; width: 100%; height: 8px; background: #ddd; border-radius: 5px; outline: none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--secondary-color); cursor: pointer; }
+
   #list-screen, .result-box { display: none; text-align: right; }
   .result-box { text-align: center; background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; }
   .product-img { width: 100%; max-width: 200px; height: 200px; object-fit: contain; border-radius: 10px; margin-bottom: 15px; border: 1px solid #eee; background: white; cursor: pointer; }
@@ -73,21 +66,8 @@
   .prices-table td { padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; color: #333; text-align: center; }
   .prices-table td.price-val { color: #28a745; font-size: 18px; }
 
-  /* الأزرار والرسائل */
   #back-fab { position: fixed; bottom: 20px; left: 20px; width: 55px; height: 55px; background-color: var(--secondary-color); color: white; border-radius: 50%; border: none; box-shadow: 0 4px 15px rgba(0,123,255,0.4); font-size: 28px; cursor: pointer; z-index: 2000; display: none; align-items: center; justify-content: center; transition: transform 0.2s; }
   #back-fab:active { transform: scale(0.9); }
-
-  .btn { display: block; width: 100%; padding: 14px; margin-top: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-  .btn-primary { background-color: var(--secondary-color); }
-  .btn-warning { background-color: #ffc107; color: #333; }
-  .btn-edit { background-color: #17a2b8; color: white; }
-  .refresh-btn { background: none; border: 1px solid var(--secondary-color); color: var(--secondary-color); padding: 5px 15px; border-radius: 20px; font-size: 12px; cursor: pointer; margin-bottom: 10px; display: inline-block; }
-  
-  .action-buttons { display: flex; gap: 10px; margin-top: 20px; }
-  .action-buttons button { flex: 1; margin-top: 0; }
-  .sub-cats-container { display: flex; overflow-x: auto; white-space: nowrap; padding: 10px 5px; gap: 8px; margin-bottom: 15px; scrollbar-width: none; }
-  .sub-cat-btn { background: #f0f0f0; color: #555; border: 1px solid #ddd; padding: 8px 16px; border-radius: 20px; font-size: 14px; cursor: pointer; transition: 0.2s; }
-  .sub-cat-btn.active { background: var(--secondary-color); color: white; border-color: var(--secondary-color); font-weight: bold; }
 
   .modal { display: none; position: fixed; z-index: 5000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); }
   .modal-content { margin: auto; display: block; width: 90%; max-width: 700px; border: 3px solid white; border-radius: 10px; }
@@ -95,7 +75,13 @@
   .form-modal { display: none; position: fixed; z-index: 4000; left: 0; top: 0; width: 100%; height: 100%; background-color: white; }
   .form-iframe { width: 100%; height: 100%; border: none; }
   .close-form-btn { position: absolute; top: 10px; left: 10px; background: red; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; cursor: pointer; z-index: 4001; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-  
+  .btn { display: block; width: 100%; padding: 14px; margin-top: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+  .btn-primary { background-color: var(--secondary-color); }
+  .btn-warning { background-color: #ffc107; color: #333; }
+  .btn-edit { background-color: #17a2b8; color: white; }
+  .btn-secondary { background: #6c757d; color: white; }
+  .action-buttons { display: flex; gap: 10px; margin-top: 20px; }
+  .action-buttons button { flex: 1; margin-top: 0; }
   .status-msg { margin: 10px 0; font-size: 14px; padding: 10px; border-radius: 8px; display: none; }
   .loading { background-color: #e2f0fb; color: var(--primary-color); border: 1px solid #b8daff; }
   .designer-footer { margin-top: auto; padding-top: 20px; border-top: 1px solid #eee; font-size: 13px; color: #777; text-align: center; }
@@ -111,7 +97,6 @@
 
 <div class="container">
   <button class="menu-btn" onclick="openNav()">☰</button>
-
   <div id="scan-screen">
     <img id="company-logo" src="" class="app-logo" alt="Logo" onerror="this.style.display='none'">
     <h2 style="color:var(--primary-color); margin-top:0; font-size: 22px;">ماسح المنتجات</h2>
@@ -119,7 +104,14 @@
     <button class="refresh-btn" onclick="fetchProducts(true)">🔄 تحديث البيانات</button>
     <div class="search-wrapper"><input type="text" id="search-input" class="search-input" placeholder="🔍 بحث بالاسم أو الباركود..." onkeyup="suggestProducts()" autocomplete="off"><div id="suggestions" class="suggestions-list"></div></div>
     
-    <div class="scanner-wrapper"><div id="reader"></div></div>
+    <div class="scanner-wrapper">
+        <div id="reader"></div>
+        <div class="laser-beam"></div> </div>
+
+    <div class="zoom-controls" id="zoom-controls" style="display:none;">
+        <span class="zoom-label">Zoom:</span>
+        <input type="range" id="zoom-slider" min="1" max="3" step="0.1" value="1" oninput="applyZoom(this.value)">
+    </div>
     
     <a id="add-btn" href="#" target="_blank" class="btn btn-warning">➕ إضافة منتج جديد</a>
   </div>
@@ -188,6 +180,7 @@
     var productsList = []; var categoriesSet = new Set(); var html5QrcodeScanner;
     const statusDiv = document.getElementById('status');
     var lastScreen = "scan-screen"; var currentProduct = null;
+    var videoTrack = null; // للتحكم في الزووم
 
     document.getElementById('add-btn').onclick = function() { openFormModal(GOOGLE_FORM_URL); };
 
@@ -295,13 +288,7 @@
           const name = clean(row[4]); 
           let p1 = cleanPrice(row[5]); let p2 = cleanPrice(row[6]); let p3 = cleanPrice(row[7]); 
           const img = row[8] ? clean(row[8]) : ""; const cat = row[9] ? clean(row[9]) : "عام"; const sub = row[10] ? clean(row[10]) : ""; 
-
-          let productData = { 
-              code1: localCode, 
-              code2: globalCode, 
-              name: name, price1: p1, price2: p2, price3: p3, img: img, category: cat, subcategory: sub 
-          };
-
+          let productData = { code1: localCode, code2: globalCode, name: name, price1: p1, price2: p2, price3: p3, img: img, category: cat, subcategory: sub };
           if(localCode) tempMap.set(localCode, productData);
           if(globalCode) tempMap.set(globalCode, productData);
         }
@@ -320,7 +307,6 @@
         let listDiv = document.getElementById('suggestions'); listDiv.innerHTML = ""; 
         if (inputVal.length < 1) { listDiv.style.display = "none"; return; }
         let matchCount = 0; let seenNames = new Set(); 
-
         for (let i = productsList.length - 1; i >= 0; i--) {
             let p = productsList[i];
             if (p.name.toLowerCase().includes(inputVal) || (p.code1 && p.code1.includes(inputVal)) || (p.code2 && p.code2.includes(inputVal))) {
@@ -407,25 +393,63 @@
         updateBackButton(); startCamera();
     }
 
-    // 🔴🔴 إعدادات الكاميرا الشاملة والمفتوحة 🔴🔴
+    // 🔴🔴 تطبيق الزووم 🔴🔴
+    function applyZoom(val) {
+        if(videoTrack) {
+            try { videoTrack.applyConstraints({ advanced: [{ zoom: parseFloat(val) }] }); } catch(e) { console.log("Zoom not supported"); }
+        }
+    }
+
+    // 🔴🔴 إعداد الكاميرا + الزووم 🔴🔴
     function startCamera() {
       document.getElementById('reader').innerHTML = "";
       setTimeout(() => {
           html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
-              fps: 15, 
-              aspectRatio: 1.3,
-              // لا يوجد qrbox هنا لتفعيل المسح في كامل الشاشة
+              fps: 10, // تقليل السرعة لزيادة الدقة مع الأكواد المعقدة
+              aspectRatio: 1.0, // مربع كامل
+              // لا نضع qrbox هنا لتفعيل المسح الشامل
               videoConstraints: { facingMode: "environment" },
-              formatsToSupport: [
+              formatsToSupport: [ // دعم كل الأكواد
                    Html5QrcodeSupportedFormats.QR_CODE, Html5QrcodeSupportedFormats.BARCODE, Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E,
                    Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8, Html5QrcodeSupportedFormats.CODE_39, Html5QrcodeSupportedFormats.CODE_93,
                    Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.ITF, Html5QrcodeSupportedFormats.RSS_14, Html5QrcodeSupportedFormats.RSS_EXPANDED,
                    Html5QrcodeSupportedFormats.PDF_417, Html5QrcodeSupportedFormats.AZTEC, Html5QrcodeSupportedFormats.DATA_MATRIX, Html5QrcodeSupportedFormats.MAXICODE
               ],
-              useBarCodeDetectorIfSupported: true, // تفعيل المكتشف الأصلي للأندرويد
+              useBarCodeDetectorIfSupported: true,
               experimentalFeatures: { useBarCodeDetectorIfSupported: true }
           });
-          html5QrcodeScanner.render(onScanSuccess);
+          
+          html5QrcodeScanner.render((decodedText, decodedResult) => {
+              onScanSuccess(decodedText, decodedResult);
+          }, (errorMessage) => {
+              // محاولة التقاط تراك الفيديو لتفعيل الزووم
+              if(!videoTrack && html5QrcodeScanner.html5Qrcode) {
+                  try {
+                      let tracks = html5QrcodeScanner.html5Qrcode.getRunningTrackCameraCapabilities();
+                      // هذا السطر يعتمد على دعم المتصفح، قد لا يعمل في كل الهواتف
+                  } catch(e) {}
+              }
+          });
+
+          // محاولة تفعيل الزووم بعد التشغيل
+          setTimeout(() => {
+              try {
+                  // هذه الطريقة الرسمية للوصول للكاميرا في المتصفح
+                  navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", zoom: true } })
+                  .then(stream => {
+                      const track = stream.getVideoTracks()[0];
+                      const capabilities = track.getCapabilities();
+                      if ('zoom' in capabilities) {
+                          videoTrack = track;
+                          document.getElementById('zoom-controls').style.display = 'flex';
+                          document.getElementById('zoom-slider').min = capabilities.zoom.min;
+                          document.getElementById('zoom-slider').max = capabilities.zoom.max;
+                          document.getElementById('zoom-slider').step = capabilities.zoom.step;
+                      }
+                  });
+              } catch(e) { console.log("Zoom init failed"); }
+          }, 2000);
+
       }, 300);
     }
     
