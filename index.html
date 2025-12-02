@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>تطبيق الشركة الشامل</title>
+<title>تطبيق المخزن الذكي</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
   :root {
@@ -34,17 +34,14 @@
   
   .app-logo { max-width: 140px; max-height: 80px; display: block; margin: 0 auto 10px auto; object-fit: contain; }
 
-  /* زر التحديث */
   .refresh-btn { background: none; border: 1px solid var(--secondary-color); color: var(--secondary-color); padding: 5px 15px; border-radius: 20px; font-size: 12px; cursor: pointer; margin-bottom: 10px; display: inline-block; }
   .refresh-btn:active { background: var(--secondary-color); color: white; }
 
-  /* القائمة الجانبية */
   .menu-btn { position: absolute; top: 20px; right: 20px; font-size: 28px; cursor: pointer; background: none; border: none; color: var(--primary-color); z-index: 100; }
   .sidenav { height: 100%; width: 0; position: fixed; z-index: 3000; top: 0; right: 0; background-color: var(--primary-color); overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; box-shadow: -5px 0 15px rgba(0,0,0,0.2); }
   .sidenav a { padding: 15px 20px 15px 32px; text-decoration: none; font-size: 18px; color: white; display: block; transition: 0.3s; border-bottom: 1px solid rgba(255,255,255,0.1); }
   .sidenav .closebtn { position: absolute; top: 0; right: 25px; font-size: 36px; margin-left: 50px; border: none; color: white; }
   
-  /* البحث */
   .search-wrapper { position: relative; margin-bottom: 15px; }
   .search-input { width: 100%; padding: 12px; background: #fff; border: 2px solid var(--border-color); color: var(--text-color); border-radius: 12px; font-size: 16px; box-sizing: border-box; outline: none; transition: 0.3s; }
   .suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border-color); border-radius: 0 0 12px 12px; z-index: 1000; max-height: 250px; overflow-y: auto; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
@@ -52,12 +49,10 @@
   .suggestion-thumb { width: 40px; height: 40px; object-fit: contain; border-radius: 6px; border: 1px solid #eee; background: #fff; margin-left: 10px; }
   .prod-info-flex { display: flex; align-items: center; }
 
-  /* الفلترة */
   .sub-cats-container { display: flex; overflow-x: auto; white-space: nowrap; padding: 10px 5px; gap: 8px; margin-bottom: 15px; scrollbar-width: none; }
   .sub-cat-btn { background: #f0f0f0; color: #555; border: 1px solid #ddd; padding: 8px 16px; border-radius: 20px; font-size: 14px; cursor: pointer; transition: 0.2s; }
   .sub-cat-btn.active { background: var(--secondary-color); color: white; border-color: var(--secondary-color); font-weight: bold; }
 
-  /* الماسح */
   .scanner-wrapper { position: relative; width: 100%; height: 280px; margin-bottom: 20px; border-radius: 20px; overflow: hidden; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 3px solid var(--secondary-color); }
   #reader { width: 100%; height: 100%; object-fit: cover; }
   .laser-beam { position: absolute; width: 100%; height: 3px; background: #ff0000; box-shadow: 0 0 20px #ff0000; top: 0; left: 0; z-index: 10; animation: scan-anim 1.5s infinite ease-in-out; pointer-events: none; }
@@ -71,7 +66,6 @@
   .scan-corners-bottom::before { bottom: 0; left: 0; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 12px; }
   .scan-corners-bottom::after { bottom: 0; right: 0; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 12px 0; }
 
-  /* النتائج */
   #list-screen, .result-box { display: none; text-align: right; }
   .result-box { text-align: center; background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; }
   .product-img { width: 100%; max-width: 200px; height: 200px; object-fit: contain; border-radius: 10px; margin-bottom: 15px; border: 1px solid #eee; background: white; cursor: pointer; }
@@ -84,7 +78,6 @@
   .prices-table td { padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; color: #333; text-align: center; }
   .prices-table td.price-val { color: #28a745; font-size: 18px; }
 
-  /* زر الرجوع */
   #back-fab { position: fixed; bottom: 20px; left: 20px; width: 55px; height: 55px; background-color: var(--secondary-color); color: white; border-radius: 50%; border: none; box-shadow: 0 4px 15px rgba(0,123,255,0.4); font-size: 28px; cursor: pointer; z-index: 2000; display: none; align-items: center; justify-content: center; transition: transform 0.2s; }
   #back-fab:active { transform: scale(0.9); }
 
@@ -96,20 +89,19 @@
   .form-iframe { width: 100%; height: 100%; border: none; }
   .close-form-btn { position: absolute; top: 10px; left: 10px; background: red; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; cursor: pointer; z-index: 4001; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
 
-  .btn { display: block; width: 100%; padding: 12px; margin-top: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+  .btn { display: block; width: 100%; padding: 14px; margin-top: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
   .btn-primary { background-color: var(--secondary-color); }
   .btn-warning { background-color: #ffc107; color: #333; }
-  /* زر التعديل الجديد */
   .btn-edit { background-color: #17a2b8; color: white; }
+  .btn-secondary { background: #6c757d; color: white; }
   
+  .action-buttons { display: flex; gap: 10px; margin-top: 20px; }
+  .action-buttons button { flex: 1; margin-top: 0; }
+
   .status-msg { margin: 10px 0; font-size: 14px; padding: 10px; border-radius: 8px; display: none; }
   .loading { background-color: #e2f0fb; color: var(--primary-color); border: 1px solid #b8daff; }
   .designer-footer { margin-top: auto; padding-top: 20px; border-top: 1px solid #eee; font-size: 13px; color: #777; text-align: center; }
   .designer-footer span { color: var(--primary-color); font-weight: bold; }
-  
-  /* تنسيق أزرار التحكم في الأسفل */
-  .action-buttons { display: flex; gap: 10px; }
-  .action-buttons button { flex: 1; }
 </style>
 </head>
 <body>
@@ -144,16 +136,14 @@
         <div class="detail-row"> <span class="detail-label">القسم:</span> <span id="p_cat" class="detail-value"></span> </div>
         <div class="detail-row"> <span class="detail-label">الفرع:</span> <span id="p_subcat" class="detail-value"></span> </div>
         <div class="detail-row"> <span class="detail-label">المنتج:</span> <span id="p_name" class="detail-value"></span> </div>
-        
         <div class="detail-row"> <span class="detail-label">باركود (C):</span> <span id="p_code_local" class="detail-value barcode-style"></span> </div>
         <div class="detail-row"> <span class="detail-label">باركود (D):</span> <span id="p_code_global" class="detail-value barcode-style"></span> </div>
     </div>
     <div id="prices-container"></div>
     <hr style="border:0; border-top:1px solid #eee; margin: 20px 0;">
-    
     <div class="action-buttons">
         <button class="btn btn-primary" onclick="goBack()">رجوع</button>
-        <button class="btn btn-edit" onclick="editCurrentProduct()">✏️ تعديل</button>
+        <button class="btn btn-edit" onclick="editCurrentProduct()">✏️ تعديل السعر</button>
     </div>
   </div>
   <div class="designer-footer">تصميم وتطوير: <span id="designer-name"></span></div>
@@ -163,15 +153,13 @@
     // ============================================================
     // 🔴🔴 البيانات المطلوبة 🔴🔴
     // ============================================================
-    const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKotb6frhhZzBOkKyvUu0V1x06UkENSEkdtSn52yfc7OG030tDMxwjjjEX8tV1UGgpNzMTuObGRur3/pub?gid=167717044&single=true&output=csv"; 
+    const SHEET_CSV_URL = "ضع_رابط_CSV_هنا"; 
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
-    const LOGO_URL = "https://kamalsaad.com/themes/theme_front/assets/images/KMS LOGO FINAL.png"; 
-    const DESIGNER_NAME = "عبدالرحمن ابراهيم";
-    
-    // 👇👇 أرقام الحقول للملء التلقائي 👇👇
+    const LOGO_URL = "ضع_رابط_الشعار_هنا"; 
+    const DESIGNER_NAME = "اسم المصمم هنا";
     const BARCODE_ENTRY_ID = "1811127320"; 
-    const NAME_ENTRY_ID = "198039627"; // (اختياري) ضع رقم حقل الاسم هنا
-    const PRICE1_ENTRY_ID = "1964075675"; // (اختياري) ضع رقم حقل سعر القطعة هنا
+    const NAME_ENTRY_ID = "198039627"; // (اختياري)
+    const PRICE1_ENTRY_ID = "1964075675"; // (اختياري)
     // ============================================================
 
     if(LOGO_URL && LOGO_URL !== "") { document.getElementById('company-logo').src = LOGO_URL; } 
@@ -196,14 +184,12 @@
     function openImageModal(src) { var modal = document.getElementById("imageModal"); var modalImg = document.getElementById("img01"); modal.style.display = "block"; modalImg.src = src; }
     function closeImageModal() { document.getElementById("imageModal").style.display = "none"; }
 
-    var productsList = []; 
+    // 🔴 التغيير الجوهري: استخدام Map بدلاً من Array للبحث 🔴
+    var productsDB = {}; // Object للبحث السريع
     var categoriesSet = new Set(); 
     var html5QrcodeScanner;
     const statusDiv = document.getElementById('status');
-    var lastScreen = "scan-screen"; 
-    
-    // متغير لتخزين المنتج المعروض حالياً (لأغراض التعديل)
-    var currentProduct = null;
+    var lastScreen = "scan-screen"; var currentProduct = null;
 
     document.getElementById('add-btn').onclick = function() { openFormModal(GOOGLE_FORM_URL); };
 
@@ -226,9 +212,19 @@
         document.getElementById('category-title').innerText = catName;
         let listDiv = document.getElementById('list-content'); let subCatDiv = document.getElementById('subcategories-filter');
         listDiv.innerHTML = ""; subCatDiv.innerHTML = "";
+        
         let subCatsInThisCat = new Set(); 
-        let productsInThisCat = productsList.filter(p => p.category === catName);
-        productsInThisCat.forEach(p => { if(p.subcategory) subCatsInThisCat.add(p.subcategory); });
+        let productsInThisCat = [];
+        // استخراج المنتجات الفريدة من الـ Object
+        let seen = new Set();
+        Object.values(productsDB).forEach(p => {
+            if(p.category === catName && !seen.has(p.name)) {
+                seen.add(p.name);
+                productsInThisCat.push(p);
+                if(p.subcategory) subCatsInThisCat.add(p.subcategory);
+            }
+        });
+
         if(subCatsInThisCat.size > 0) {
             let allBtn = document.createElement('button'); allBtn.innerText = "الكل"; allBtn.className = "sub-cat-btn active";
             allBtn.onclick = function() { filterList(this, 'ALL', productsInThisCat); }; subCatDiv.appendChild(allBtn);
@@ -244,61 +240,61 @@
     function renderList(items) {
         let listDiv = document.getElementById('list-content'); listDiv.innerHTML = "";
         if(items.length === 0) { listDiv.innerHTML = "<p style='text-align:center; color:#999;'>لا توجد منتجات</p>"; return; }
-        let uniqueItems = []; let seenNames = new Set();
-        // 🔴 تعديل: نأخذ "آخر" نسخة من المنتج المكرر (الأحدث)
-        // نقوم بعكس المصفوفة أولاً لتظهر الأحدث، ثم نفلتر التكرار
-        let reversedItems = [...items].reverse();
-        reversedItems.forEach(p => { if(!seenNames.has(p.name)){ seenNames.add(p.name); uniqueItems.push(p); } });
-
-        uniqueItems.forEach(p => {
+        items.forEach(p => {
             let div = document.createElement('div'); div.className = 'suggestion-item';
             let imgTag = (p.img && p.img.startsWith('http')) ? `<img src="${p.img}" class="suggestion-thumb">` : '';
             div.innerHTML = `<div class="prod-info-flex">${imgTag}<span>${p.name}</span></div><span style="color:var(--primary-color); font-weight:bold;">${p.price1} ج.م</span>`;
-            div.onclick = function() { showResultScreen(p, 'list-screen'); }; 
-            listDiv.appendChild(div);
+            div.onclick = function() { showResultScreen(p, 'list-screen'); }; listDiv.appendChild(div);
         });
     }
 
     function filterList(btn, filter, allItems) {
         let buttons = document.querySelectorAll('.sub-cat-btn');
         buttons.forEach(b => b.classList.remove('active')); btn.classList.add('active');
-        if(filter === 'ALL') { renderList(allItems); } 
-        else { let filtered = allItems.filter(p => p.subcategory === filter); renderList(filtered); }
+        if(filter === 'ALL') { renderList(allItems); } else { let filtered = allItems.filter(p => p.subcategory === filter); renderList(filtered); }
     }
 
     async function fetchProducts(force = false) {
-      showStatus("🔄 جاري التحديث...", "loading");
+      showStatus("🔄 جاري التحميل...", "loading");
+      if (!navigator.onLine) { loadFromCache(); return; }
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000); 
       let fetchUrl = SHEET_CSV_URL;
       if(force) { fetchUrl += "&t=" + new Date().getTime(); }
       try {
-        const response = await fetch(fetchUrl, { cache: "no-store" });
+        const response = await fetch(fetchUrl, { cache: "no-store", signal: controller.signal });
+        clearTimeout(timeoutId);
         if (!response.ok) throw new Error("Network error");
-        const data = await response.text(); localStorage.setItem('offline_products_csv', data); parseCSV(data);
-        showStatus("تم التحديث ✅", "loading"); setTimeout(() => { statusDiv.style.display = 'none'; }, 1000);
+        const data = await response.text(); 
+        localStorage.setItem('offline_products_csv', data); 
+        parseCSV(data);
+        showStatus("تم التحديث ✅", "loading"); 
+        setTimeout(() => { statusDiv.style.display = 'none'; }, 1000);
       } catch (error) {
-        const cachedData = localStorage.getItem('offline_products_csv');
-        if (cachedData && !force) { parseCSV(cachedData); showStatus("⚠️ وضع الأوفلاين", "loading"); }
-        else { showStatus("❌ فشل الاتصال بالإنترنت", "error"); }
+        loadFromCache();
       }
+    }
+
+    function loadFromCache() {
+        const cachedData = localStorage.getItem('offline_products_csv');
+        if (cachedData) { parseCSV(cachedData); showStatus("⚠️ وضع الأوفلاين (سريع)", "loading"); setTimeout(() => { statusDiv.style.display = 'none'; }, 2000); }
+        else { showStatus("❌ لا يوجد إنترنت ولا بيانات", "error"); }
     }
 
     function sanitizeBarcode(text) {
         if(!text) return "";
-        let clean = text;
-        if(clean.includes('.')) { clean = clean.split('.')[0]; }
-        clean = clean.replace(/[^a-zA-Z0-9]/g, '');
-        return clean;
+        let clean = text; if(clean.includes('.')) { clean = clean.split('.')[0]; } 
+        clean = clean.replace(/[^a-zA-Z0-9]/g, ''); return clean;
     }
 
+    // 🔴🔴 أهم دالة: الربط الذكي 🔴🔴
     function parseCSV(csvText) {
-      const rows = csvText.split('\n'); productsList = []; categoriesSet.clear();
-      // 🔴 نستخدم Map لتخزين المنتجات حسب الباركود لضمان "الأحدث يكتب فوق القديم"
-      let tempMap = new Map();
-
+      const rows = csvText.split('\n'); productsDB = {}; categoriesSet.clear();
+      
+      // التكرار من الأعلى للأسفل (عادي)
       for (let i = 1; i < rows.length; i++) {
         if(!rows[i].trim()) continue;
         const row = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-        
         if (row.length >= 11) { 
           const localCode = sanitizeBarcode(row[2]); 
           const globalCode = sanitizeBarcode(row[3]); 
@@ -306,24 +302,40 @@
           let p1 = cleanPrice(row[5]); let p2 = cleanPrice(row[6]); let p3 = cleanPrice(row[7]); 
           const img = row[8] ? clean(row[8]) : ""; const cat = row[9] ? clean(row[9]) : "عام"; const sub = row[10] ? clean(row[10]) : ""; 
 
-          let productData = { code1: localCode, code2: globalCode, name: name, price1: p1, price2: p2, price3: p3, img: img, category: cat, subcategory: sub };
+          // هل المنتج موجود مسبقاً؟
+          let existingProduct = null;
+          if (localCode && productsDB[localCode]) existingProduct = productsDB[localCode];
+          else if (globalCode && productsDB[globalCode]) existingProduct = productsDB[globalCode];
 
-          // الحفظ في Map يضمن أن آخر صف في الإكسيل يكتب فوق القديم
-          if(localCode) tempMap.set(localCode, productData);
-          if(globalCode) tempMap.set(globalCode, productData);
+          if (existingProduct) {
+              // 🔄 تحديث المنتج الموجود بالبيانات الجديدة (الأحدث يربح)
+              existingProduct.name = name;
+              existingProduct.price1 = p1; existingProduct.price2 = p2; existingProduct.price3 = p3;
+              existingProduct.img = img; existingProduct.category = cat; existingProduct.subcategory = sub;
+              
+              // ربط المفاتيح الجديدة (إذا وجدت) بنفس الكائن
+              if(localCode) { productsDB[localCode] = existingProduct; existingProduct.code1 = localCode; }
+              if(globalCode) { productsDB[globalCode] = existingProduct; existingProduct.code2 = globalCode; }
+          } else {
+              // ✨ إنشاء منتج جديد
+              let newProduct = { 
+                  code1: localCode, code2: globalCode, 
+                  name: name, price1: p1, price2: p2, price3: p3, 
+                  img: img, category: cat, subcategory: sub 
+              };
+              if(localCode) productsDB[localCode] = newProduct;
+              if(globalCode) productsDB[globalCode] = newProduct;
+              categoriesSet.add(cat);
+          }
         }
       }
-      
-      // تحويل الـ Map إلى قائمة، واستخراج الأقسام
-      productsList = Array.from(tempMap.values());
-      productsList.forEach(p => categoriesSet.add(p.category));
-      
       updateCategoriesMenu();
     }
 
     function clean(text) { return text ? text.replace(/"/g, '').trim() : ""; }
     function cleanPrice(text) { if(!text) return ""; return text.replace(/"/g, '').replace('ج.م', '').replace('$', '').trim(); }
 
+    // البحث في الـ Object المربوط
     function suggestProducts() {
         let inputVal = document.getElementById('search-input').value.toLowerCase().trim();
         let listDiv = document.getElementById('suggestions'); listDiv.innerHTML = ""; 
@@ -331,33 +343,39 @@
         let matchCount = 0;
         let seenNames = new Set(); 
 
-        // نبحث بالعكس (من الآخر للأول) للعثور على الأحدث
-        for (let i = productsList.length - 1; i >= 0; i--) {
-            let p = productsList[i];
+        // تحويل القيم إلى مصفوفة فريدة للبحث
+        let uniqueProducts = new Set(Object.values(productsDB));
+        
+        uniqueProducts.forEach(p => {
+            if (matchCount >= 10) return;
             if (p.name.toLowerCase().includes(inputVal) || (p.code1 && p.code1.includes(inputVal)) || (p.code2 && p.code2.includes(inputVal))) {
-                if(seenNames.has(p.name)) continue; 
-                seenNames.add(p.name);
-
-                let item = document.createElement('div'); item.className = 'suggestion-item';
-                let imgTag = (p.img && p.img.startsWith('http')) ? `<img src="${p.img}" class="suggestion-thumb">` : '';
-                item.innerHTML = `<div class="prod-info-flex">${imgTag}<span>${p.name}</span></div><span style="color:var(--primary-color)">${p.price1} ج.م</span>`;
-                item.onclick = function() { showResultScreen(p, 'scan-screen'); document.getElementById('search-input').value = ""; listDiv.style.display = "none"; };
-                
-                listDiv.appendChild(item); matchCount++; if(matchCount >= 10) break;
+                if(!seenNames.has(p.name)) { 
+                    seenNames.add(p.name);
+                    let item = document.createElement('div'); item.className = 'suggestion-item';
+                    let imgTag = (p.img && p.img.startsWith('http')) ? `<img src="${p.img}" class="suggestion-thumb">` : '';
+                    item.innerHTML = `<div class="prod-info-flex">${imgTag}<span>${p.name}</span></div><span style="color:var(--primary-color)">${p.price1} ج.م</span>`;
+                    item.onclick = function() { showResultScreen(p, 'scan-screen'); document.getElementById('search-input').value = ""; listDiv.style.display = "none"; };
+                    listDiv.appendChild(item); matchCount++;
+                }
             }
-        }
+        });
         listDiv.style.display = (matchCount > 0) ? "block" : "none";
     }
 
-    // البحث عن المنتج (الأحدث)
+    // البحث المباشر
     function findProductInDB(scannedCode) {
         let code = sanitizeBarcode(scannedCode);
-        // البحث من النهاية للبداية (reverse loop) لضمان إيجاد آخر تحديث للسعر
-        for(let i = productsList.length - 1; i >= 0; i--) {
-            let p = productsList[i];
-            if(p.code1 === code || p.code2 === code) return p;
-            if(p.code1 === code.replace(/^0+/, '')) return p;
-            if(p.code2 === code.replace(/^0+/, '')) return p;
+        
+        // 1. بحث مباشر
+        if(productsDB[code]) return productsDB[code];
+        
+        // 2. بحث ذكي (بدون أصفار)
+        let noZero = code.replace(/^0+/, '');
+        // البحث في كل القيم (مكلف قليلاً لكن ضروري للحالات النادرة)
+        let allProducts = Object.values(productsDB);
+        for(let p of allProducts) {
+            if (p.code1 && p.code1.replace(/^0+/, '') === noZero) return p;
+            if (p.code2 && p.code2.replace(/^0+/, '') === noZero) return p;
         }
         return null;
     }
@@ -382,28 +400,21 @@
       }
     }
 
-    // 🔴 وظيفة التعديل الجديدة 🔴
     function editCurrentProduct() {
         if(!currentProduct) return;
-        
-        // نستخدم الكود الدولي أو المحلي المتاح
         let codeToEdit = currentProduct.code2 || currentProduct.code1;
         let nameToEdit = currentProduct.name;
         let priceToEdit = currentProduct.price1;
-
         let separator = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
-        // بناء الرابط مع ملء البيانات المتاحة
         let finalLink = GOOGLE_FORM_URL + separator + "usp=pp_url";
-        
         if(BARCODE_ENTRY_ID) finalLink += "&entry." + BARCODE_ENTRY_ID + "=" + codeToEdit;
-        if(NAME_ENTRY_ID) finalLink += "&entry." + NAME_ENTRY_ID + "=" + encodeURIComponent(nameToEdit); // تشفير الاسم للعربية
+        if(NAME_ENTRY_ID) finalLink += "&entry." + NAME_ENTRY_ID + "=" + encodeURIComponent(nameToEdit);
         if(PRICE1_ENTRY_ID) finalLink += "&entry." + PRICE1_ENTRY_ID + "=" + priceToEdit;
-
         openFormModal(finalLink);
     }
 
     function showResultScreen(product, source = 'scan-screen') {
-        currentProduct = product; // حفظ المنتج الحالي للتعديل
+        currentProduct = product; 
         lastScreen = source; updateBackButton();
         document.getElementById('scan-screen').style.display = 'none'; document.getElementById('list-screen').style.display = 'none';
         document.getElementById('result-screen').style.display = 'block';
@@ -412,7 +423,6 @@
         document.getElementById('p_name').innerText = product.name; 
         document.getElementById('p_code_local').innerText = product.code1 || "-";
         document.getElementById('p_code_global').innerText = product.code2 || "-";
-
         const imgElem = document.getElementById('p_img');
         if(product.img && product.img.startsWith('http')) { imgElem.src = product.img; imgElem.style.display = 'inline-block'; } else { imgElem.style.display = 'none'; }
         let priceHTML = `<table class="prices-table"><thead><tr><th>الوحدة</th><th>السعر</th></tr></thead><tbody>`;
@@ -457,4 +467,3 @@
 </script>
 </body>
 </html>
-
