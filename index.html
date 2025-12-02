@@ -11,14 +11,25 @@
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
   :root {
-      --primary-color: #0056b3; --secondary-color: #007bff; --scanner-color: #00d2ff;
-      --bg-color: #f4f7f6; --card-bg: #ffffff; --text-color: #333333; --border-color: #e0e0e0; 
+      --primary-color: #0056b3; 
+      --secondary-color: #007bff; 
+      --scanner-color: #00d2ff;
+      --bg-color: #f4f7f6; 
+      --card-bg: #ffffff; 
+      --text-color: #333333; 
+      --border-color: #e0e0e0; 
   }
 
   body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; background-color: var(--bg-color); margin: 0; color: var(--text-color); user-select: none; }
   
   .container { 
-      max-width: 600px; margin: 10px auto; background: var(--card-bg); padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; min-height: 90vh; padding-bottom: 70px; display: flex; flex-direction: column;
+      max-width: 600px; margin: 10px auto; 
+      background: var(--card-bg); padding: 15px; 
+      border-radius: 20px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+      position: relative; min-height: 90vh; 
+      padding-bottom: 60px; 
+      display: flex; flex-direction: column;
   }
   
   .app-logo { max-width: 140px; max-height: 80px; display: block; margin: 0 auto 10px auto; object-fit: contain; }
@@ -42,17 +53,18 @@
   .sub-cat-btn { background: #f0f0f0; color: #555; border: 1px solid #ddd; padding: 8px 16px; border-radius: 20px; font-size: 14px; cursor: pointer; transition: 0.2s; }
   .sub-cat-btn.active { background: var(--secondary-color); color: white; border-color: var(--secondary-color); font-weight: bold; }
 
-  /* الكاميرا والزووم */
-  .scanner-wrapper { position: relative; width: 100%; height: 350px; margin-bottom: 10px; border-radius: 20px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 2px solid var(--secondary-color); }
+  .scanner-wrapper { position: relative; width: 100%; height: 280px; margin-bottom: 20px; border-radius: 20px; overflow: hidden; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 3px solid var(--secondary-color); }
   #reader { width: 100%; height: 100%; object-fit: cover; }
-  /* مؤشر ليزر خفيف للمساعدة في التوجيه */
-  .laser-beam { position: absolute; top: 50%; left: 10%; right: 10%; height: 2px; background: rgba(255, 0, 0, 0.5); z-index: 10; pointer-events: none; box-shadow: 0 0 10px red; }
-
-  /* 🔴 شريط الزووم الجديد 🔴 */
-  .zoom-controls { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; padding: 0 20px; }
-  .zoom-label { font-size: 14px; color: #777; font-weight: bold; }
-  input[type=range] { -webkit-appearance: none; width: 100%; height: 8px; background: #ddd; border-radius: 5px; outline: none; }
-  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--secondary-color); cursor: pointer; }
+  .laser-beam { position: absolute; width: 100%; height: 3px; background: #ff0000; box-shadow: 0 0 20px #ff0000; top: 0; left: 0; z-index: 10; animation: scan-anim 1.5s infinite ease-in-out; pointer-events: none; }
+  @keyframes scan-anim { 0% { top: 10%; opacity: 0; } 50% { opacity: 1; } 100% { top: 90%; opacity: 0; } }
+  .scan-overlay { position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px; border-radius: 15px; pointer-events: none; box-shadow: inset 0 0 30px rgba(0, 210, 255, 0.1); }
+  .scan-overlay::before, .scan-overlay::after { content: ''; position: absolute; width: 40px; height: 40px; border-color: var(--scanner-color); border-style: solid; border-width: 0; filter: drop-shadow(0 0 5px var(--scanner-color)); }
+  .scan-overlay::before { top: 0; left: 0; border-top-width: 4px; border-left-width: 4px; border-radius: 12px 0 0 0; }
+  .scan-overlay::after { top: 0; right: 0; border-top-width: 4px; border-right-width: 4px; border-radius: 0 12px 0 0; }
+  .scan-corners-bottom { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+  .scan-corners-bottom::before, .scan-corners-bottom::after { content: ''; position: absolute; width: 40px; height: 40px; border-color: var(--scanner-color); border-style: solid; border-width: 0; filter: drop-shadow(0 0 5px var(--scanner-color)); }
+  .scan-corners-bottom::before { bottom: 0; left: 0; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 12px; }
+  .scan-corners-bottom::after { bottom: 0; right: 0; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 12px 0; }
 
   #list-screen, .result-box { display: none; text-align: right; }
   .result-box { text-align: center; background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; }
@@ -72,16 +84,20 @@
   .modal { display: none; position: fixed; z-index: 5000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); }
   .modal-content { margin: auto; display: block; width: 90%; max-width: 700px; border: 3px solid white; border-radius: 10px; }
   .close-zoom { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; }
+  
   .form-modal { display: none; position: fixed; z-index: 4000; left: 0; top: 0; width: 100%; height: 100%; background-color: white; }
   .form-iframe { width: 100%; height: 100%; border: none; }
   .close-form-btn { position: absolute; top: 10px; left: 10px; background: red; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; cursor: pointer; z-index: 4001; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+
   .btn { display: block; width: 100%; padding: 14px; margin-top: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
   .btn-primary { background-color: var(--secondary-color); }
   .btn-warning { background-color: #ffc107; color: #333; }
   .btn-edit { background-color: #17a2b8; color: white; }
   .btn-secondary { background: #6c757d; color: white; }
+  
   .action-buttons { display: flex; gap: 10px; margin-top: 20px; }
   .action-buttons button { flex: 1; margin-top: 0; }
+
   .status-msg { margin: 10px 0; font-size: 14px; padding: 10px; border-radius: 8px; display: none; }
   .loading { background-color: #e2f0fb; color: var(--primary-color); border: 1px solid #b8daff; }
   .designer-footer { margin-top: auto; padding-top: 20px; border-top: 1px solid #eee; font-size: 13px; color: #777; text-align: center; }
@@ -103,16 +119,7 @@
     <div id="status" class="status-msg loading">جاري التحميل...</div>
     <button class="refresh-btn" onclick="fetchProducts(true)">🔄 تحديث البيانات</button>
     <div class="search-wrapper"><input type="text" id="search-input" class="search-input" placeholder="🔍 بحث بالاسم أو الباركود..." onkeyup="suggestProducts()" autocomplete="off"><div id="suggestions" class="suggestions-list"></div></div>
-    
-    <div class="scanner-wrapper">
-        <div id="reader"></div>
-        <div class="laser-beam"></div> </div>
-
-    <div class="zoom-controls" id="zoom-controls" style="display:none;">
-        <span class="zoom-label">Zoom:</span>
-        <input type="range" id="zoom-slider" min="1" max="3" step="0.1" value="1" oninput="applyZoom(this.value)">
-    </div>
-    
+    <div class="scanner-wrapper"><div id="reader"></div><div class="laser-beam"></div><div class="scan-overlay"><div class="scan-corners-bottom"></div></div></div>
     <a id="add-btn" href="#" target="_blank" class="btn btn-warning">➕ إضافة منتج جديد</a>
   </div>
 
@@ -146,13 +153,15 @@
     // ============================================================
     // 🔴🔴 البيانات المطلوبة 🔴🔴
     // ============================================================
-    const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKotb6frhhZzBOkKyvUu0V1x06UkENSEkdtSn52yfc7OG030tDMxwjjjEX8tV1UGgpNzMTuObGRur3/pub?gid=167717044&single=true&output=csv"; 
+    const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKotb6frhhZzBOkKyvUu0V1x06UkENSEkdtSn52yfc7OG030tDMxwjjjEX8tV1UGgpNzMTuObGRur3/pub?gid=0&single=true&output=csv"; 
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
-    const LOGO_URL = "ضع_رابط_الشعار_هنا"; 
-    const DESIGNER_NAME = "اسم المصمم هنا";
-    const BARCODE_ENTRY_ID = "ضع_رقم_الباركود_هنا"; 
-    const NAME_ENTRY_ID = ""; 
-    const PRICE1_ENTRY_ID = ""; 
+    const LOGO_URL = "https://kamalsaad.com/themes/theme_front/assets/images/KMS LOGO FINAL.png"; 
+    const DESIGNER_NAME = "عبدالرحمن ابراهيم";
+    
+    // 👇👇 أرقام الحقول للملء التلقائي والتعديل 👇👇
+    const BARCODE_ENTRY_ID = "1811127320"; 
+    const NAME_ENTRY_ID = "198039627"; // (اختياري)
+    const PRICE1_ENTRY_ID = "1964075675"; // (اختياري)
     // ============================================================
 
     if(LOGO_URL && LOGO_URL !== "") { document.getElementById('company-logo').src = LOGO_URL; } 
@@ -180,7 +189,6 @@
     var productsList = []; var categoriesSet = new Set(); var html5QrcodeScanner;
     const statusDiv = document.getElementById('status');
     var lastScreen = "scan-screen"; var currentProduct = null;
-    var videoTrack = null; // للتحكم في الزووم
 
     document.getElementById('add-btn').onclick = function() { openFormModal(GOOGLE_FORM_URL); };
 
@@ -228,23 +236,30 @@
             let div = document.createElement('div'); div.className = 'suggestion-item';
             let imgTag = (p.img && p.img.startsWith('http')) ? `<img src="${p.img}" class="suggestion-thumb">` : '';
             div.innerHTML = `<div class="prod-info-flex">${imgTag}<span>${p.name}</span></div><span style="color:var(--primary-color); font-weight:bold;">${p.price1} ج.م</span>`;
-            div.onclick = function() { showResultScreen(p, 'list-screen'); }; listDiv.appendChild(div);
+            div.onclick = function() { showResultScreen(p, 'list-screen'); }; 
+            listDiv.appendChild(div);
         });
     }
 
     function filterList(btn, filter, allItems) {
         let buttons = document.querySelectorAll('.sub-cat-btn');
         buttons.forEach(b => b.classList.remove('active')); btn.classList.add('active');
-        if(filter === 'ALL') { renderList(allItems); } else { let filtered = allItems.filter(p => p.subcategory === filter); renderList(filtered); }
+        if(filter === 'ALL') { renderList(allItems); } 
+        else { let filtered = allItems.filter(p => p.subcategory === filter); renderList(filtered); }
     }
 
     async function fetchProducts(force = false) {
-      showStatus("🔄 جاري التحميل...", "loading");
+      showStatus("🔄 جاري التحديث...", "loading");
+      
+      // 🔴🔴 منطق السرعة (Fast Boot) 🔴🔴
       if (!navigator.onLine) { loadFromCache(); return; }
+      
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); 
+      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 ثواني فقط
+
       let fetchUrl = SHEET_CSV_URL;
-      if(force) { fetchUrl += (fetchUrl.includes('?') ? '&' : '?') + "nocache=" + new Date().getTime(); }
+      if(force) { fetchUrl += "&t=" + new Date().getTime(); }
+
       try {
         const response = await fetch(fetchUrl, { cache: "no-store", signal: controller.signal });
         clearTimeout(timeoutId);
@@ -254,10 +269,6 @@
         parseCSV(data);
         showStatus("تم التحديث ✅", "loading"); 
         setTimeout(() => { statusDiv.style.display = 'none'; }, 1000);
-        if (document.getElementById('result-screen').style.display === 'block' && currentProduct) {
-             let updatedProduct = findProductInDB(currentProduct.code1 || currentProduct.code2);
-             if (updatedProduct) { showResultScreen(updatedProduct, 'scan-screen'); alert("تم تحديث السعر!"); }
-        }
       } catch (error) {
         loadFromCache();
       }
@@ -265,14 +276,16 @@
 
     function loadFromCache() {
         const cachedData = localStorage.getItem('offline_products_csv');
-        if (cachedData) { parseCSV(cachedData); showStatus("⚠️ وضع الأوفلاين", "loading"); setTimeout(() => { statusDiv.style.display = 'none'; }, 2000); }
+        if (cachedData) { parseCSV(cachedData); showStatus("⚠️ وضع الأوفلاين (سريع)", "loading"); setTimeout(() => { statusDiv.style.display = 'none'; }, 2000); }
         else { showStatus("❌ لا يوجد إنترنت ولا بيانات", "error"); }
     }
 
     function sanitizeBarcode(text) {
         if(!text) return "";
-        let clean = text; if(clean.includes('.')) { clean = clean.split('.')[0]; } 
-        clean = clean.replace(/[^a-zA-Z0-9]/g, ''); return clean;
+        let clean = text;
+        if(clean.includes('.')) { clean = clean.split('.')[0]; } 
+        clean = clean.replace(/[^a-zA-Z0-9]/g, ''); 
+        return clean;
     }
 
     function parseCSV(csvText) {
@@ -282,17 +295,25 @@
       for (let i = 1; i < rows.length; i++) {
         if(!rows[i].trim()) continue;
         const row = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+        
         if (row.length >= 11) { 
           const localCode = sanitizeBarcode(row[2]); 
           const globalCode = sanitizeBarcode(row[3]); 
           const name = clean(row[4]); 
           let p1 = cleanPrice(row[5]); let p2 = cleanPrice(row[6]); let p3 = cleanPrice(row[7]); 
           const img = row[8] ? clean(row[8]) : ""; const cat = row[9] ? clean(row[9]) : "عام"; const sub = row[10] ? clean(row[10]) : ""; 
-          let productData = { code1: localCode, code2: globalCode, name: name, price1: p1, price2: p2, price3: p3, img: img, category: cat, subcategory: sub };
+
+          let productData = { 
+              code1: localCode, 
+              code2: globalCode, 
+              name: name, price1: p1, price2: p2, price3: p3, img: img, category: cat, subcategory: sub 
+          };
+
           if(localCode) tempMap.set(localCode, productData);
           if(globalCode) tempMap.set(globalCode, productData);
         }
       }
+      
       productsList = Array.from(tempMap.values());
       productsList = [...new Set(productsList)];
       productsList.forEach(p => categoriesSet.add(p.category));
@@ -306,15 +327,20 @@
         let inputVal = document.getElementById('search-input').value.toLowerCase().trim();
         let listDiv = document.getElementById('suggestions'); listDiv.innerHTML = ""; 
         if (inputVal.length < 1) { listDiv.style.display = "none"; return; }
-        let matchCount = 0; let seenNames = new Set(); 
+        let matchCount = 0;
+        let seenNames = new Set(); 
+
         for (let i = productsList.length - 1; i >= 0; i--) {
             let p = productsList[i];
             if (p.name.toLowerCase().includes(inputVal) || (p.code1 && p.code1.includes(inputVal)) || (p.code2 && p.code2.includes(inputVal))) {
-                if(seenNames.has(p.name)) continue; seenNames.add(p.name);
+                if(seenNames.has(p.name)) continue; 
+                seenNames.add(p.name);
+
                 let item = document.createElement('div'); item.className = 'suggestion-item';
                 let imgTag = (p.img && p.img.startsWith('http')) ? `<img src="${p.img}" class="suggestion-thumb">` : '';
                 item.innerHTML = `<div class="prod-info-flex">${imgTag}<span>${p.name}</span></div><span style="color:var(--primary-color)">${p.price1} ج.م</span>`;
                 item.onclick = function() { showResultScreen(p, 'scan-screen'); document.getElementById('search-input').value = ""; listDiv.style.display = "none"; };
+                
                 listDiv.appendChild(item); matchCount++; if(matchCount >= 10) break;
             }
         }
@@ -335,34 +361,49 @@
     async function onScanSuccess(decodedText, decodedResult) {
       playScanSound();
       try { if(html5QrcodeScanner) { await html5QrcodeScanner.clear(); } } catch(e) {}
+      
       let cleanCode = sanitizeBarcode(decodedText);
       let foundProduct = findProductInDB(cleanCode);
-      if (foundProduct) { showResultScreen(foundProduct, 'scan-screen'); } 
-      else { 
+
+      if (foundProduct) { 
+          showResultScreen(foundProduct, 'scan-screen'); 
+      } else { 
           if(confirm("المنتج غير مسجل: " + cleanCode + "\nهل تريد إضافته؟")) { 
-              let sep = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
-              openFormModal(GOOGLE_FORM_URL + sep + "usp=pp_url&entry." + BARCODE_ENTRY_ID + "=" + cleanCode);
-          } else { resetScanner(); }
+              let separator = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
+              let finalLink = GOOGLE_FORM_URL + separator + "usp=pp_url&entry." + BARCODE_ENTRY_ID + "=" + cleanCode;
+              openFormModal(finalLink);
+          } else { 
+              resetScanner(); 
+          } 
       }
     }
 
     function editCurrentProduct() {
         if(!currentProduct) return;
-        let code = currentProduct.code2 || currentProduct.code1;
-        let sep = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
-        let link = GOOGLE_FORM_URL + sep + "usp=pp_url";
-        if(BARCODE_ENTRY_ID) link += "&entry." + BARCODE_ENTRY_ID + "=" + code;
-        if(NAME_ENTRY_ID) link += "&entry." + NAME_ENTRY_ID + "=" + encodeURIComponent(currentProduct.name);
-        if(PRICE1_ENTRY_ID) link += "&entry." + PRICE1_ENTRY_ID + "=" + currentProduct.price1;
-        openFormModal(link);
+        let codeToEdit = currentProduct.code2 || currentProduct.code1;
+        let nameToEdit = currentProduct.name;
+        let priceToEdit = currentProduct.price1;
+
+        let separator = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
+        let finalLink = GOOGLE_FORM_URL + separator + "usp=pp_url";
+        
+        if(BARCODE_ENTRY_ID) finalLink += "&entry." + BARCODE_ENTRY_ID + "=" + codeToEdit;
+        if(NAME_ENTRY_ID) finalLink += "&entry." + NAME_ENTRY_ID + "=" + encodeURIComponent(nameToEdit);
+        if(PRICE1_ENTRY_ID) finalLink += "&entry." + PRICE1_ENTRY_ID + "=" + priceToEdit;
+
+        openFormModal(finalLink);
     }
 
     function showResultScreen(product, source = 'scan-screen') {
-        currentProduct = product; lastScreen = source; updateBackButton();
+        currentProduct = product; 
+        lastScreen = source; updateBackButton();
         document.getElementById('scan-screen').style.display = 'none'; document.getElementById('list-screen').style.display = 'none';
         document.getElementById('result-screen').style.display = 'block';
-        document.getElementById('p_cat').innerText = product.category; document.getElementById('p_subcat').innerText = product.subcategory || "-"; document.getElementById('p_name').innerText = product.name; 
-        document.getElementById('p_code_local').innerText = product.code1 || "-"; document.getElementById('p_code_global').innerText = product.code2 || "-";
+        document.getElementById('p_cat').innerText = product.category; 
+        document.getElementById('p_subcat').innerText = product.subcategory || "-"; 
+        document.getElementById('p_name').innerText = product.name; 
+        document.getElementById('p_code_local').innerText = product.code1 || "-";
+        document.getElementById('p_code_global').innerText = product.code2 || "-";
         const imgElem = document.getElementById('p_img');
         if(product.img && product.img.startsWith('http')) { imgElem.src = product.img; imgElem.style.display = 'inline-block'; } else { imgElem.style.display = 'none'; }
         let priceHTML = `<table class="prices-table"><thead><tr><th>الوحدة</th><th>السعر</th></tr></thead><tbody>`;
@@ -393,66 +434,15 @@
         updateBackButton(); startCamera();
     }
 
-    // 🔴🔴 تطبيق الزووم 🔴🔴
-    function applyZoom(val) {
-        if(videoTrack) {
-            try { videoTrack.applyConstraints({ advanced: [{ zoom: parseFloat(val) }] }); } catch(e) { console.log("Zoom not supported"); }
-        }
-    }
-
-    // 🔴🔴 إعداد الكاميرا + الزووم 🔴🔴
     function startCamera() {
       document.getElementById('reader').innerHTML = "";
       setTimeout(() => {
-          html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
-              fps: 10, // تقليل السرعة لزيادة الدقة مع الأكواد المعقدة
-              aspectRatio: 1.0, // مربع كامل
-              // لا نضع qrbox هنا لتفعيل المسح الشامل
-              videoConstraints: { facingMode: "environment" },
-              formatsToSupport: [ // دعم كل الأكواد
-                   Html5QrcodeSupportedFormats.QR_CODE, Html5QrcodeSupportedFormats.BARCODE, Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E,
-                   Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8, Html5QrcodeSupportedFormats.CODE_39, Html5QrcodeSupportedFormats.CODE_93,
-                   Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.ITF, Html5QrcodeSupportedFormats.RSS_14, Html5QrcodeSupportedFormats.RSS_EXPANDED,
-                   Html5QrcodeSupportedFormats.PDF_417, Html5QrcodeSupportedFormats.AZTEC, Html5QrcodeSupportedFormats.DATA_MATRIX, Html5QrcodeSupportedFormats.MAXICODE
-              ],
-              useBarCodeDetectorIfSupported: true,
-              experimentalFeatures: { useBarCodeDetectorIfSupported: true }
-          });
-          
-          html5QrcodeScanner.render((decodedText, decodedResult) => {
-              onScanSuccess(decodedText, decodedResult);
-          }, (errorMessage) => {
-              // محاولة التقاط تراك الفيديو لتفعيل الزووم
-              if(!videoTrack && html5QrcodeScanner.html5Qrcode) {
-                  try {
-                      let tracks = html5QrcodeScanner.html5Qrcode.getRunningTrackCameraCapabilities();
-                      // هذا السطر يعتمد على دعم المتصفح، قد لا يعمل في كل الهواتف
-                  } catch(e) {}
-              }
-          });
-
-          // محاولة تفعيل الزووم بعد التشغيل
-          setTimeout(() => {
-              try {
-                  // هذه الطريقة الرسمية للوصول للكاميرا في المتصفح
-                  navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", zoom: true } })
-                  .then(stream => {
-                      const track = stream.getVideoTracks()[0];
-                      const capabilities = track.getCapabilities();
-                      if ('zoom' in capabilities) {
-                          videoTrack = track;
-                          document.getElementById('zoom-controls').style.display = 'flex';
-                          document.getElementById('zoom-slider').min = capabilities.zoom.min;
-                          document.getElementById('zoom-slider').max = capabilities.zoom.max;
-                          document.getElementById('zoom-slider').step = capabilities.zoom.step;
-                      }
-                  });
-              } catch(e) { console.log("Zoom init failed"); }
-          }, 2000);
-
+          html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250, videoConstraints: { facingMode: "environment" } });
+          html5QrcodeScanner.render(onScanSuccess);
       }, 300);
     }
     
+    document.getElementById('add-btn').onclick = function() { openFormModal(GOOGLE_FORM_URL); };
     function showStatus(text, type) { statusDiv.innerText = text; statusDiv.className = "status-msg " + type; statusDiv.style.display = 'block'; }
     fetchProducts().then(() => { startCamera(); });
 </script>
