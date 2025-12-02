@@ -7,20 +7,21 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>تطبيق الشركة الشامل</title>
+<title>تطبيق الشركة (الإصدار المستقر)</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
   /* --- 🎨 الألوان --- */
   :root {
       --primary-color: #0056b3; 
       --secondary-color: #007bff; 
-      --scanner-color: #00d2ff; 
+      --scanner-color: #ffffff; /* ⚪ تم التغيير للأبيض */
       --bg-color: #f4f7f6; 
       --card-bg: #ffffff; 
       --text-color: #333333; 
       --border-color: #e0e0e0; 
-      --success-color: #28a745; /* أخضر للاتصال */
-      --danger-color: #dc3545; /* أحمر للانقطاع */
+      --success-color: #28a745; 
+      --danger-color: #dc3545; 
+      --warning-color: #ffc107;
   }
 
   body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; background-color: var(--bg-color); margin: 0; color: var(--text-color); user-select: none; }
@@ -37,22 +38,14 @@
   
   .app-logo { max-width: 140px; max-height: 80px; display: block; margin: 0 auto 5px auto; object-fit: contain; }
 
-  /* 🔴 مؤشر حالة الاتصال الجديد 🔴 */
+  /* مؤشر الاتصال */
   .connection-badge {
-      display: inline-block;
-      padding: 5px 15px;
-      border-radius: 15px;
-      font-size: 12px;
-      font-weight: bold;
-      color: white;
-      margin-bottom: 15px;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: inline-block; padding: 5px 15px; border-radius: 15px; font-size: 12px; font-weight: bold; color: white; margin-bottom: 15px; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   }
   .conn-online { background-color: var(--success-color); }
   .conn-offline { background-color: var(--danger-color); }
+  .conn-checking { background-color: var(--warning-color); color: #333; }
 
-  /* الأزرار والقوائم */
   .refresh-btn { background: none; border: 1px solid var(--secondary-color); color: var(--secondary-color); padding: 5px 15px; border-radius: 20px; font-size: 12px; cursor: pointer; margin-bottom: 10px; display: inline-block; }
   .refresh-btn:active { background: var(--secondary-color); color: white; }
 
@@ -73,26 +66,21 @@
   .sub-cat-btn.active { background: var(--secondary-color); color: white; border-color: var(--secondary-color); font-weight: bold; }
 
   /* الماسح */
-  .scanner-wrapper { 
-      position: relative; width: 100%; height: 300px; 
-      margin-bottom: 20px; border-radius: 20px; overflow: hidden; 
-      background: #000; 
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-      border: 2px solid var(--secondary-color); 
-  }
-  #reader { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+  .scanner-wrapper { position: relative; width: 100%; height: 300px; margin-bottom: 20px; border-radius: 20px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 2px solid var(--secondary-color); }
+  #reader { width: 100%; height: 100%; object-fit: cover; }
   .laser-beam { position: absolute; width: 100%; height: 3px; background: #ff0000; box-shadow: 0 0 20px #ff0000; top: 0; left: 0; z-index: 10; animation: scan-anim 1.5s infinite ease-in-out; pointer-events: none; }
   @keyframes scan-anim { 0% { top: 10%; opacity: 0; } 50% { opacity: 1; } 100% { top: 90%; opacity: 0; } }
-  .scan-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 250px; height: 150px; border: 2px solid rgba(255,255,255,0.3); border-radius: 10px; pointer-events: none; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4); }
-  .scan-overlay::before, .scan-overlay::after { content: ''; position: absolute; width: 30px; height: 30px; border-color: var(--scanner-color); border-style: solid; border-width: 0; }
-  .scan-overlay::before { top: -2px; left: -2px; border-top-width: 4px; border-left-width: 4px; border-radius: 10px 0 0 0; }
-  .scan-overlay::after { top: -2px; right: -2px; border-top-width: 4px; border-right-width: 4px; border-radius: 0 10px 0 0; }
+  
+  /* ⚪ تصميم الإطار الأبيض الجديد ⚪ */
+  .scan-overlay { position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px; border-radius: 15px; pointer-events: none; box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.1); }
+  .scan-overlay::before, .scan-overlay::after { content: ''; position: absolute; width: 40px; height: 40px; border-color: var(--scanner-color); border-style: solid; border-width: 0; filter: drop-shadow(0 0 5px var(--scanner-color)); }
+  .scan-overlay::before { top: 0; left: 0; border-top-width: 4px; border-left-width: 4px; border-radius: 12px 0 0 0; }
+  .scan-overlay::after { top: 0; right: 0; border-top-width: 4px; border-right-width: 4px; border-radius: 0 12px 0 0; }
   .scan-corners-bottom { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-  .scan-corners-bottom::before, .scan-corners-bottom::after { content: ''; position: absolute; width: 30px; height: 30px; border-color: var(--scanner-color); border-style: solid; border-width: 0; }
-  .scan-corners-bottom::before { bottom: -2px; left: -2px; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 10px; }
-  .scan-corners-bottom::after { bottom: -2px; right: -2px; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 10px 0; }
+  .scan-corners-bottom::before, .scan-corners-bottom::after { content: ''; position: absolute; width: 40px; height: 40px; border-color: var(--scanner-color); border-style: solid; border-width: 0; filter: drop-shadow(0 0 5px var(--scanner-color)); }
+  .scan-corners-bottom::before { bottom: 0; left: 0; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 12px; }
+  .scan-corners-bottom::after { bottom: 0; right: 0; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 12px 0; }
 
-  /* النتائج */
   #list-screen, .result-box { display: none; text-align: right; }
   .result-box { text-align: center; background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; }
   .product-img { width: 100%; max-width: 200px; height: 200px; object-fit: contain; border-radius: 10px; margin-bottom: 15px; border: 1px solid #eee; background: white; cursor: pointer; }
@@ -105,7 +93,6 @@
   .prices-table td { padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; color: #333; text-align: center; }
   .prices-table td.price-val { color: #28a745; font-size: 18px; }
 
-  /* زر الرجوع */
   #back-fab { position: fixed; bottom: 20px; left: 20px; width: 55px; height: 55px; background-color: var(--secondary-color); color: white; border-radius: 50%; border: none; box-shadow: 0 4px 15px rgba(0,123,255,0.4); font-size: 28px; cursor: pointer; z-index: 2000; display: none; align-items: center; justify-content: center; transition: transform 0.2s; }
   #back-fab:active { transform: scale(0.9); }
 
@@ -122,10 +109,8 @@
   .btn-warning { background-color: #ffc107; color: #333; }
   .btn-edit { background-color: #17a2b8; color: white; }
   .btn-secondary { background: #6c757d; color: white; }
-  
   .action-buttons { display: flex; gap: 10px; margin-top: 20px; }
   .action-buttons button { flex: 1; margin-top: 0; }
-
   .status-msg { margin: 10px 0; font-size: 14px; padding: 10px; border-radius: 8px; display: none; }
   .loading { background-color: #e2f0fb; color: var(--primary-color); border: 1px solid #b8daff; }
   .designer-footer { margin-top: auto; padding-top: 20px; border-top: 1px solid #eee; font-size: 13px; color: #777; text-align: center; }
@@ -144,20 +129,11 @@
   <div id="scan-screen">
     <img id="company-logo" src="" class="app-logo" alt="Logo" onerror="this.style.display='none'">
     <h2 style="color:var(--primary-color); margin-top:0; font-size: 22px;">ماسح المنتجات</h2>
-    
-    <div id="connection-badge" class="connection-badge conn-online">جارِ التحقق...</div>
-
+    <div id="connection-badge" class="connection-badge conn-checking">جارِ التحقق من الاتصال...</div>
     <div id="status" class="status-msg loading">جاري التحميل...</div>
     <button class="refresh-btn" onclick="fetchProducts(true)">🔄 تحديث البيانات</button>
-
     <div class="search-wrapper"><input type="text" id="search-input" class="search-input" placeholder="🔍 بحث بالاسم أو الباركود..." onkeyup="suggestProducts()" autocomplete="off"><div id="suggestions" class="suggestions-list"></div></div>
-    
-    <div class="scanner-wrapper">
-        <div id="reader"></div>
-        <div class="laser-beam"></div>
-        <div class="scan-overlay"><div class="scan-corners-bottom"></div></div>
-    </div>
-    
+    <div class="scanner-wrapper"><div id="reader"></div><div class="laser-beam"></div><div class="scan-overlay"><div class="scan-corners-bottom"></div></div></div>
     <a id="add-btn" href="#" target="_blank" class="btn btn-warning">➕ إضافة منتج جديد</a>
   </div>
 
@@ -204,22 +180,18 @@
     else { document.getElementById('company-logo').style.display = 'none'; }
     document.getElementById('designer-name').innerText = DESIGNER_NAME;
 
-    // 🔴🔴 منطق مؤشر الاتصال 🔴🔴
-    function updateConnectionStatus() {
-        const badge = document.getElementById('connection-badge');
-        if (navigator.onLine) {
-            badge.innerText = "متصل بالإنترنت ✅";
-            badge.className = "connection-badge conn-online";
-        } else {
-            badge.innerText = "وضع الأوفلاين ⚠️";
-            badge.className = "connection-badge conn-offline";
-        }
+    // مؤشر الاتصال
+    async function checkRealConnection() {
+        try { const response = await fetch(SHEET_CSV_URL + "&ping=" + new Date().getTime(), { method: 'HEAD', cache: 'no-store' }); return true; } 
+        catch (error) { return false; }
     }
-    
-    // استماع لتغيرات الشبكة
-    window.addEventListener('online', updateConnectionStatus);
-    window.addEventListener('offline', updateConnectionStatus);
-    updateConnectionStatus(); // فحص عند البدء
+    function updateBadge(isOnline) {
+        const badge = document.getElementById('connection-badge');
+        if (isOnline) { badge.innerText = "متصل بالإنترنت ✅"; badge.className = "connection-badge conn-online"; } 
+        else { badge.innerText = "وضع الأوفلاين ⚠️"; badge.className = "connection-badge conn-offline"; }
+    }
+    setInterval(async () => { const online = await checkRealConnection(); updateBadge(online); }, 5000);
+    checkRealConnection().then(updateBadge);
 
     function openFormModal(url) { document.getElementById('googleFormIframe').src = url; document.getElementById('formModal').style.display = 'block'; }
     function closeFormModal() { document.getElementById('formModal').style.display = 'none'; document.getElementById('googleFormIframe').src = ""; resetScanner(); }
@@ -301,9 +273,6 @@
 
     async function fetchProducts(force = false) {
       showStatus("🔄 جاري التحميل...", "loading");
-      
-      if (!navigator.onLine) { loadFromCache(); return; }
-      
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); 
       let fetchUrl = SHEET_CSV_URL;
@@ -463,6 +432,7 @@
         updateBackButton(); startCamera();
     }
 
+    // 🔴🔴 تشغيل الكاميرا "فوراً وبلا شروط" 🔴🔴
     function startCamera() {
       document.getElementById('reader').innerHTML = "";
       setTimeout(() => {
@@ -484,7 +454,13 @@
     }
     
     function showStatus(text, type) { statusDiv.innerText = text; statusDiv.className = "status-msg " + type; statusDiv.style.display = 'block'; }
-    fetchProducts().then(() => { startCamera(); });
+    
+    // ⚠️ تنفيذ متوازي (Parallel Execution)
+    // يشغل الكاميرا فوراً، ويبدأ تحميل البيانات في الخلفية
+    (function initApp() {
+        startCamera(); // الكاميرا أولاً
+        fetchProducts(); // البيانات ثانياً
+    })();
 </script>
 </body>
 </html>
