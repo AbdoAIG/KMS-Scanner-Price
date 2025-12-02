@@ -7,12 +7,18 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>تطبيق الشركة (HD Scanner)</title>
+<title>تطبيق الشركة الشامل</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
+  /* --- 🎨 الألوان والتصميم --- */
   :root {
-      --primary-color: #0056b3; --secondary-color: #007bff; --scanner-color: #00d2ff;
-      --bg-color: #f4f7f6; --card-bg: #ffffff; --text-color: #333333; 
+      --primary-color: #0056b3; 
+      --secondary-color: #007bff; 
+      --scanner-color: #00d2ff; 
+      --bg-color: #f4f7f6; 
+      --card-bg: #ffffff; 
+      --text-color: #333333; 
+      --border-color: #e0e0e0; 
   }
 
   body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; background-color: var(--bg-color); margin: 0; color: var(--text-color); user-select: none; }
@@ -20,42 +26,51 @@
   .container { 
       max-width: 600px; margin: 10px auto; 
       background: var(--card-bg); padding: 15px; 
-      border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-      position: relative; min-height: 90vh; padding-bottom: 60px; 
+      border-radius: 20px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+      position: relative; min-height: 90vh; 
+      padding-bottom: 60px; 
       display: flex; flex-direction: column;
   }
   
   .app-logo { max-width: 140px; max-height: 80px; display: block; margin: 0 auto 10px auto; object-fit: contain; }
+
   .refresh-btn { background: none; border: 1px solid var(--secondary-color); color: var(--secondary-color); padding: 5px 15px; border-radius: 20px; font-size: 12px; cursor: pointer; margin-bottom: 10px; display: inline-block; }
+  .refresh-btn:active { background: var(--secondary-color); color: white; }
+
   .menu-btn { position: absolute; top: 20px; right: 20px; font-size: 28px; cursor: pointer; background: none; border: none; color: var(--primary-color); z-index: 100; }
   .sidenav { height: 100%; width: 0; position: fixed; z-index: 3000; top: 0; right: 0; background-color: var(--primary-color); overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; box-shadow: -5px 0 15px rgba(0,0,0,0.2); }
   .sidenav a { padding: 15px 20px 15px 32px; text-decoration: none; font-size: 18px; color: white; display: block; transition: 0.3s; border-bottom: 1px solid rgba(255,255,255,0.1); }
   .sidenav .closebtn { position: absolute; top: 0; right: 25px; font-size: 36px; margin-left: 50px; border: none; color: white; }
   
   .search-wrapper { position: relative; margin-bottom: 15px; }
-  .search-input { width: 100%; padding: 12px; background: #fff; border: 2px solid #e0e0e0; color: var(--text-color); border-radius: 12px; font-size: 16px; box-sizing: border-box; outline: none; transition: 0.3s; }
-  .suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e0e0e0; border-radius: 0 0 12px 12px; z-index: 1000; max-height: 250px; overflow-y: auto; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+  .search-input { width: 100%; padding: 12px; background: #fff; border: 2px solid var(--border-color); color: var(--text-color); border-radius: 12px; font-size: 16px; box-sizing: border-box; outline: none; transition: 0.3s; }
+  .suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border-color); border-radius: 0 0 12px 12px; z-index: 1000; max-height: 250px; overflow-y: auto; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
   .suggestion-item { padding: 10px; border-bottom: 1px solid #f0f0f0; text-align: right; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--text-color); }
   .suggestion-thumb { width: 40px; height: 40px; object-fit: contain; border-radius: 6px; border: 1px solid #eee; background: #fff; margin-left: 10px; }
   .prod-info-flex { display: flex; align-items: center; }
 
-  /* الفلترة */
   .sub-cats-container { display: flex; overflow-x: auto; white-space: nowrap; padding: 10px 5px; gap: 8px; margin-bottom: 15px; scrollbar-width: none; }
   .sub-cat-btn { background: #f0f0f0; color: #555; border: 1px solid #ddd; padding: 8px 16px; border-radius: 20px; font-size: 14px; cursor: pointer; transition: 0.2s; }
   .sub-cat-btn.active { background: var(--secondary-color); color: white; border-color: var(--secondary-color); font-weight: bold; }
 
-  /* 🔴 الماسح الجديد (أكثر ارتفاعاً) 🔴 */
+  /* الماسح العريض */
   .scanner-wrapper { position: relative; width: 100%; height: 350px; margin-bottom: 20px; border-radius: 20px; overflow: hidden; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 3px solid var(--secondary-color); }
   #reader { width: 100%; height: 100%; object-fit: cover; }
   
-  /* الليزر */
   .laser-beam { position: absolute; width: 100%; height: 2px; background: #ff0000; box-shadow: 0 0 20px #ff0000; top: 0; left: 0; z-index: 10; animation: scan-anim 1.5s infinite ease-in-out; pointer-events: none; }
   @keyframes scan-anim { 0% { top: 10%; opacity: 0; } 50% { opacity: 1; } 100% { top: 90%; opacity: 0; } }
+  
+  /* إطار المسح */
+  .scan-overlay { position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px; border-radius: 15px; pointer-events: none; box-shadow: inset 0 0 30px rgba(0, 210, 255, 0.1); }
+  .scan-overlay::before, .scan-overlay::after { content: ''; position: absolute; width: 40px; height: 40px; border-color: var(--scanner-color); border-style: solid; border-width: 0; filter: drop-shadow(0 0 5px var(--scanner-color)); }
+  .scan-overlay::before { top: 0; left: 0; border-top-width: 4px; border-left-width: 4px; border-radius: 12px 0 0 0; }
+  .scan-overlay::after { top: 0; right: 0; border-top-width: 4px; border-right-width: 4px; border-radius: 0 12px 0 0; }
+  .scan-corners-bottom { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+  .scan-corners-bottom::before, .scan-corners-bottom::after { content: ''; position: absolute; width: 40px; height: 40px; border-color: var(--scanner-color); border-style: solid; border-width: 0; filter: drop-shadow(0 0 5px var(--scanner-color)); }
+  .scan-corners-bottom::before { bottom: 0; left: 0; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 12px; }
+  .scan-corners-bottom::after { bottom: 0; right: 0; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 12px 0; }
 
-  /* 🔴 الإطار الجديد (مستطيل) 🔴 */
-  .scan-overlay { position: absolute; top: 30%; left: 10%; right: 10%; bottom: 30%; border-radius: 10px; pointer-events: none; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5); border: 2px solid rgba(255,255,255,0.5); }
-
-  /* النتائج */
   #list-screen, .result-box { display: none; text-align: right; }
   .result-box { text-align: center; background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; }
   .product-img { width: 100%; max-width: 200px; height: 200px; object-fit: contain; border-radius: 10px; margin-bottom: 15px; border: 1px solid #eee; background: white; cursor: pointer; }
@@ -68,7 +83,6 @@
   .prices-table td { padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; color: #333; text-align: center; }
   .prices-table td.price-val { color: #28a745; font-size: 18px; }
 
-  /* زر الرجوع */
   #back-fab { position: fixed; bottom: 20px; left: 20px; width: 55px; height: 55px; background-color: var(--secondary-color); color: white; border-radius: 50%; border: none; box-shadow: 0 4px 15px rgba(0,123,255,0.4); font-size: 28px; cursor: pointer; z-index: 2000; display: none; align-items: center; justify-content: center; transition: transform 0.2s; }
   #back-fab:active { transform: scale(0.9); }
 
@@ -111,7 +125,7 @@
     <button class="refresh-btn" onclick="fetchProducts(true)">🔄 تحديث البيانات</button>
     <div class="search-wrapper"><input type="text" id="search-input" class="search-input" placeholder="🔍 بحث بالاسم أو الباركود..." onkeyup="suggestProducts()" autocomplete="off"><div id="suggestions" class="suggestions-list"></div></div>
     
-    <div class="scanner-wrapper"><div id="reader"></div><div class="laser-beam"></div><div class="scan-overlay"></div></div>
+    <div class="scanner-wrapper"><div id="reader"></div><div class="laser-beam"></div><div class="scan-overlay"><div class="scan-corners-bottom"></div></div></div>
     
     <a id="add-btn" href="#" target="_blank" class="btn btn-warning">➕ إضافة منتج جديد</a>
   </div>
@@ -150,9 +164,10 @@
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
     const LOGO_URL = "ضع_رابط_الشعار_هنا"; 
     const DESIGNER_NAME = "اسم المصمم هنا";
-    const BARCODE_ENTRY_ID = "1811127320"; 
-    const NAME_ENTRY_ID = "198039627"; 
-    const PRICE1_ENTRY_ID = "1964075675"; 
+    
+    const BARCODE_ENTRY_ID = "ضع_رقم_الباركود_هنا"; 
+    const NAME_ENTRY_ID = ""; 
+    const PRICE1_ENTRY_ID = ""; 
     // ============================================================
 
     if(LOGO_URL && LOGO_URL !== "") { document.getElementById('company-logo').src = LOGO_URL; } 
@@ -205,7 +220,6 @@
         let subCatsInThisCat = new Set(); 
         let productsInThisCat = productsList.filter(p => p.category === catName);
         productsInThisCat.forEach(p => { if(p.subcategory) subCatsInThisCat.add(p.subcategory); });
-        
         if(subCatsInThisCat.size > 0) {
             let allBtn = document.createElement('button'); allBtn.innerText = "الكل"; allBtn.className = "sub-cat-btn active";
             allBtn.onclick = function() { filterList(this, 'ALL', productsInThisCat); }; subCatDiv.appendChild(allBtn);
@@ -347,35 +361,29 @@
       if (foundProduct) { showResultScreen(foundProduct, 'scan-screen'); } 
       else { 
           if(confirm("المنتج غير مسجل: " + cleanCode + "\nهل تريد إضافته؟")) { 
-              let separator = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
-              let finalLink = GOOGLE_FORM_URL + separator + "usp=pp_url&entry." + BARCODE_ENTRY_ID + "=" + cleanCode;
-              openFormModal(finalLink);
+              let sep = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
+              openFormModal(GOOGLE_FORM_URL + sep + "usp=pp_url&entry." + BARCODE_ENTRY_ID + "=" + cleanCode);
           } else { resetScanner(); }
       }
     }
 
     function editCurrentProduct() {
         if(!currentProduct) return;
-        let codeToEdit = currentProduct.code2 || currentProduct.code1;
-        let nameToEdit = currentProduct.name;
-        let priceToEdit = currentProduct.price1;
-        let separator = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
-        let finalLink = GOOGLE_FORM_URL + separator + "usp=pp_url";
-        if(BARCODE_ENTRY_ID) finalLink += "&entry." + BARCODE_ENTRY_ID + "=" + codeToEdit;
-        if(NAME_ENTRY_ID) finalLink += "&entry." + NAME_ENTRY_ID + "=" + encodeURIComponent(nameToEdit);
-        if(PRICE1_ENTRY_ID) finalLink += "&entry." + PRICE1_ENTRY_ID + "=" + priceToEdit;
-        openFormModal(finalLink);
+        let code = currentProduct.code2 || currentProduct.code1;
+        let sep = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
+        let link = GOOGLE_FORM_URL + sep + "usp=pp_url";
+        if(BARCODE_ENTRY_ID) link += "&entry." + BARCODE_ENTRY_ID + "=" + code;
+        if(NAME_ENTRY_ID) link += "&entry." + NAME_ENTRY_ID + "=" + encodeURIComponent(currentProduct.name);
+        if(PRICE1_ENTRY_ID) link += "&entry." + PRICE1_ENTRY_ID + "=" + currentProduct.price1;
+        openFormModal(link);
     }
 
     function showResultScreen(product, source = 'scan-screen') {
         currentProduct = product; lastScreen = source; updateBackButton();
         document.getElementById('scan-screen').style.display = 'none'; document.getElementById('list-screen').style.display = 'none';
         document.getElementById('result-screen').style.display = 'block';
-        document.getElementById('p_cat').innerText = product.category; 
-        document.getElementById('p_subcat').innerText = product.subcategory || "-"; 
-        document.getElementById('p_name').innerText = product.name; 
-        document.getElementById('p_code_local').innerText = product.code1 || "-"; 
-        document.getElementById('p_code_global').innerText = product.code2 || "-";
+        document.getElementById('p_cat').innerText = product.category; document.getElementById('p_subcat').innerText = product.subcategory || "-"; document.getElementById('p_name').innerText = product.name; 
+        document.getElementById('p_code_local').innerText = product.code1 || "-"; document.getElementById('p_code_global').innerText = product.code2 || "-";
         const imgElem = document.getElementById('p_img');
         if(product.img && product.img.startsWith('http')) { imgElem.src = product.img; imgElem.style.display = 'inline-block'; } else { imgElem.style.display = 'none'; }
         let priceHTML = `<table class="prices-table"><thead><tr><th>الوحدة</th><th>السعر</th></tr></thead><tbody>`;
@@ -406,23 +414,34 @@
         updateBackButton(); startCamera();
     }
 
-    // 🔴🔴 إعدادات السكانر الجديد 🔴🔴
     function startCamera() {
       document.getElementById('reader').innerHTML = "";
       setTimeout(() => {
-          // طلب دقة عالية وتحديد الصيغ
+          // 🔴🔴 دعم شامل لجميع صيغ الباركود 🔴🔴
           html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
-              fps: 15, // زيادة السرعة
-              qrbox: { width: 300, height: 150 }, // مربع عريض للباركود
+              fps: 15, 
+              qrbox: { width: 300, height: 150 }, 
               aspectRatio: 1.3,
-              videoConstraints: {
-                  facingMode: "environment",
-                  width: { min: 640, ideal: 1280, max: 1920 }, // طلب دقة عالية
-                  height: { min: 480, ideal: 720, max: 1080 }
-              },
-              formatsToSupport: [ // دعم كل أنواع الباركود
-                 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 // كل الصيغ الموجودة في المكتبة
-              ]
+              videoConstraints: { facingMode: "environment", width: { min: 640, ideal: 1280, max: 1920 }, height: { min: 480, ideal: 720, max: 1080 } },
+              formatsToSupport: [
+                   Html5QrcodeSupportedFormats.QR_CODE,
+                   Html5QrcodeSupportedFormats.BARCODE, 
+                   Html5QrcodeSupportedFormats.UPC_A,
+                   Html5QrcodeSupportedFormats.UPC_E,
+                   Html5QrcodeSupportedFormats.EAN_13,
+                   Html5QrcodeSupportedFormats.EAN_8,
+                   Html5QrcodeSupportedFormats.CODE_39,
+                   Html5QrcodeSupportedFormats.CODE_93,
+                   Html5QrcodeSupportedFormats.CODE_128,
+                   Html5QrcodeSupportedFormats.ITF,
+                   Html5QrcodeSupportedFormats.RSS_14,
+                   Html5QrcodeSupportedFormats.RSS_EXPANDED,
+                   Html5QrcodeSupportedFormats.PDF_417,
+                   Html5QrcodeSupportedFormats.AZTEC,
+                   Html5QrcodeSupportedFormats.DATA_MATRIX,
+                   Html5QrcodeSupportedFormats.MAXICODE
+              ],
+              useBarCodeDetectorIfSupported: true 
           });
           html5QrcodeScanner.render(onScanSuccess);
       }, 300);
