@@ -19,6 +19,8 @@
       --card-bg: #ffffff; 
       --text-color: #333333; 
       --border-color: #e0e0e0; 
+      --success-color: #28a745; /* أخضر للاتصال */
+      --danger-color: #dc3545; /* أحمر للانقطاع */
   }
 
   body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; background-color: var(--bg-color); margin: 0; color: var(--text-color); user-select: none; }
@@ -33,8 +35,24 @@
       display: flex; flex-direction: column;
   }
   
-  .app-logo { max-width: 140px; max-height: 80px; display: block; margin: 0 auto 10px auto; object-fit: contain; }
+  .app-logo { max-width: 140px; max-height: 80px; display: block; margin: 0 auto 5px auto; object-fit: contain; }
 
+  /* 🔴 مؤشر حالة الاتصال الجديد 🔴 */
+  .connection-badge {
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  .conn-online { background-color: var(--success-color); }
+  .conn-offline { background-color: var(--danger-color); }
+
+  /* الأزرار والقوائم */
   .refresh-btn { background: none; border: 1px solid var(--secondary-color); color: var(--secondary-color); padding: 5px 15px; border-radius: 20px; font-size: 12px; cursor: pointer; margin-bottom: 10px; display: inline-block; }
   .refresh-btn:active { background: var(--secondary-color); color: white; }
 
@@ -50,48 +68,31 @@
   .suggestion-thumb { width: 40px; height: 40px; object-fit: contain; border-radius: 6px; border: 1px solid #eee; background: #fff; margin-left: 10px; }
   .prod-info-flex { display: flex; align-items: center; }
 
-  /* 🔴🔴 إعادة تصميم المربع القديم 🔴🔴 */
+  .sub-cats-container { display: flex; overflow-x: auto; white-space: nowrap; padding: 10px 5px; gap: 8px; margin-bottom: 15px; scrollbar-width: none; }
+  .sub-cat-btn { background: #f0f0f0; color: #555; border: 1px solid #ddd; padding: 8px 16px; border-radius: 20px; font-size: 14px; cursor: pointer; transition: 0.2s; }
+  .sub-cat-btn.active { background: var(--secondary-color); color: white; border-color: var(--secondary-color); font-weight: bold; }
+
+  /* الماسح */
   .scanner-wrapper { 
       position: relative; width: 100%; height: 300px; 
       margin-bottom: 20px; border-radius: 20px; overflow: hidden; 
-      background: #000; /* خلفية سوداء لتباين أفضل */
+      background: #000; 
       box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
       border: 2px solid var(--secondary-color); 
   }
   #reader { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
-  
-  /* الليزر المتحرك */
-  .laser-beam { 
-      position: absolute; width: 100%; height: 3px; 
-      background: #ff0000; 
-      box-shadow: 0 0 20px #ff0000; 
-      top: 0; left: 0; z-index: 10; 
-      animation: scan-anim 1.5s infinite ease-in-out; 
-      pointer-events: none; 
-  }
+  .laser-beam { position: absolute; width: 100%; height: 3px; background: #ff0000; box-shadow: 0 0 20px #ff0000; top: 0; left: 0; z-index: 10; animation: scan-anim 1.5s infinite ease-in-out; pointer-events: none; }
   @keyframes scan-anim { 0% { top: 10%; opacity: 0; } 50% { opacity: 1; } 100% { top: 90%; opacity: 0; } }
-  
-  /* المربع المحدد (Viewfinder) */
-  .scan-overlay { 
-      position: absolute; top: 50%; left: 50%; 
-      transform: translate(-50%, -50%);
-      width: 250px; height: 150px; /* حجم المربع */
-      border: 2px solid rgba(255,255,255,0.3); 
-      border-radius: 10px; 
-      pointer-events: none; 
-      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4); /* تعتيم حول المربع */
-  }
-  /* الزوايا المضيئة */
+  .scan-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 250px; height: 150px; border: 2px solid rgba(255,255,255,0.3); border-radius: 10px; pointer-events: none; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4); }
   .scan-overlay::before, .scan-overlay::after { content: ''; position: absolute; width: 30px; height: 30px; border-color: var(--scanner-color); border-style: solid; border-width: 0; }
   .scan-overlay::before { top: -2px; left: -2px; border-top-width: 4px; border-left-width: 4px; border-radius: 10px 0 0 0; }
   .scan-overlay::after { top: -2px; right: -2px; border-top-width: 4px; border-right-width: 4px; border-radius: 0 10px 0 0; }
-  
   .scan-corners-bottom { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
   .scan-corners-bottom::before, .scan-corners-bottom::after { content: ''; position: absolute; width: 30px; height: 30px; border-color: var(--scanner-color); border-style: solid; border-width: 0; }
   .scan-corners-bottom::before { bottom: -2px; left: -2px; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 10px; }
   .scan-corners-bottom::after { bottom: -2px; right: -2px; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 10px 0; }
 
-
+  /* النتائج */
   #list-screen, .result-box { display: none; text-align: right; }
   .result-box { text-align: center; background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; }
   .product-img { width: 100%; max-width: 200px; height: 200px; object-fit: contain; border-radius: 10px; margin-bottom: 15px; border: 1px solid #eee; background: white; cursor: pointer; }
@@ -104,6 +105,7 @@
   .prices-table td { padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; color: #333; text-align: center; }
   .prices-table td.price-val { color: #28a745; font-size: 18px; }
 
+  /* زر الرجوع */
   #back-fab { position: fixed; bottom: 20px; left: 20px; width: 55px; height: 55px; background-color: var(--secondary-color); color: white; border-radius: 50%; border: none; box-shadow: 0 4px 15px rgba(0,123,255,0.4); font-size: 28px; cursor: pointer; z-index: 2000; display: none; align-items: center; justify-content: center; transition: transform 0.2s; }
   #back-fab:active { transform: scale(0.9); }
 
@@ -128,10 +130,6 @@
   .loading { background-color: #e2f0fb; color: var(--primary-color); border: 1px solid #b8daff; }
   .designer-footer { margin-top: auto; padding-top: 20px; border-top: 1px solid #eee; font-size: 13px; color: #777; text-align: center; }
   .designer-footer span { color: var(--primary-color); font-weight: bold; }
-  
-  .sub-cats-container { display: flex; overflow-x: auto; white-space: nowrap; padding: 10px 5px; gap: 8px; margin-bottom: 15px; scrollbar-width: none; }
-  .sub-cat-btn { background: #f0f0f0; color: #555; border: 1px solid #ddd; padding: 8px 16px; border-radius: 20px; font-size: 14px; cursor: pointer; transition: 0.2s; }
-  .sub-cat-btn.active { background: var(--secondary-color); color: white; border-color: var(--secondary-color); font-weight: bold; }
 </style>
 </head>
 <body>
@@ -143,12 +141,15 @@
 
 <div class="container">
   <button class="menu-btn" onclick="openNav()">☰</button>
-
   <div id="scan-screen">
     <img id="company-logo" src="" class="app-logo" alt="Logo" onerror="this.style.display='none'">
     <h2 style="color:var(--primary-color); margin-top:0; font-size: 22px;">ماسح المنتجات</h2>
+    
+    <div id="connection-badge" class="connection-badge conn-online">جارِ التحقق...</div>
+
     <div id="status" class="status-msg loading">جاري التحميل...</div>
     <button class="refresh-btn" onclick="fetchProducts(true)">🔄 تحديث البيانات</button>
+
     <div class="search-wrapper"><input type="text" id="search-input" class="search-input" placeholder="🔍 بحث بالاسم أو الباركود..." onkeyup="suggestProducts()" autocomplete="off"><div id="suggestions" class="suggestions-list"></div></div>
     
     <div class="scanner-wrapper">
@@ -192,16 +193,33 @@
     // ============================================================
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKotb6frhhZzBOkKyvUu0V1x06UkENSEkdtSn52yfc7OG030tDMxwjjjEX8tV1UGgpNzMTuObGRur3/pub?gid=167717044&single=true&output=csv"; 
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
-    const LOGO_URL = "ضع_رابط_الشعار_هنا"; 
-    const DESIGNER_NAME = "اسم المصمم هنا";
-    const BARCODE_ENTRY_ID = "ضع_رقم_الباركود_هنا"; 
-    const NAME_ENTRY_ID = ""; 
-    const PRICE1_ENTRY_ID = ""; 
+    const LOGO_URL = "https://kamalsaad.com/themes/theme_front/assets/images/KMS LOGO FINAL.png"; 
+    const DESIGNER_NAME = "عبدالرحمن ابراهيم";
+    const BARCODE_ENTRY_ID = "1811127320"; 
+    const NAME_ENTRY_ID = "198039627"; 
+    const PRICE1_ENTRY_ID = "1964075675"; 
     // ============================================================
 
     if(LOGO_URL && LOGO_URL !== "") { document.getElementById('company-logo').src = LOGO_URL; } 
     else { document.getElementById('company-logo').style.display = 'none'; }
     document.getElementById('designer-name').innerText = DESIGNER_NAME;
+
+    // 🔴🔴 منطق مؤشر الاتصال 🔴🔴
+    function updateConnectionStatus() {
+        const badge = document.getElementById('connection-badge');
+        if (navigator.onLine) {
+            badge.innerText = "متصل بالإنترنت ✅";
+            badge.className = "connection-badge conn-online";
+        } else {
+            badge.innerText = "وضع الأوفلاين ⚠️";
+            badge.className = "connection-badge conn-offline";
+        }
+    }
+    
+    // استماع لتغيرات الشبكة
+    window.addEventListener('online', updateConnectionStatus);
+    window.addEventListener('offline', updateConnectionStatus);
+    updateConnectionStatus(); // فحص عند البدء
 
     function openFormModal(url) { document.getElementById('googleFormIframe').src = url; document.getElementById('formModal').style.display = 'block'; }
     function closeFormModal() { document.getElementById('formModal').style.display = 'none'; document.getElementById('googleFormIframe').src = ""; resetScanner(); }
@@ -283,7 +301,9 @@
 
     async function fetchProducts(force = false) {
       showStatus("🔄 جاري التحميل...", "loading");
+      
       if (!navigator.onLine) { loadFromCache(); return; }
+      
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); 
       let fetchUrl = SHEET_CSV_URL;
@@ -443,16 +463,14 @@
         updateBackButton(); startCamera();
     }
 
-    // 🔴🔴 إعدادات الماسح الجديد مع المربع 🔴🔴
     function startCamera() {
       document.getElementById('reader').innerHTML = "";
       setTimeout(() => {
           html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
               fps: 10, 
-              qrbox: { width: 250, height: 150 }, // 👈 المربع عاد هنا
+              qrbox: { width: 250, height: 150 }, 
               aspectRatio: 1.3,
               videoConstraints: { facingMode: "environment" },
-              // 👈 هذه القائمة تضمن قراءة كل الأنواع
               formatsToSupport: [
                    Html5QrcodeSupportedFormats.QR_CODE, Html5QrcodeSupportedFormats.BARCODE, Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E,
                    Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8, Html5QrcodeSupportedFormats.CODE_39, Html5QrcodeSupportedFormats.CODE_93,
