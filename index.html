@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>تطبيق الشركة (V52)</title>
+<title>تطبيق الشركة (الدمج الذكي)</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
 <style>
@@ -49,13 +49,11 @@
   
   .app-logo { max-width: 130px; max-height: 80px; display: block; margin: 0 auto 10px auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
 
-  /* مؤشر الاتصال */
   .connection-badge { display: inline-block; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: bold; color: white; margin-bottom: 15px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
   .conn-online { background: linear-gradient(45deg, #28a745, #218838); }
   .conn-offline { background: linear-gradient(45deg, #dc3545, #c82333); }
   .conn-checking { background: linear-gradient(45deg, #ffc107, #e0a800); color: #333; }
 
-  /* الأزرار */
   .btn { display: block; width: 100%; padding: 16px; margin-top: 15px; border: none; border-radius: 15px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; transition: transform 0.1s, box-shadow 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.1); font-family: 'Tajawal', sans-serif; }
   .btn:active { transform: scale(0.97); }
   .btn-primary { background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); }
@@ -63,13 +61,11 @@
   .btn-edit { background: linear-gradient(45deg, #17a2b8, #138496); }
   .refresh-btn { background: white; border: 1px solid var(--secondary-color); color: var(--primary-color); padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; margin-bottom: 15px; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-  /* القائمة الجانبية */
   .menu-btn { position: absolute; top: 25px; right: 25px; font-size: 30px; cursor: pointer; background: none; border: none; color: var(--primary-color); z-index: 100; }
   .sidenav { height: 100%; width: 0; position: fixed; z-index: 3000; top: 0; right: 0; background: linear-gradient(180deg, var(--primary-color) 0%, #004a99 100%); overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; box-shadow: -5px 0 20px rgba(0,0,0,0.2); }
   .sidenav a { padding: 15px 25px; text-decoration: none; font-size: 18px; color: rgba(255,255,255,0.9); display: block; transition: 0.3s; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: bold; }
   .sidenav .closebtn { position: absolute; top: 0; right: 25px; font-size: 36px; margin-left: 50px; border: none; color: white; background: none; }
   
-  /* البحث */
   .search-wrapper { position: relative; margin-bottom: 20px; }
   .search-input { width: 100%; padding: 15px; background: #f8f9fa; border: 2px solid transparent; border-radius: 15px; font-size: 16px; font-family: 'Tajawal', sans-serif; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: 0.3s; box-sizing: border-box; outline: none; }
   .search-input:focus { background: white; border-color: var(--secondary-color); box-shadow: 0 4px 15px rgba(0,123,255,0.2); }
@@ -78,13 +74,11 @@
   .suggestion-thumb { width: 40px; height: 40px; object-fit: contain; border-radius: 8px; border: 1px solid #eee; background: #fff; margin-left: 10px; }
   .prod-info-flex { display: flex; align-items: center; }
 
-  /* الفلترة */
   .sub-cats-container { display: flex; overflow-x: auto; white-space: nowrap; padding: 10px 5px; gap: 10px; margin-bottom: 15px; scrollbar-width: none; }
   .sub-cat-btn { background: white; color: var(--text-light); border: 1px solid #eee; padding: 8px 18px; border-radius: 25px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-family: 'Tajawal', sans-serif; }
   .sub-cat-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); box-shadow: 0 4px 10px rgba(0,98,204,0.4); transform: scale(1.05); }
 
-  /* الماسح */
-  .scanner-wrapper { position: relative; width: 100%; height: 300px; margin-bottom: 10px; border-radius: 20px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 3px solid var(--secondary-color); }
+  .scanner-wrapper { position: relative; width: 100%; height: 350px; margin-bottom: 10px; border-radius: 20px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 3px solid var(--secondary-color); }
   #reader { width: 100%; height: 100%; object-fit: cover; }
   .laser-beam { position: absolute; width: 100%; height: 3px; background: #ff0000; box-shadow: 0 0 20px #ff0000; top: 0; left: 0; z-index: 10; animation: scan-anim 1.5s infinite ease-in-out; pointer-events: none; }
   @keyframes scan-anim { 0% { top: 10%; opacity: 0; } 50% { opacity: 1; } 100% { top: 90%; opacity: 0; } }
@@ -97,24 +91,14 @@
   .scan-corners-bottom::before { bottom: 0; left: 0; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 12px; }
   .scan-corners-bottom::after { bottom: 0; right: 0; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 12px 0; }
 
-  /* النتائج */
+  .zoom-controls { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 20px; padding: 0 10px; }
+  .zoom-label { font-size: 14px; color: var(--text-light); font-weight: bold; }
+  input[type=range] { -webkit-appearance: none; width: 100%; height: 6px; background: #e0e0e0; border-radius: 5px; outline: none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--secondary-color); cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+
   #list-screen, .result-box { display: none; text-align: right; }
   .result-box { text-align: center; background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; }
-  
-  /* 🔴 تعديل حجم الصورة هنا 🔴 */
-  .product-img { 
-      width: auto; 
-      height: 120px; /* ارتفاع ثابت صغير */
-      max-width: 100%; 
-      object-fit: contain; 
-      border-radius: 10px; 
-      margin: 0 auto 15px; 
-      border: 1px solid #eee; 
-      background: white; 
-      cursor: pointer; 
-      display: block;
-  }
-  
+  .product-img { width: auto; height: 120px; max-width: 100%; object-fit: contain; border-radius: 10px; margin: 0 auto 15px; border: 1px solid #eee; background: white; cursor: pointer; display: block; }
   .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed #eee; }
   .detail-label { color: var(--text-light); font-weight: bold; font-size: 14px; margin-left: 10px; }
   .detail-value { color: var(--text-dark); font-weight: 800; font-size: 16px; }
@@ -125,15 +109,12 @@
   .prices-table tr:last-child td { border-bottom: none; }
   .prices-table td.price-val { color: #27ae60; font-size: 18px; }
 
-  /* زر الرجوع العائم */
   #back-fab { position: fixed; bottom: 25px; left: 25px; width: 60px; height: 60px; background-color: var(--secondary-color); color: white; border-radius: 50%; border: none; box-shadow: 0 5px 20px rgba(0,123,255,0.4); font-size: 28px; cursor: pointer; z-index: 2000; display: none; align-items: center; justify-content: center; transition: transform 0.2s; }
   #back-fab:active { transform: scale(0.9); }
 
-  /* المودال والفورم */
   .modal { display: none; position: fixed; z-index: 5000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); backdrop-filter: blur(5px); }
   .modal-content { margin: auto; display: block; width: 90%; max-width: 700px; border-radius: 15px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
   .close-zoom { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; }
-  
   .form-modal { display: none; position: fixed; z-index: 4000; left: 0; top: 0; width: 100%; height: 100%; background-color: white; }
   .form-iframe { width: 100%; height: 100%; border: none; }
   .close-form-btn { position: absolute; top: 15px; left: 15px; background: #dc3545; color: white; border: none; padding: 10px 25px; border-radius: 25px; font-size: 14px; font-weight: bold; cursor: pointer; z-index: 4001; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3); }
@@ -151,7 +132,6 @@
 <div id="formModal" class="form-modal"><button class="close-form-btn" onclick="closeFormModal()">✖ إغلاق وعودة</button><iframe id="googleFormIframe" class="form-iframe" src=""></iframe></div>
 
 <div id="mySidenav" class="sidenav"><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a><h3 style="color:white; padding-right:25px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:15px; margin-top:0;">الأقسام</h3><div id="categories-container"></div></div>
-
 <button id="back-fab" onclick="goBack()">🔙</button>
 
 <div class="container">
@@ -170,6 +150,11 @@
         <div id="reader"></div>
         <div class="laser-beam"></div>
         <div class="scan-overlay"><div class="scan-corners-bottom"></div></div>
+    </div>
+    
+    <div class="zoom-controls" id="zoom-controls" style="display:none;">
+        <span class="zoom-label">Zoom:</span>
+        <input type="range" id="zoom-slider" min="1" max="3" step="0.1" value="1" oninput="applyZoom(this.value)">
     </div>
     
     <a id="add-btn" href="#" target="_blank" class="btn btn-warning">➕ إضافة منتج جديد</a>
@@ -207,7 +192,7 @@
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKotb6frhhZzBOkKyvUu0V1x06UkENSEkdtSn52yfc7OG030tDMxwjjjEX8tV1UGgpNzMTuObGRur3/pub?gid=167717044&single=true&output=csv"; 
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
     const LOGO_URL = "https://kamalsaad.com/themes/theme_front/assets/images/KMS LOGO FINAL.png"; 
-    const DESIGNER_NAME = "عبدالرحمن ابراهيم";
+    const DESIGNER_NAME = "عبدالرحمن إبراهيم";
     
     const BARCODE_ENTRY_ID = "1811127320"; 
     const NAME_ENTRY_ID = "198039627"; 
@@ -218,7 +203,6 @@
     else { document.getElementById('company-logo').style.display = 'none'; }
     document.getElementById('designer-name').innerText = DESIGNER_NAME;
 
-    // مؤشر الاتصال
     async function checkRealConnection() {
         try { const response = await fetch(SHEET_CSV_URL + "&ping=" + new Date().getTime(), { method: 'HEAD', cache: 'no-store' }); return true; } 
         catch (error) { return false; }
@@ -252,6 +236,7 @@
     var productsList = []; var categoriesSet = new Set(); var html5QrcodeScanner;
     const statusDiv = document.getElementById('status');
     var lastScreen = "scan-screen"; var currentProduct = null;
+    var videoTrack = null;
 
     document.getElementById('add-btn').onclick = function() { openFormModal(GOOGLE_FORM_URL); };
 
@@ -346,6 +331,7 @@
         clean = clean.replace(/[^a-zA-Z0-9]/g, ''); return clean;
     }
 
+    // 🔴 دالة الدمج الذكي (Smart Merge) 🔴
     function parseCSV(csvText) {
       const rows = csvText.split('\n'); productsList = []; categoriesSet.clear();
       let tempMap = new Map();
@@ -361,10 +347,26 @@
           const img = row[8] ? clean(row[8]) : ""; const cat = row[9] ? clean(row[9]) : "عام"; const sub = row[10] ? clean(row[10]) : ""; 
 
           let productData = { 
-              code1: localCode, 
-              code2: globalCode, 
-              name: name, price1: p1, price2: p2, price3: p3, img: img, category: cat, subcategory: sub 
+              code1: localCode, code2: globalCode, 
+              name: name, price1: p1, price2: p2, price3: p3, 
+              img: img, category: cat, subcategory: sub 
           };
+
+          // 🔴 منطق الترقيع (الاحتفاظ بالقديم إذا كان الجديد فارغاً)
+          if(localCode && tempMap.has(localCode)) {
+              let oldData = tempMap.get(localCode);
+              if(!productData.img) productData.img = oldData.img;
+              if(productData.category === "عام") productData.category = oldData.category;
+              if(!productData.subcategory) productData.subcategory = oldData.subcategory;
+              if(!productData.name) productData.name = oldData.name;
+              // السعر دائماً يتحدث
+          } else if(globalCode && tempMap.has(globalCode)) {
+              let oldData = tempMap.get(globalCode);
+              if(!productData.img) productData.img = oldData.img;
+              if(productData.category === "عام") productData.category = oldData.category;
+              if(!productData.subcategory) productData.subcategory = oldData.subcategory;
+              if(!productData.name) productData.name = oldData.name;
+          }
 
           if(localCode) tempMap.set(localCode, productData);
           if(globalCode) tempMap.set(globalCode, productData);
@@ -471,7 +473,10 @@
         updateBackButton(); startCamera();
     }
 
-    // 🔴🔴 تشغيل الكاميرا فوراً في النهاية 🔴🔴
+    function applyZoom(val) {
+        if(videoTrack) { try { videoTrack.applyConstraints({ advanced: [{ zoom: parseFloat(val) }] }); } catch(e) {} }
+    }
+
     function startCamera() {
       document.getElementById('reader').innerHTML = "";
       setTimeout(() => {
@@ -488,17 +493,38 @@
               ],
               useBarCodeDetectorIfSupported: true 
           });
-          html5QrcodeScanner.render(onScanSuccess);
+          
+          html5QrcodeScanner.render((decodedText, decodedResult) => {
+              onScanSuccess(decodedText, decodedResult);
+          }, (errorMessage) => {
+              if(!videoTrack && html5QrcodeScanner.html5Qrcode) { try { let tracks = html5QrcodeScanner.html5Qrcode.getRunningTrackCameraCapabilities(); } catch(e) {} }
+          });
+
+          setTimeout(() => {
+              try {
+                  navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", zoom: true } })
+                  .then(stream => {
+                      const track = stream.getVideoTracks()[0];
+                      const capabilities = track.getCapabilities();
+                      if ('zoom' in capabilities) {
+                          videoTrack = track;
+                          document.getElementById('zoom-controls').style.display = 'flex';
+                          document.getElementById('zoom-slider').min = capabilities.zoom.min;
+                          document.getElementById('zoom-slider').max = capabilities.zoom.max;
+                          document.getElementById('zoom-slider').step = capabilities.zoom.step;
+                      }
+                  });
+              } catch(e) {}
+          }, 2000);
+
       }, 300);
     }
     
     function showStatus(text, type) { statusDiv.innerText = text; statusDiv.className = "status-msg " + type; statusDiv.style.display = 'block'; }
     
-    // ⚠️ تنفيذ متوازي (Parallel Execution)
-    // يشغل الكاميرا فوراً، ويبدأ تحميل البيانات في الخلفية
     (function initApp() {
-        startCamera(); // الكاميرا أولاً
-        fetchProducts(); // البيانات ثانياً
+        startCamera(); 
+        fetchProducts();
     })();
 </script>
 </body>
