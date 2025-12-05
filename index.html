@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>KMS Price Scanner (V55)</title>
+<title>KMS Price Scanner (V57)</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
 <style>
@@ -23,7 +23,6 @@
       --success-color: #28a745;
       --danger-color: #dc3545;
       --warning-color: #ffc107;
-      --scanner-color: #ffffff;
   }
 
   body { 
@@ -35,27 +34,26 @@
       color: var(--text-dark); 
       user-select: none; 
       -webkit-tap-highlight-color: transparent;
+      padding-top: 40px; 
   }
   
   .container { 
-      max-width: 600px; margin: 15px auto; 
+      max-width: 600px; margin: 10px auto; 
       background: var(--card-bg); padding: 20px; 
       border-radius: 25px; 
       box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
-      position: relative; min-height: 90vh; 
+      position: relative; min-height: 85vh; 
       padding-bottom: 80px; 
       display: flex; flex-direction: column;
   }
   
   .app-logo { max-width: 130px; max-height: 80px; display: block; margin: 0 auto 10px auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
 
-  /* مؤشر الاتصال */
   .connection-badge { display: inline-block; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: bold; color: white; margin-bottom: 15px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
   .conn-online { background: linear-gradient(45deg, #28a745, #218838); }
   .conn-offline { background: linear-gradient(45deg, #dc3545, #c82333); }
   .conn-checking { background: linear-gradient(45deg, #ffc107, #e0a800); color: #333; }
 
-  /* الأزرار */
   .btn { display: block; width: 100%; padding: 16px; margin-top: 15px; border: none; border-radius: 15px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; transition: transform 0.1s, box-shadow 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.1); font-family: 'Tajawal', sans-serif; }
   .btn:active { transform: scale(0.97); }
   .btn-primary { background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); }
@@ -63,10 +61,20 @@
   .btn-edit { background: linear-gradient(45deg, #17a2b8, #138496); }
   .refresh-btn { background: white; border: 1px solid var(--secondary-color); color: var(--primary-color); padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; margin-bottom: 15px; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-  .menu-btn { position: absolute; top: 25px; right: 25px; font-size: 30px; cursor: pointer; background: none; border: none; color: var(--primary-color); z-index: 100; }
-  .sidenav { height: 100%; width: 0; position: fixed; z-index: 3000; top: 0; right: 0; background: linear-gradient(180deg, var(--primary-color) 0%, #004a99 100%); overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; box-shadow: -5px 0 20px rgba(0,0,0,0.2); }
+  /* 🔴 زر إنعاش الكاميرا (يظهر عند الخطأ) 🔴 */
+  .fix-camera-btn {
+      background: #dc3545; color: white; 
+      border: none; padding: 10px 20px; 
+      border-radius: 10px; margin: 10px auto; 
+      cursor: pointer; display: none;
+      font-weight: bold;
+  }
+
+  .menu-btn { position: absolute; top: 45px; right: 25px; font-size: 35px; cursor: pointer; background: none; border: none; color: var(--primary-color); z-index: 5000; filter: drop-shadow(0 2px 2px rgba(255,255,255,0.8)); }
+
+  .sidenav { height: 100%; width: 0; position: fixed; z-index: 6000; top: 0; right: 0; background: linear-gradient(180deg, var(--primary-color) 0%, #004a99 100%); overflow-x: hidden; transition: 0.3s; padding-top: 80px; text-align: right; box-shadow: -5px 0 20px rgba(0,0,0,0.2); }
   .sidenav a { padding: 15px 25px; text-decoration: none; font-size: 18px; color: rgba(255,255,255,0.9); display: block; transition: 0.3s; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: bold; }
-  .sidenav .closebtn { position: absolute; top: 0; right: 25px; font-size: 36px; margin-left: 50px; border: none; color: white; background: none; }
+  .sidenav .closebtn { position: absolute; top: 20px; right: 25px; font-size: 36px; margin-left: 50px; border: none; color: white; background: none; }
   
   .search-wrapper { position: relative; margin-bottom: 20px; }
   .search-input { width: 100%; padding: 15px; background: #f8f9fa; border: 2px solid transparent; border-radius: 15px; font-size: 16px; font-family: 'Tajawal', sans-serif; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: 0.3s; box-sizing: border-box; outline: none; }
@@ -80,11 +88,11 @@
   .sub-cat-btn { background: white; color: var(--text-light); border: 1px solid #eee; padding: 8px 18px; border-radius: 25px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-family: 'Tajawal', sans-serif; }
   .sub-cat-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); box-shadow: 0 4px 10px rgba(0,98,204,0.4); transform: scale(1.05); }
 
-  .scanner-wrapper { position: relative; width: 100%; height: 350px; margin-bottom: 10px; border-radius: 20px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 3px solid var(--secondary-color); }
+  /* الماسح */
+  .scanner-wrapper { position: relative; width: 100%; height: 300px; margin-bottom: 10px; border-radius: 20px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 3px solid var(--secondary-color); }
   #reader { width: 100%; height: 100%; object-fit: cover; }
   .laser-beam { position: absolute; width: 100%; height: 3px; background: #ff0000; box-shadow: 0 0 20px #ff0000; top: 0; left: 0; z-index: 10; animation: scan-anim 1.5s infinite ease-in-out; pointer-events: none; }
   @keyframes scan-anim { 0% { top: 10%; opacity: 0; } 50% { opacity: 1; } 100% { top: 90%; opacity: 0; } }
-  
   .scan-overlay { position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px; border-radius: 15px; pointer-events: none; box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.1); }
   .scan-overlay::before, .scan-overlay::after { content: ''; position: absolute; width: 40px; height: 40px; border-color: white; border-style: solid; border-width: 0; filter: drop-shadow(0 0 5px white); }
   .scan-overlay::before { top: 0; left: 0; border-top-width: 4px; border-left-width: 4px; border-radius: 12px 0 0 0; }
@@ -101,9 +109,7 @@
 
   #list-screen, .result-box { display: none; text-align: right; }
   .result-box { text-align: center; background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; }
-  
   .product-img { width: auto; height: 120px; max-width: 100%; object-fit: contain; border-radius: 10px; margin: 0 auto 15px; border: 1px solid #eee; background: white; cursor: pointer; display: block; }
-  
   .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed #eee; }
   .detail-label { color: var(--text-light); font-weight: bold; font-size: 14px; margin-left: 10px; }
   .detail-value { color: var(--text-dark); font-weight: 800; font-size: 16px; }
@@ -138,11 +144,10 @@
 <div id="formModal" class="form-modal"><button class="close-form-btn" onclick="closeFormModal()">✖ إغلاق وعودة</button><iframe id="googleFormIframe" class="form-iframe" src=""></iframe></div>
 
 <div id="mySidenav" class="sidenav"><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a><h3 style="color:white; padding-right:25px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:15px; margin-top:0;">الأقسام</h3><div id="categories-container"></div></div>
-
 <button id="back-fab" onclick="goBack()">🔙</button>
+<button class="menu-btn" onclick="openNav()">☰</button>
 
 <div class="container">
-  <button class="menu-btn" onclick="openNav()">☰</button>
   <div id="scan-screen">
     <img id="company-logo" src="" class="app-logo" alt="Logo" onerror="this.style.display='none'">
     <h2 style="color:var(--primary-color); margin-top:0; font-size: 22px; font-weight: 800;">ماسح المنتجات</h2>
@@ -158,6 +163,7 @@
         <div class="laser-beam"></div>
         <div class="scan-overlay"><div class="scan-corners-bottom"></div></div>
     </div>
+    <button id="fix-camera-btn" class="fix-camera-btn" onclick="window.location.reload()">⚠️ الكاميرا معلقة؟ اضغط للإنعاش</button>
     
     <div class="zoom-controls" id="zoom-controls" style="display:none;">
         <span class="zoom-label">Zoom:</span>
@@ -244,6 +250,9 @@
     const statusDiv = document.getElementById('status');
     var lastScreen = "scan-screen"; var currentProduct = null;
     var videoTrack = null;
+    
+    // 🔴 متغير لحماية الكاميرا من الفتح المتكرر
+    var isCameraRunning = false;
 
     document.getElementById('add-btn').onclick = function() { openFormModal(GOOGLE_FORM_URL); };
 
@@ -338,7 +347,6 @@
         clean = clean.replace(/[^a-zA-Z0-9]/g, ''); return clean;
     }
 
-    // 🔴 دالة الدمج الذكي (Smart Merge) 🔴
     function parseCSV(csvText) {
       const rows = csvText.split('\n'); productsList = []; categoriesSet.clear();
       let tempMap = new Map();
@@ -359,22 +367,18 @@
               img: img, category: cat, subcategory: sub 
           };
 
-          // 🔴 منطق الترقيع: إذا كان السطر الجديد (التعديل) يفتقد الصورة أو القسم، نأخذهما من السطر القديم
-          // نفحص إذا كان المنتج موجوداً مسبقاً (عن طريق أي باركود)
-          let existingProduct = null;
-          if(localCode && tempMap.has(localCode)) existingProduct = tempMap.get(localCode);
-          else if(globalCode && tempMap.has(globalCode)) existingProduct = tempMap.get(globalCode);
-
-          if(existingProduct) {
-              // إذا كانت الصورة فارغة في السطر الجديد، احتفظ بالقديمة
-              if(!productData.img) productData.img = existingProduct.img;
-              // إذا كان القسم "عام" أو فارغ في السطر الجديد، احتفظ بالقديم
-              if(!productData.category || productData.category === "عام") productData.category = existingProduct.category;
-              if(!productData.subcategory) productData.subcategory = existingProduct.subcategory;
-              // إذا كان الاسم فارغاً (نادر الحدوث)، احتفظ بالقديم
-              if(!productData.name) productData.name = existingProduct.name;
-              
-              // *ملاحظة:* الأسعار لا نقوم بترقيعها لأننا نفترض أن السطر الجديد هو تحديث للسعر
+          if(localCode && tempMap.has(localCode)) {
+              let oldData = tempMap.get(localCode);
+              if(!productData.img) productData.img = oldData.img;
+              if(productData.category === "عام") productData.category = oldData.category;
+              if(!productData.subcategory) productData.subcategory = oldData.subcategory;
+              if(!productData.name) productData.name = oldData.name;
+          } else if(globalCode && tempMap.has(globalCode)) {
+              let oldData = tempMap.get(globalCode);
+              if(!productData.img) productData.img = oldData.img;
+              if(productData.category === "عام") productData.category = oldData.category;
+              if(!productData.subcategory) productData.subcategory = oldData.subcategory;
+              if(!productData.name) productData.name = oldData.name;
           }
 
           if(localCode) tempMap.set(localCode, productData);
@@ -421,9 +425,22 @@
         return null;
     }
 
+    // 🔴🔴 دالة إغلاق الكاميرا بأمان 🔴🔴
+    async function stopCamera() {
+        if (html5QrcodeScanner && isCameraRunning) {
+            try {
+                await html5QrcodeScanner.clear();
+                isCameraRunning = false;
+            } catch (e) {
+                console.log("Failed to clear camera", e);
+            }
+        }
+    }
+
     async function onScanSuccess(decodedText, decodedResult) {
       playScanSound();
-      try { if(html5QrcodeScanner) { await html5QrcodeScanner.clear(); } } catch(e) {}
+      await stopCamera(); // إغلاق آمن
+
       let cleanCode = sanitizeBarcode(decodedText);
       let foundProduct = findProductInDB(cleanCode);
       if (foundProduct) { showResultScreen(foundProduct, 'scan-screen'); } 
@@ -486,8 +503,16 @@
         if(videoTrack) { try { videoTrack.applyConstraints({ advanced: [{ zoom: parseFloat(val) }] }); } catch(e) {} }
     }
 
-    function startCamera() {
+    // 🔴🔴 دالة بدء الكاميرا المحسنة (مع الحماية) 🔴🔴
+    async function startCamera() {
+      // إذا كانت الكاميرا تعمل بالفعل، لا تفعل شيئاً
+      if (isCameraRunning) return;
+
+      // تنظيف أي بقايا سابقة
+      try { await html5QrcodeScanner?.clear(); } catch(e) {}
       document.getElementById('reader').innerHTML = "";
+      document.getElementById('fix-camera-btn').style.display = 'none';
+
       setTimeout(() => {
           html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
               fps: 10, 
@@ -503,12 +528,21 @@
               useBarCodeDetectorIfSupported: true 
           });
           
-          html5QrcodeScanner.render((decodedText, decodedResult) => {
-              onScanSuccess(decodedText, decodedResult);
-          }, (errorMessage) => {
-              if(!videoTrack && html5QrcodeScanner.html5Qrcode) { try { let tracks = html5QrcodeScanner.html5Qrcode.getRunningTrackCameraCapabilities(); } catch(e) {} }
+          // التعامل مع أخطاء التشغيل
+          html5QrcodeScanner.render(onScanSuccess, (errorMessage) => {
+             // أخطاء المسح العادية (يتم تجاهلها)
           });
 
+          // إذا حدث خطأ جسيم (NotReadableError)، نظهره للمستخدم
+          html5QrcodeScanner.html5Qrcode.catch(err => {
+               if(err.name == "NotReadableError") {
+                   document.getElementById('fix-camera-btn').style.display = 'block';
+               }
+          });
+
+          isCameraRunning = true;
+
+          // تفعيل الزووم
           setTimeout(() => {
               try {
                   navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", zoom: true } })
@@ -531,6 +565,7 @@
     
     function showStatus(text, type) { statusDiv.innerText = text; statusDiv.className = "status-msg " + type; statusDiv.style.display = 'block'; }
     
+    // ⚠️ تشغيل متوازي
     (function initApp() {
         startCamera(); 
         fetchProducts();
