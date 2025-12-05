@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title> KMS Price Scanner (V57)</title>
+<title>KMS Price Scanner (V58)</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
 <style>
@@ -90,8 +90,6 @@
   .scan-corners-bottom::before, .scan-corners-bottom::after { content: ''; position: absolute; width: 40px; height: 40px; border-color: white; border-style: solid; border-width: 0; filter: drop-shadow(0 0 5px white); }
   .scan-corners-bottom::before { bottom: 0; left: 0; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 12px; }
   .scan-corners-bottom::after { bottom: 0; right: 0; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 12px 0; }
-  /* زر إصلاح الكاميرا */
-  .fix-camera-btn { background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 10px; margin: 5px auto; cursor: pointer; display: none; font-weight: bold; font-size: 12px; }
 
   .zoom-controls { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 20px; padding: 0 10px; }
   .zoom-label { font-size: 14px; color: var(--text-light); font-weight: bold; }
@@ -135,7 +133,6 @@
 <div id="formModal" class="form-modal"><button class="close-form-btn" onclick="closeFormModal()">✖ إغلاق وعودة</button><iframe id="googleFormIframe" class="form-iframe" src=""></iframe></div>
 
 <div id="mySidenav" class="sidenav"><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a><h3 style="color:white; padding-right:25px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:15px; margin-top:0;">الأقسام</h3><div id="categories-container"></div></div>
-
 <button id="back-fab" onclick="goBack()">🔙</button>
 
 <div class="container">
@@ -155,8 +152,7 @@
         <div class="laser-beam"></div>
         <div class="scan-overlay"><div class="scan-corners-bottom"></div></div>
     </div>
-    <button id="fix-camera-btn" class="fix-camera-btn" onclick="window.location.reload()">⚠️ الكاميرا معلقة؟ اضغط هنا</button>
-
+    
     <div class="zoom-controls" id="zoom-controls" style="display:none;">
         <span class="zoom-label">Zoom:</span>
         <input type="range" id="zoom-slider" min="1" max="3" step="0.1" value="1" oninput="applyZoom(this.value)">
@@ -192,7 +188,7 @@
 
 <script>
     // ============================================================
-    // 🔴🔴 البيانات المطلوبة (يجب ملؤها) 🔴🔴
+    // 🔴🔴 البيانات المطلوبة 🔴🔴
     // ============================================================
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKotb6frhhZzBOkKyvUu0V1x06UkENSEkdtSn52yfc7OG030tDMxwjjjEX8tV1UGgpNzMTuObGRur3/pub?gid=0&single=true&output=csv"; 
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
@@ -242,7 +238,9 @@
     const statusDiv = document.getElementById('status');
     var lastScreen = "scan-screen"; var currentProduct = null;
     var videoTrack = null;
-    var isCameraRunning = false;
+    
+    // 🔴 متغير لمنع التكرار (القفل)
+    var isProcessing = false;
 
     document.getElementById('add-btn').onclick = function() { openFormModal(GOOGLE_FORM_URL); };
 
@@ -338,32 +336,18 @@
     }
 
     function parseCSV(csvText) {
-      // 🔴🔴 التعديل الجوهري: تنظيف النص بالكامل من علامات Enter المخفية 🔴🔴
-      let cleanText = csvText.replace(/"([^"]*)"/g, function(match, group1) {
-          return '"' + group1.replace(/[\r\n]+/g, ' ') + '"';
-      });
-
-      const rows = cleanText.split('\n'); 
-      productsList = []; categoriesSet.clear();
+      const rows = csvText.split('\n'); productsList = []; categoriesSet.clear();
       let tempMap = new Map();
 
       for (let i = 1; i < rows.length; i++) {
         if(!rows[i].trim()) continue;
         const row = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-        
-        // قبول الحد الأدنى 5 أعمدة
-        if (row.length >= 5) { 
-          const localCode = row[2] ? sanitizeBarcode(row[2]) : ""; 
-          const globalCode = row[3] ? sanitizeBarcode(row[3]) : ""; 
-          const name = row[4] ? clean(row[4]) : "بدون اسم"; 
-          
-          let p1 = row[5] ? cleanPrice(row[5]) : "0"; 
-          let p2 = row[6] ? cleanPrice(row[6]) : ""; 
-          let p3 = row[7] ? cleanPrice(row[7]) : ""; 
-          
-          const img = row[8] ? clean(row[8]) : ""; 
-          const cat = row[9] ? clean(row[9]) : "عام"; 
-          const sub = row[10] ? clean(row[10]) : ""; 
+        if (row.length >= 11) { 
+          const localCode = sanitizeBarcode(row[2]); 
+          const globalCode = sanitizeBarcode(row[3]); 
+          const name = clean(row[4]); 
+          let p1 = cleanPrice(row[5]); let p2 = cleanPrice(row[6]); let p3 = cleanPrice(row[7]); 
+          const img = row[8] ? clean(row[8]) : ""; const cat = row[9] ? clean(row[9]) : "عام"; const sub = row[10] ? clean(row[10]) : ""; 
 
           let productData = { 
               code1: localCode, code2: globalCode, 
@@ -374,13 +358,13 @@
           if(localCode && tempMap.has(localCode)) {
               let oldData = tempMap.get(localCode);
               if(!productData.img) productData.img = oldData.img;
-              if(!productData.category || productData.category === "عام") productData.category = oldData.category;
+              if(productData.category === "عام") productData.category = oldData.category;
               if(!productData.subcategory) productData.subcategory = oldData.subcategory;
               if(!productData.name) productData.name = oldData.name;
           } else if(globalCode && tempMap.has(globalCode)) {
               let oldData = tempMap.get(globalCode);
               if(!productData.img) productData.img = oldData.img;
-              if(!productData.category || productData.category === "عام") productData.category = oldData.category;
+              if(productData.category === "عام") productData.category = oldData.category;
               if(!productData.subcategory) productData.subcategory = oldData.subcategory;
               if(!productData.name) productData.name = oldData.name;
           }
@@ -391,8 +375,7 @@
       }
       productsList = Array.from(tempMap.values());
       productsList = [...new Set(productsList)];
-      productsList.forEach(p => { if(p.category && p.category !== "عام") categoriesSet.add(p.category); });
-      categoriesSet.add("عام");
+      productsList.forEach(p => categoriesSet.add(p.category));
       updateCategoriesMenu();
     }
 
@@ -430,24 +413,27 @@
         return null;
     }
 
-    async function stopCamera() {
-        if (html5QrcodeScanner && isCameraRunning) {
-            try { await html5QrcodeScanner.clear(); isCameraRunning = false; } catch (e) {}
-        }
-    }
-
+    // 🔴 دالة المسح (مع القفل) 🔴
     async function onScanSuccess(decodedText, decodedResult) {
-      playScanSound();
-      await stopCamera();
+      // إذا كان الكود مشغولاً بمعالجة باركود، تجاهل الباركودات الجديدة
+      if(isProcessing) return; 
       
+      isProcessing = true; // 🔒 قفل
+      playScanSound();
+      
+      try { if(html5QrcodeScanner) { await html5QrcodeScanner.clear(); } } catch(e) {}
       let cleanCode = sanitizeBarcode(decodedText);
       let foundProduct = findProductInDB(cleanCode);
-      if (foundProduct) { showResultScreen(foundProduct, 'scan-screen'); } 
-      else { 
+      
+      if (foundProduct) { 
+          showResultScreen(foundProduct, 'scan-screen'); 
+      } else { 
           if(confirm("المنتج غير مسجل: " + cleanCode + "\nهل تريد إضافته؟")) { 
               let sep = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
               openFormModal(GOOGLE_FORM_URL + sep + "usp=pp_url&entry." + BARCODE_ENTRY_ID + "=" + cleanCode);
-          } else { resetScanner(); }
+          } else { 
+              resetScanner(); // هذا سيفك القفل
+          } 
       }
     }
 
@@ -495,6 +481,7 @@
     function resetScanner() {
         document.getElementById('result-screen').style.display = 'none'; document.getElementById('list-screen').style.display = 'none';
         document.getElementById('scan-screen').style.display = 'block'; document.getElementById('suggestions').style.display = "none";
+        isProcessing = false; // 🔓 فك القفل هنا فقط
         updateBackButton(); startCamera();
     }
 
@@ -502,12 +489,10 @@
         if(videoTrack) { try { videoTrack.applyConstraints({ advanced: [{ zoom: parseFloat(val) }] }); } catch(e) {} }
     }
 
-    async function startCamera() {
-      if (isCameraRunning) return;
-      try { await html5QrcodeScanner?.clear(); } catch(e) {}
+    function startCamera() {
+      // إعادة ضبط القفل احتياطياً عند تشغيل الكاميرا
+      isProcessing = false;
       document.getElementById('reader').innerHTML = "";
-      document.getElementById('fix-camera-btn').style.display = 'none';
-
       setTimeout(() => {
           html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
               fps: 10, 
@@ -523,13 +508,9 @@
               useBarCodeDetectorIfSupported: true 
           });
           
-          html5QrcodeScanner.render(onScanSuccess, (errorMessage) => {});
-          
-          html5QrcodeScanner.html5Qrcode.catch(err => {
-               if(err.name == "NotReadableError") { document.getElementById('fix-camera-btn').style.display = 'block'; }
+          html5QrcodeScanner.render(onScanSuccess, (errorMessage) => {
+              if(!videoTrack && html5QrcodeScanner.html5Qrcode) { try { let tracks = html5QrcodeScanner.html5Qrcode.getRunningTrackCameraCapabilities(); } catch(e) {} }
           });
-
-          isCameraRunning = true;
 
           setTimeout(() => {
               try {
