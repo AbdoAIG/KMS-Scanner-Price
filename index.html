@@ -35,14 +35,15 @@
       color: var(--text-dark); 
       user-select: none; 
       -webkit-tap-highlight-color: transparent;
+      padding-top: 40px;
   }
   
   .container { 
-      max-width: 600px; margin: 15px auto; 
+      max-width: 600px; margin: 10px auto; 
       background: var(--card-bg); padding: 20px; 
       border-radius: 25px; 
       box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
-      position: relative; min-height: 90vh; 
+      position: relative; min-height: 85vh; 
       padding-bottom: 80px; 
       display: flex; flex-direction: column;
   }
@@ -61,11 +62,11 @@
   .btn-edit { background: linear-gradient(45deg, #17a2b8, #138496); }
   .refresh-btn { background: white; border: 1px solid var(--secondary-color); color: var(--primary-color); padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; margin-bottom: 15px; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-  /* زر القائمة */
-  .menu-btn { position: absolute; top: 25px; right: 25px; font-size: 30px; cursor: pointer; background: none; border: none; color: var(--primary-color); z-index: 100; }
-  .sidenav { height: 100%; width: 0; position: fixed; z-index: 3000; top: 0; right: 0; background: linear-gradient(180deg, var(--primary-color) 0%, #004a99 100%); overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; box-shadow: -5px 0 20px rgba(0,0,0,0.2); }
+  .menu-btn { position: absolute; top: 45px; right: 25px; font-size: 35px; cursor: pointer; background: none; border: none; color: var(--primary-color); z-index: 5000; filter: drop-shadow(0 2px 2px rgba(255,255,255,0.8)); }
+
+  .sidenav { height: 100%; width: 0; position: fixed; z-index: 6000; top: 0; right: 0; background: linear-gradient(180deg, var(--primary-color) 0%, #004a99 100%); overflow-x: hidden; transition: 0.3s; padding-top: 80px; text-align: right; box-shadow: -5px 0 20px rgba(0,0,0,0.2); }
   .sidenav a { padding: 15px 25px; text-decoration: none; font-size: 18px; color: rgba(255,255,255,0.9); display: block; transition: 0.3s; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: bold; }
-  .sidenav .closebtn { position: absolute; top: 0; right: 25px; font-size: 36px; margin-left: 50px; border: none; color: white; background: none; }
+  .sidenav .closebtn { position: absolute; top: 20px; right: 25px; font-size: 36px; margin-left: 50px; border: none; color: white; background: none; }
   
   .search-wrapper { position: relative; margin-bottom: 20px; }
   .search-input { width: 100%; padding: 15px; background: #f8f9fa; border: 2px solid transparent; border-radius: 15px; font-size: 16px; font-family: 'Tajawal', sans-serif; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: 0.3s; box-sizing: border-box; outline: none; }
@@ -80,26 +81,8 @@
   .sub-cat-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); box-shadow: 0 4px 10px rgba(0,98,204,0.4); transform: scale(1.05); }
 
   /* الماسح */
-  .scanner-wrapper { position: relative; width: 100%; height: 350px; margin-bottom: 10px; border-radius: 20px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 3px solid var(--secondary-color); }
+  .scanner-wrapper { position: relative; width: 100%; height: 300px; margin-bottom: 10px; border-radius: 20px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 3px solid var(--secondary-color); }
   #reader { width: 100%; height: 100%; object-fit: cover; }
-  
-  /* إخفاء رسائل الخطأ الافتراضية للمكتبة */
-  #reader__status_span { display: none !important; }
-
-  /* 🔴 زر الطوارئ (إصلاح الكاميرا) 🔴 */
-  .camera-error-overlay {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8); z-index: 50;
-      display: none; flex-direction: column; align-items: center; justify-content: center;
-  }
-  .fix-camera-btn {
-      background: #dc3545; color: white; border: none; padding: 12px 25px; 
-      border-radius: 30px; font-size: 14px; font-weight: bold; cursor: pointer; 
-      box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
-      animation: pulse 2s infinite;
-  }
-  @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-
   .laser-beam { position: absolute; width: 100%; height: 3px; background: #ff0000; box-shadow: 0 0 20px #ff0000; top: 0; left: 0; z-index: 10; animation: scan-anim 1.5s infinite ease-in-out; pointer-events: none; }
   @keyframes scan-anim { 0% { top: 10%; opacity: 0; } 50% { opacity: 1; } 100% { top: 90%; opacity: 0; } }
   .scan-overlay { position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px; border-radius: 15px; pointer-events: none; box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.1); }
@@ -111,10 +94,19 @@
   .scan-corners-bottom::before { bottom: 0; left: 0; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 12px; }
   .scan-corners-bottom::after { bottom: 0; right: 0; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 12px 0; }
 
-  .zoom-controls { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 20px; padding: 0 10px; }
-  .zoom-label { font-size: 14px; color: var(--text-light); font-weight: bold; }
-  input[type=range] { -webkit-appearance: none; width: 100%; height: 6px; background: #e0e0e0; border-radius: 5px; outline: none; }
-  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--secondary-color); cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+  /* 🔴 طبقة الطوارئ (المانعة للخطأ) 🔴 */
+  .camera-fallback-layer {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: #222; z-index: 100;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+  }
+  .start-cam-btn {
+      background: var(--success-color); color: white; border: none; padding: 12px 25px;
+      border-radius: 30px; font-size: 14px; font-weight: bold; cursor: pointer;
+      box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4); animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
   #list-screen, .result-box { display: none; text-align: right; }
   .result-box { text-align: center; background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; }
@@ -168,18 +160,14 @@
     <div class="search-wrapper"><input type="text" id="search-input" class="search-input" placeholder="🔍 بحث بالاسم أو الباركود..." onkeyup="suggestProducts()" autocomplete="off"><div id="suggestions" class="suggestions-list"></div></div>
     
     <div class="scanner-wrapper">
+        <div id="camera-fallback" class="camera-fallback-layer" style="display: none;">
+            <p style="color:#ccc; margin-bottom:15px;">⚠️ الكاميرا متوقفة</p>
+            <button class="start-cam-btn" onclick="forceRestartCamera()">⚡ تشغيل الكاميرا</button>
+        </div>
+
         <div id="reader"></div>
         <div class="laser-beam"></div>
         <div class="scan-overlay"><div class="scan-corners-bottom"></div></div>
-        
-        <div id="camera-error-layer" class="camera-error-overlay">
-             <button class="fix-camera-btn" onclick="forceRestartCamera()">🔄 إصلاح الكاميرا المعلقة</button>
-        </div>
-    </div>
-    
-    <div class="zoom-controls" id="zoom-controls" style="display:none;">
-        <span class="zoom-label">Zoom:</span>
-        <input type="range" id="zoom-slider" min="1" max="3" step="0.1" value="1" oninput="applyZoom(this.value)">
     </div>
     
     <a id="add-btn" href="#" target="_blank" class="btn btn-warning">➕ إضافة منتج جديد</a>
@@ -261,7 +249,6 @@
     var productsList = []; var categoriesSet = new Set(); var html5QrcodeScanner;
     const statusDiv = document.getElementById('status');
     var lastScreen = "scan-screen"; var currentProduct = null;
-    var videoTrack = null;
     var isProcessing = false;
 
     document.getElementById('add-btn').onclick = function() { openFormModal(GOOGLE_FORM_URL); };
@@ -358,8 +345,7 @@
     }
 
     function parseCSV(csvText) {
-      let cleanText = csvText.replace(/"([^"]*)"/g, function(match, group1) { return '"' + group1.replace(/[\r\n]+/g, ' ') + '"'; });
-      const rows = cleanText.split('\n'); productsList = []; categoriesSet.clear();
+      const rows = csvText.split('\n'); productsList = []; categoriesSet.clear();
       let tempMap = new Map();
 
       for (let i = 1; i < rows.length; i++) {
@@ -436,14 +422,11 @@
         return null;
     }
 
-    // 🔴🔴 دالة المسح الآمنة 🔴🔴
     async function onScanSuccess(decodedText, decodedResult) {
       if(isProcessing) return;
-      isProcessing = true; // قفل
-
+      isProcessing = true;
       playScanSound();
       
-      // محاولة الإيقاف مع تجاهل الخطأ
       try { await html5QrcodeScanner.clear(); } catch(e) {}
       
       let cleanCode = sanitizeBarcode(decodedText);
@@ -456,7 +439,7 @@
               let sep = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
               openFormModal(GOOGLE_FORM_URL + sep + "usp=pp_url&entry." + BARCODE_ENTRY_ID + "=" + cleanCode);
           } else { 
-              forceRestartCamera(); // إعادة تشغيل آمنة
+              forceRestartCamera();
           } 
       }
     }
@@ -502,86 +485,63 @@
         if(document.getElementById('scan-screen').style.display === 'block') { btn.style.display = 'none'; } else { btn.style.display = 'flex'; }
     }
 
-    // 🔴🔴 دالة إعادة التشغيل الآمنة (Hard Reset) 🔴🔴
-    function forceRestartCamera() {
-        document.getElementById('result-screen').style.display = 'none'; 
-        document.getElementById('list-screen').style.display = 'none';
-        document.getElementById('scan-screen').style.display = 'block'; 
-        document.getElementById('suggestions').style.display = "none";
-        document.getElementById('camera-error-layer').style.display = 'none';
-        updateBackButton();
+    function resetScanner() {
+        document.getElementById('result-screen').style.display = 'none'; document.getElementById('list-screen').style.display = 'none';
+        document.getElementById('scan-screen').style.display = 'block'; document.getElementById('suggestions').style.display = "none";
+        isProcessing = false;
+        updateBackButton(); startCamera();
+    }
 
-        // 1. تدمير القديم
-        if(html5QrcodeScanner) {
-             try { html5QrcodeScanner.clear(); } catch(e) {}
-             html5QrcodeScanner = null;
-        }
+    // 🔴🔴 نظام الحماية وإعادة التشغيل (Force Restart) 🔴🔴
+    function forceRestartCamera() {
+        document.getElementById('result-screen').style.display = 'none';
+        document.getElementById('list-screen').style.display = 'none';
+        document.getElementById('scan-screen').style.display = 'block';
+        
+        document.getElementById('camera-fallback').style.display = 'none'; // إخفاء زر الإنقاذ
         document.getElementById('reader').innerHTML = "";
+        
+        if(html5QrcodeScanner) { try { html5QrcodeScanner.clear(); } catch(e) {} html5QrcodeScanner = null; }
         isProcessing = false;
 
-        // 2. إنشاء جديد بعد مهلة
         setTimeout(() => { startCamera(); }, 300);
     }
 
-    function applyZoom(val) {
-        if(videoTrack) { try { videoTrack.applyConstraints({ advanced: [{ zoom: parseFloat(val) }] }); } catch(e) {} }
-    }
-
+    // تشغيل الكاميرا الآمن
     function startCamera() {
-      // منع التشغيل المتكرر
-      if(document.getElementById('reader').innerHTML !== "") return;
+      if(document.getElementById('reader').innerHTML !== "") return; // منع التكرار
       
-      html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
-          fps: 10, 
-          qrbox: { width: 250, height: 150 }, 
-          aspectRatio: 1.3,
-          videoConstraints: { facingMode: "environment" },
-          formatsToSupport: [
-               Html5QrcodeSupportedFormats.QR_CODE, Html5QrcodeSupportedFormats.BARCODE, Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E,
-               Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8, Html5QrcodeSupportedFormats.CODE_39, Html5QrcodeSupportedFormats.CODE_93,
-               Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.ITF, Html5QrcodeSupportedFormats.RSS_14, Html5QrcodeSupportedFormats.RSS_EXPANDED,
-               Html5QrcodeSupportedFormats.PDF_417, Html5QrcodeSupportedFormats.AZTEC, Html5QrcodeSupportedFormats.DATA_MATRIX, Html5QrcodeSupportedFormats.MAXICODE
-          ],
-          useBarCodeDetectorIfSupported: true 
-      });
-      
-      html5QrcodeScanner.render(onScanSuccess, (errorMessage) => {
-          // تجاهل الأخطاء العادية
-      });
-
-      // التقاط خطأ NotReadableError وعرض زر الإصلاح
       setTimeout(() => {
-          if(html5QrcodeScanner && html5QrcodeScanner.html5Qrcode) {
-              html5QrcodeScanner.html5Qrcode.catch(err => {
-                   if(err && err.name == "NotReadableError") {
-                       document.getElementById('camera-error-layer').style.display = 'flex';
-                   }
-              });
-          }
-      }, 1000);
+          html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
+              fps: 10, 
+              qrbox: { width: 250, height: 150 }, 
+              aspectRatio: 1.3,
+              videoConstraints: { facingMode: "environment" },
+              formatsToSupport: [
+                   Html5QrcodeSupportedFormats.QR_CODE, Html5QrcodeSupportedFormats.BARCODE, Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E,
+                   Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8, Html5QrcodeSupportedFormats.CODE_39, Html5QrcodeSupportedFormats.CODE_93,
+                   Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.ITF, Html5QrcodeSupportedFormats.RSS_14, Html5QrcodeSupportedFormats.RSS_EXPANDED,
+                   Html5QrcodeSupportedFormats.PDF_417, Html5QrcodeSupportedFormats.AZTEC, Html5QrcodeSupportedFormats.DATA_MATRIX, Html5QrcodeSupportedFormats.MAXICODE
+              ],
+              useBarCodeDetectorIfSupported: true 
+          });
+          
+          html5QrcodeScanner.render(onScanSuccess, (errorMessage) => {});
 
-      setTimeout(() => {
-          try {
-              navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", zoom: true } })
-              .then(stream => {
-                  const track = stream.getVideoTracks()[0];
-                  const capabilities = track.getCapabilities();
-                  if ('zoom' in capabilities) {
-                      videoTrack = track;
-                      document.getElementById('zoom-controls').style.display = 'flex';
-                      document.getElementById('zoom-slider').min = capabilities.zoom.min;
-                      document.getElementById('zoom-slider').max = capabilities.zoom.max;
-                      document.getElementById('zoom-slider').step = capabilities.zoom.step;
-                  }
-              });
-          } catch(e) {}
-      }, 2000);
+          // 🚨 مراقب الأخطاء لإظهار زر الإنقاذ 🚨
+          html5QrcodeScanner.html5Qrcode.catch(err => {
+               if(err && err.name == "NotReadableError") {
+                   document.getElementById('camera-fallback').style.display = 'flex';
+               }
+          });
+      }, 300);
     }
     
     function showStatus(text, type) { statusDiv.innerText = text; statusDiv.className = "status-msg " + type; statusDiv.style.display = 'block'; }
     
     (function initApp() {
-        startCamera(); 
+        // تأخير بسيط جداً لبدء الكاميرا لضمان جاهزية الصفحة
+        setTimeout(startCamera, 500);
         fetchProducts();
     })();
 </script>
