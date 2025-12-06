@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>KMS PRICE SCANNER</title>
+<title>KMS Price Scanner</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
 <style>
@@ -62,62 +62,82 @@
   .btn-edit { background: linear-gradient(45deg, #17a2b8, #138496); }
   .refresh-btn { background: white; border: 1px solid var(--secondary-color); color: var(--primary-color); padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; margin-bottom: 15px; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-  /* 💎 القائمة الجانبية (تصميم الزجاج) 💎 */
+  /* القائمة الجانبية (Glassmorphism) */
   .menu-btn { position: absolute; top: 45px; right: 25px; font-size: 35px; cursor: pointer; background: none; border: none; color: var(--primary-color); z-index: 5000; filter: drop-shadow(0 2px 2px rgba(255,255,255,0.8)); }
 
-  /* استبدل كود .sidenav القديم بهذا */
-.sidenav {
-    height: 100%;
-    width: 0;
-    position: fixed;
-    z-index: 6000;
-    top: 0;
-    right: 0;
-    background-color: #f4f6f8; /* خلفية رمادية فاتحة */
-    overflow-x: hidden;
-    transition: 0.3s;
-    padding-top: 80px;
-    text-align: center; /* توسيط العناصر */
-}
+  .sidenav {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      z-index: 6000;
+      top: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95); 
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      overflow-x: hidden;
+      transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      padding-top: 20px;
+      text-align: right;
+      box-shadow: -10px 0 30px rgba(0,0,0,0.15);
+      border-left: 1px solid rgba(255,255,255,0.6);
+  }
 
-.sidenav a {
-    background: white; /* كارت أبيض */
-    margin: 10px 15px; /* مسافات بين الكروت */
-    padding: 15px;
-    text-decoration: none;
-    font-size: 16px;
-    color: var(--text-dark);
-    display: block;
-    transition: 0.2s;
-    border-radius: 12px; /* حواف دائرية */
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* ظل خفيف */
-    font-weight: bold;
-    border: 1px solid #eee;
-}
+  .sidenav a {
+      padding: 12px 25px;
+      text-decoration: none;
+      font-size: 16px;
+      color: var(--primary-color);
+      display: block;
+      transition: 0.3s;
+      font-weight: 700;
+      border-radius: 15px 0 0 15px;
+      margin-left: 20px;
+      margin-bottom: 5px;
+  }
 
-.sidenav a:hover {
-    background: var(--primary-color);
-    color: white;
-    transform: scale(1.02); /* تكبير بسيط */
-    box-shadow: 0 8px 15px rgba(0,98,204,0.2);
-    border-color: transparent;
-}
+  .sidenav a:hover {
+      background: var(--primary-color);
+      color: white;
+      transform: translateX(-8px);
+      box-shadow: 0 5px 15px rgba(0,98,204,0.2);
+  }
 
-.sidenav .closebtn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 36px;
-    color: var(--danger-color);
-    background: white;
-    width: 50px;
-    height: 50px;
-    line-height: 50px;
-    border-radius: 50%;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    margin: 0;
-    padding: 0;
-}
+  .sidenav .closebtn {
+      position: absolute;
+      top: 15px;
+      right: 25px;
+      font-size: 40px;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      background: none;
+      box-shadow: none;
+  }
+
+  /* 🔴 رأس القائمة المصغر 🔴 */
+  .sidenav-header {
+      text-align: center;
+      margin-top: 30px; /* تقليل المسافة العلوية */
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  .sidenav-header img {
+      width: 60px; /* 👈 تم التصغير من 90 إلى 60 */
+      height: 60px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: white;
+      padding: 5px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-bottom: 8px;
+  }
+  .sidenav-header h3 {
+      font-size: 18px; /* تصغير الخط قليلاً */
+      margin: 0;
+      color: var(--primary-color);
+  }
   
   .search-wrapper { position: relative; margin-bottom: 20px; }
   .search-input { width: 100%; padding: 15px; background: #f8f9fa; border: 2px solid transparent; border-radius: 15px; font-size: 16px; font-family: 'Tajawal', sans-serif; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: 0.3s; box-sizing: border-box; outline: none; }
@@ -145,7 +165,9 @@
   .scan-corners-bottom::before { bottom: 0; left: 0; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 12px; }
   .scan-corners-bottom::after { bottom: 0; right: 0; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 12px 0; }
   
-  .fix-camera-btn { background: #dc3545; color: white; border: none; padding: 12px 25px; border-radius: 30px; font-size: 14px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4); animation: pulse 2s infinite; }
+  /* زر الطوارئ */
+  .camera-fallback-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .start-cam-btn { background: var(--success-color); color: white; border: none; padding: 12px 25px; border-radius: 30px; font-size: 14px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4); animation: pulse 2s infinite; }
   @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
   .zoom-controls { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 20px; padding: 0 10px; }
@@ -192,7 +214,7 @@
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     
     <div class="sidenav-header">
-        <img id="nav-logo" src="https://kamalsaad.com/themes/theme_front/assets/images/KMS LOGO FINAL.png" alt="Logo">
+        <img id="nav-logo" src="" alt="Logo">
         <h3 style="margin: 5px 0 0 0; color: var(--primary-color);">أقسام المخزن</h3>
     </div>
 
@@ -214,14 +236,14 @@
     <div class="search-wrapper"><input type="text" id="search-input" class="search-input" placeholder="🔍 بحث بالاسم أو الباركود..." onkeyup="suggestProducts()" autocomplete="off"><div id="suggestions" class="suggestions-list"></div></div>
     
     <div class="scanner-wrapper">
+        <div id="camera-fallback" class="camera-fallback-layer" style="display: none;">
+            <p style="color:#fff; margin-bottom:15px; font-weight:bold;">⚠️ الكاميرا متوقفة</p>
+            <button class="start-cam-btn" onclick="forceRestartCamera()">⚡ تشغيل الكاميرا</button>
+        </div>
+
         <div id="reader"></div>
         <div class="laser-beam"></div>
         <div class="scan-overlay"><div class="scan-corners-bottom"></div></div>
-        
-        <div id="camera-error-layer" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:50; flex-direction:column; align-items:center; justify-content:center;">
-             <p style="color:#fff; margin-bottom:15px; font-weight:bold;">⚠️ تعذر الوصول للكاميرا</p>
-             <button class="fix-camera-btn" onclick="forceRestartCamera()">🔄 اضغط للإنعاش</button>
-        </div>
     </div>
     
     <div class="zoom-controls" id="zoom-controls" style="display:none;">
@@ -259,7 +281,7 @@
 
 <script>
     // ============================================================
-    // 🔴🔴 البيانات المطلوبة (لا تنس ملأها) 🔴🔴
+    // 🔴🔴 البيانات المطلوبة 🔴🔴
     // ============================================================
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKotb6frhhZzBOkKyvUu0V1x06UkENSEkdtSn52yfc7OG030tDMxwjjjEX8tV1UGgpNzMTuObGRur3/pub?gid=0&single=true&output=csv"; 
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
@@ -273,7 +295,7 @@
 
     if(LOGO_URL && LOGO_URL !== "") { 
         document.getElementById('company-logo').src = LOGO_URL; 
-        document.getElementById('nav-logo').src = LOGO_URL; // تحديث شعار القائمة الجانبية أيضاً
+        document.getElementById('nav-logo').src = LOGO_URL;
     } else { 
         document.getElementById('company-logo').style.display = 'none'; 
         document.getElementById('nav-logo').style.display = 'none';
@@ -318,7 +340,7 @@
 
     document.getElementById('add-btn').onclick = function() { openFormModal(GOOGLE_FORM_URL); };
 
-    function openNav() { document.getElementById("mySidenav").style.width = "280px"; /* عرض القائمة */ }
+    function openNav() { document.getElementById("mySidenav").style.width = "280px"; }
     function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
     
     function updateCategoriesMenu() {
@@ -567,7 +589,7 @@
         document.getElementById('result-screen').style.display = 'none';
         document.getElementById('list-screen').style.display = 'none';
         document.getElementById('scan-screen').style.display = 'block';
-        document.getElementById('camera-error-layer').style.display = 'none';
+        document.getElementById('camera-fallback').style.display = 'none';
         document.getElementById('reader').innerHTML = "";
         
         if(html5QrcodeScanner) { try { html5QrcodeScanner.clear(); } catch(e) {} html5QrcodeScanner = null; }
@@ -595,9 +617,10 @@
           
           html5QrcodeScanner.render(onScanSuccess, (errorMessage) => {});
 
+          // إظهار زر الإنقاذ عند الخطأ
           html5QrcodeScanner.html5Qrcode.catch(err => {
                if(err && err.name == "NotReadableError") {
-                   document.getElementById('camera-error-layer').style.display = 'flex';
+                   document.getElementById('camera-fallback').style.display = 'flex';
                }
           });
 
@@ -623,8 +646,9 @@
     
     function showStatus(text, type) { statusDiv.innerText = text; statusDiv.className = "status-msg " + type; statusDiv.style.display = 'block'; }
     
+    // تأخير تشغيل الكاميرا لثانية واحدة لتجنب التعليق عند البدء
     (function initApp() {
-        startCamera(); 
+        setTimeout(startCamera, 1000); 
         fetchProducts();
     })();
 </script>
