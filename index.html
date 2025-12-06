@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>KMS Price Scanner</title>
+<title>KMS-Scanner-Price V60</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
 <style>
@@ -62,9 +62,10 @@
   .btn-edit { background: linear-gradient(45deg, #17a2b8, #138496); }
   .refresh-btn { background: white; border: 1px solid var(--secondary-color); color: var(--primary-color); padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; margin-bottom: 15px; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-  /* القائمة الجانبية (Glassmorphism) */
+  /* زر القائمة */
   .menu-btn { position: absolute; top: 45px; right: 25px; font-size: 35px; cursor: pointer; background: none; border: none; color: var(--primary-color); z-index: 5000; filter: drop-shadow(0 2px 2px rgba(255,255,255,0.8)); }
 
+  /* 🃏 تصميم الكروت العائمة للقائمة 🃏 */
   .sidenav {
       height: 100%;
       width: 0;
@@ -72,72 +73,72 @@
       z-index: 6000;
       top: 0;
       right: 0;
-      background: rgba(255, 255, 255, 0.95); 
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
+      background-color: #f8f9fa; /* خلفية رمادية فاتحة جداً */
       overflow-x: hidden;
       transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
       padding-top: 20px;
-      text-align: right;
-      box-shadow: -10px 0 30px rgba(0,0,0,0.15);
-      border-left: 1px solid rgba(255,255,255,0.6);
+      text-align: center; /* توسيط الكروت */
+      box-shadow: -10px 0 30px rgba(0,0,0,0.1);
   }
 
   .sidenav a {
-      padding: 12px 25px;
+      background: white; /* لون الكارت */
+      margin: 12px 15px; /* مسافات بين الكروت */
+      padding: 15px;
       text-decoration: none;
       font-size: 16px;
-      color: var(--primary-color);
+      color: var(--text-dark);
       display: block;
       transition: 0.3s;
+      border-radius: 15px; /* حواف دائرية */
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03); /* ظل خفيف جداً */
       font-weight: 700;
-      border-radius: 15px 0 0 15px;
-      margin-left: 20px;
-      margin-bottom: 5px;
+      border: 1px solid transparent;
+      position: relative;
+      overflow: hidden;
   }
 
+  /* تأثير عند اللمس */
   .sidenav a:hover {
-      background: var(--primary-color);
-      color: white;
-      transform: translateX(-8px);
-      box-shadow: 0 5px 15px rgba(0,98,204,0.2);
+      background: white;
+      transform: translateY(-3px); /* يرتفع للأعلى */
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      color: var(--primary-color);
+      border-color: var(--secondary-color);
+  }
+  
+  /* خط جانبي ملون عند اللمس */
+  .sidenav a:hover::before {
+      content: ''; position: absolute; right: 0; top: 0; height: 100%; width: 5px; background: var(--primary-color);
   }
 
   .sidenav .closebtn {
       position: absolute;
       top: 15px;
-      right: 25px;
-      font-size: 40px;
-      color: #333;
-      margin: 0;
-      padding: 0;
+      right: 20px;
+      font-size: 35px;
+      color: #777;
       background: none;
       box-shadow: none;
+      width: auto;
+      margin: 0;
+      padding: 0;
+      border: none;
   }
+  .sidenav .closebtn:hover { transform: none; box-shadow: none; color: var(--danger-color); }
 
-  /* 🔴 رأس القائمة المصغر 🔴 */
+  /* رأس القائمة */
   .sidenav-header {
-      text-align: center;
-      margin-top: 30px; /* تقليل المسافة العلوية */
-      margin-bottom: 15px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
+      margin-top: 40px; margin-bottom: 20px; padding-bottom: 10px;
   }
   .sidenav-header img {
-      width: 60px; /* 👈 تم التصغير من 90 إلى 60 */
-      height: 60px;
-      object-fit: contain;
-      border-radius: 50%;
-      background: white;
-      padding: 5px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      margin-bottom: 8px;
+      width: 70px; height: 70px; /* حجم مناسب */
+      object-fit: contain; border-radius: 15px; /* حواف مربعة دائرية */
+      background: white; padding: 5px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      margin-bottom: 10px;
   }
-  .sidenav-header h3 {
-      font-size: 18px; /* تصغير الخط قليلاً */
-      margin: 0;
-      color: var(--primary-color);
-  }
+  .sidenav-header h3 { font-size: 18px; margin: 0; color: var(--text-dark); opacity: 0.8; }
   
   .search-wrapper { position: relative; margin-bottom: 20px; }
   .search-input { width: 100%; padding: 15px; background: #f8f9fa; border: 2px solid transparent; border-radius: 15px; font-size: 16px; font-family: 'Tajawal', sans-serif; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: 0.3s; box-sizing: border-box; outline: none; }
@@ -617,7 +618,6 @@
           
           html5QrcodeScanner.render(onScanSuccess, (errorMessage) => {});
 
-          // إظهار زر الإنقاذ عند الخطأ
           html5QrcodeScanner.html5Qrcode.catch(err => {
                if(err && err.name == "NotReadableError") {
                    document.getElementById('camera-fallback').style.display = 'flex';
@@ -646,7 +646,6 @@
     
     function showStatus(text, type) { statusDiv.innerText = text; statusDiv.className = "status-msg " + type; statusDiv.style.display = 'block'; }
     
-    // تأخير تشغيل الكاميرا لثانية واحدة لتجنب التعليق عند البدء
     (function initApp() {
         setTimeout(startCamera, 1000); 
         fetchProducts();
