@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>KMS-Scanner-Price V60</title>
+<title>KMS Price Scanner (V57)</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
 <style>
@@ -62,10 +62,9 @@
   .btn-edit { background: linear-gradient(45deg, #17a2b8, #138496); }
   .refresh-btn { background: white; border: 1px solid var(--secondary-color); color: var(--primary-color); padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; margin-bottom: 15px; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-  /* زر القائمة */
   .menu-btn { position: absolute; top: 45px; right: 25px; font-size: 35px; cursor: pointer; background: none; border: none; color: var(--primary-color); z-index: 5000; filter: drop-shadow(0 2px 2px rgba(255,255,255,0.8)); }
 
-  /* 🃏 تصميم الكروت العائمة للقائمة 🃏 */
+  /* القائمة الجانبية (Glassmorphism) */
   .sidenav {
       height: 100%;
       width: 0;
@@ -73,72 +72,41 @@
       z-index: 6000;
       top: 0;
       right: 0;
-      background-color: #f8f9fa; /* خلفية رمادية فاتحة جداً */
+      background: rgba(255, 255, 255, 0.95); 
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
       overflow-x: hidden;
       transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
       padding-top: 20px;
-      text-align: center; /* توسيط الكروت */
-      box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+      text-align: center;
+      box-shadow: -10px 0 30px rgba(0,0,0,0.15);
+      border-left: 1px solid rgba(255,255,255,0.6);
   }
 
   .sidenav a {
-      background: white; /* لون الكارت */
-      margin: 12px 15px; /* مسافات بين الكروت */
-      padding: 15px;
-      text-decoration: none;
-      font-size: 16px;
-      color: var(--text-dark);
-      display: block;
-      transition: 0.3s;
-      border-radius: 15px; /* حواف دائرية */
-      box-shadow: 0 4px 10px rgba(0,0,0,0.03); /* ظل خفيف جداً */
-      font-weight: 700;
-      border: 1px solid transparent;
-      position: relative;
-      overflow: hidden;
+      background: white; margin: 12px 15px; padding: 15px;
+      text-decoration: none; font-size: 16px; color: var(--text-dark);
+      display: block; transition: 0.3s; border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03); font-weight: 700;
+      border: 1px solid transparent; position: relative; overflow: hidden;
   }
 
-  /* تأثير عند اللمس */
   .sidenav a:hover {
-      background: white;
-      transform: translateY(-3px); /* يرتفع للأعلى */
+      background: white; transform: translateY(-3px);
       box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-      color: var(--primary-color);
-      border-color: var(--secondary-color);
+      color: var(--primary-color); border-color: var(--secondary-color);
   }
   
-  /* خط جانبي ملون عند اللمس */
-  .sidenav a:hover::before {
-      content: ''; position: absolute; right: 0; top: 0; height: 100%; width: 5px; background: var(--primary-color);
-  }
-
   .sidenav .closebtn {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      font-size: 35px;
-      color: #777;
-      background: none;
-      box-shadow: none;
-      width: auto;
-      margin: 0;
-      padding: 0;
-      border: none;
+      position: absolute; top: 15px; right: 20px; font-size: 35px;
+      color: #777; background: none; box-shadow: none; width: auto;
+      margin: 0; padding: 0; border: none;
   }
   .sidenav .closebtn:hover { transform: none; box-shadow: none; color: var(--danger-color); }
 
-  /* رأس القائمة */
-  .sidenav-header {
-      margin-top: 40px; margin-bottom: 20px; padding-bottom: 10px;
-  }
-  .sidenav-header img {
-      width: 70px; height: 70px; /* حجم مناسب */
-      object-fit: contain; border-radius: 15px; /* حواف مربعة دائرية */
-      background: white; padding: 5px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-      margin-bottom: 10px;
-  }
-  .sidenav-header h3 { font-size: 18px; margin: 0; color: var(--text-dark); opacity: 0.8; }
+  .sidenav-header { margin-top: 30px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+  .sidenav-header img { width: 60px; height: 60px; object-fit: contain; border-radius: 50%; background: white; padding: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 8px; }
+  .sidenav-header h3 { font-size: 18px; margin: 0; color: var(--primary-color); }
   
   .search-wrapper { position: relative; margin-bottom: 20px; }
   .search-input { width: 100%; padding: 15px; background: #f8f9fa; border: 2px solid transparent; border-radius: 15px; font-size: 16px; font-family: 'Tajawal', sans-serif; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: 0.3s; box-sizing: border-box; outline: none; }
@@ -166,7 +134,6 @@
   .scan-corners-bottom::before { bottom: 0; left: 0; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 12px; }
   .scan-corners-bottom::after { bottom: 0; right: 0; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 12px 0; }
   
-  /* زر الطوارئ */
   .camera-fallback-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .start-cam-btn { background: var(--success-color); color: white; border: none; padding: 12px 25px; border-radius: 30px; font-size: 14px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4); animation: pulse 2s infinite; }
   @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
@@ -304,9 +271,21 @@
     document.getElementById('designer-name').innerText = DESIGNER_NAME;
 
     async function checkRealConnection() {
-        try { const response = await fetch(SHEET_CSV_URL + "&ping=" + new Date().getTime(), { method: 'HEAD', cache: 'no-store' }); return true; } 
+        try { 
+            // استخدام AbortController لعمل Timeout (3 ثواني)
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 ثواني فقط
+            const response = await fetch(SHEET_CSV_URL + "&ping=" + new Date().getTime(), { 
+                method: 'HEAD', 
+                cache: 'no-store',
+                signal: controller.signal 
+            });
+            clearTimeout(timeoutId);
+            return true; 
+        } 
         catch (error) { return false; }
     }
+
     function updateBadge(isOnline) {
         const badge = document.getElementById('connection-badge');
         if (isOnline) { badge.innerText = "متصل بالإنترنت ✅"; badge.className = "connection-badge conn-online"; } 
@@ -398,33 +377,54 @@
 
     async function fetchProducts(force = false) {
       showStatus("🔄 جاري التحميل...", "loading");
-      if (!navigator.onLine) { loadFromCache(); return; }
+      
+      // محاولة التحميل من الكاش أولاً للسرعة
+      loadFromCache();
+
+      // التحقق من الشبكة قبل المحاولة (مع Timeout سريع)
+      const isOnline = await checkRealConnection();
+      if (!isOnline) { 
+          showStatus("⚠️ وضع الأوفلاين", "loading"); 
+          setTimeout(() => { statusDiv.style.display = 'none'; }, 2000);
+          return; 
+      }
+
+      // إذا كان أونلاين، نحاول جلب التحديث
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); 
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 ثواني مهلة
+      
       let fetchUrl = SHEET_CSV_URL;
       if(force) { fetchUrl += (fetchUrl.includes('?') ? '&' : '?') + "nocache=" + new Date().getTime(); }
+      
       try {
         const response = await fetch(fetchUrl, { cache: "no-store", signal: controller.signal });
         clearTimeout(timeoutId);
         if (!response.ok) throw new Error("Network error");
         const data = await response.text(); 
+        
+        // حفظ الجديد
         localStorage.setItem('offline_products_csv', data); 
-        parseCSV(data);
+        parseCSV(data); // إعادة الرسم بالبيانات الجديدة
+        
         showStatus("تم التحديث ✅", "loading"); 
         setTimeout(() => { statusDiv.style.display = 'none'; }, 1000);
+        
         if (document.getElementById('result-screen').style.display === 'block' && currentProduct) {
              let updatedProduct = findProductInDB(currentProduct.code1 || currentProduct.code2);
              if (updatedProduct) { showResultScreen(updatedProduct, 'scan-screen'); alert("تم تحديث السعر!"); }
         }
       } catch (error) {
-        loadFromCache();
+        // إذا فشل النت (Timeout)، نحن أصلاً عرضنا الكاش في البداية، فلا مشكلة
+        console.log("Fetch failed, using cache");
       }
     }
 
     function loadFromCache() {
         const cachedData = localStorage.getItem('offline_products_csv');
-        if (cachedData) { parseCSV(cachedData); showStatus("⚠️ وضع الأوفلاين", "loading"); setTimeout(() => { statusDiv.style.display = 'none'; }, 2000); }
-        else { showStatus("❌ لا يوجد إنترنت ولا بيانات", "error"); }
+        if (cachedData) { 
+            parseCSV(cachedData); 
+            // لا نظهر رسالة "أوفلاين" هنا، نترك دالة fetch تقرر
+        }
     }
 
     function sanitizeBarcode(text) {
@@ -647,8 +647,9 @@
     function showStatus(text, type) { statusDiv.innerText = text; statusDiv.className = "status-msg " + type; statusDiv.style.display = 'block'; }
     
     (function initApp() {
-        setTimeout(startCamera, 1000); 
-        fetchProducts();
+        loadFromCache(); // 1. العرض الفوري للكاش
+        setTimeout(startCamera, 500); // 2. تشغيل الكاميرا
+        fetchProducts(); // 3. محاولة جلب الجديد
     })();
 </script>
 </body>
