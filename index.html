@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>KMS Price Scanner (V61)</title>
+<title>KMS Price Scanner (V62)</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
 <style>
@@ -99,7 +99,7 @@
   .sub-cat-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); box-shadow: 0 4px 10px rgba(0,98,204,0.4); transform: scale(1.05); }
 
   /* الماسح */
-  .scanner-wrapper { position: relative; width: 100%; height: 350px; margin-bottom: 10px; border-radius: 20px; overflow: hidden; background: #f2f2f2; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 3px solid var(--secondary-color); }
+  .scanner-wrapper { position: relative; width: 100%; height: 350px; margin-bottom: 10px; border-radius: 20px; overflow: hidden; background: #2a7793; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 3px solid var(--secondary-color); }
   #reader { width: 100%; height: 100%; object-fit: cover; }
   .laser-beam { position: absolute; width: 100%; height: 3px; background: #ff0000; box-shadow: 0 0 20px #ff0000; top: 0; left: 0; z-index: 10; animation: scan-anim 1.5s infinite ease-in-out; pointer-events: none; }
   @keyframes scan-anim { 0% { top: 10%; opacity: 0; } 50% { opacity: 1; } 100% { top: 90%; opacity: 0; } }
@@ -150,6 +150,28 @@
   .status-msg { margin: 10px 0; font-size: 14px; padding: 10px; border-radius: 8px; display: none; font-weight: bold; }
   .loading { background-color: #e2f0fb; color: var(--primary-color); }
   .designer-footer { margin-top: auto; padding-top: 30px; border-top: 1px solid #eee; font-size: 12px; color: #999; text-align: center; font-weight: bold; opacity: 0.8; }
+
+  /* 🔴🔴 تصميم شاشة الترحيب 🔴🔴 */
+  .welcome-overlay { 
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+      background: rgba(0,0,0,0.9); z-index: 9999; 
+      display: none; 
+      align-items: center; justify-content: center; 
+      backdrop-filter: blur(8px); 
+  }
+  .welcome-box { 
+      background: white; padding: 30px 25px; border-radius: 25px; 
+      width: 85%; max-width: 400px; text-align: center; 
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4); 
+      animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  }
+  .welcome-box h3 { color: var(--primary-color); margin-top: 15px; font-size: 22px; margin-bottom: 10px; }
+  .welcome-box p { color: #666; font-size: 15px; line-height: 1.6; margin-bottom: 20px; }
+  .welcome-list { list-style: none; padding: 0; text-align: right; margin-bottom: 25px; }
+  .welcome-list li { margin-bottom: 12px; font-size: 15px; color: var(--text-dark); display: flex; align-items: center; }
+  .welcome-list li span { margin-left: 10px; font-size: 20px; }
+  .welcome-logo { width: 80px; height: 80px; object-fit: contain; border-radius: 20px; background: #f8f9fa; padding: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+  @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 </style>
 </head>
 <body>
@@ -157,14 +179,28 @@
 <div id="imageModal" class="modal" onclick="closeImageModal()"><span class="close-zoom">&times;</span><img class="modal-content" id="img01"></div>
 <div id="formModal" class="form-modal"><button class="close-form-btn" onclick="closeFormModal()">✖ إغلاق وعودة</button><iframe id="googleFormIframe" class="form-iframe" src=""></iframe></div>
 
+<div id="welcomeModal" class="welcome-overlay">
+    <div class="welcome-box">
+        <img id="welcome-logo" src="" class="welcome-logo" onerror="this.style.display='none'">
+        <h3>مرحباً بك/ي في KMS Price Scanner! 👋</h3>
+        <p>سكانر ذكي لمعرفة سعر المنتج بضغطة زر.</p>
+        <ul class="welcome-list">
+            <li><span>📸</span> <b>ماسح ذكي:</b> قراءة فورية للباركود (المحلي والدولي).</li>
+            <li><span>🔍</span> <b>بحث بالاسم:</b> لا يوجد باركود؟ اكتب "اسم المنتج" للبحث عنه.</li>
+            <li><span>⚡</span> <b>وضع الأوفلاين:</b> يعمل بكفاءة تامة حتى بدون إنترنت.</li>
+            <li><span>✏️</span> <b>تحكم كامل:</b> إمكانية تعديل الأسعار (للمدير فقط).</li>
+        </ul>
+        <button class="btn btn-primary" onclick="closeWelcome()">لاتنس بإبداء رأيك عن التطبيق إخباري ان كان هناك اي فكرة تود إضافتها
+          اإبدأ العمل الأن🚀</button>
+    </div>
+</div>
+
 <div id="mySidenav" class="sidenav">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-    
     <div class="sidenav-header">
         <img id="nav-logo" src="" alt="Logo">
         <h3 style="margin: 5px 0 0 0; color: var(--primary-color);">أقسام المخزن</h3>
     </div>
-
     <div id="categories-container"></div>
 </div>
 
@@ -228,7 +264,7 @@
 
 <script>
     // ============================================================
-    // 🔴🔴 البيانات المطلوبة 🔴🔴
+    // 🔴🔴 البيانات المطلوبة (لا تنس ملأها) 🔴🔴
     // ============================================================
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKotb6frhhZzBOkKyvUu0V1x06UkENSEkdtSn52yfc7OG030tDMxwjjjEX8tV1UGgpNzMTuObGRur3/pub?gid=0&single=true&output=csv"; 
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfT5WLBAE4dTq-uprfqbVnX1K8HWrOs8AlyGH60IdEkBee2Kg/viewform?usp=header";
@@ -243,11 +279,28 @@
     if(LOGO_URL && LOGO_URL !== "") { 
         document.getElementById('company-logo').src = LOGO_URL; 
         document.getElementById('nav-logo').src = LOGO_URL;
+        document.getElementById('welcome-logo').src = LOGO_URL;
     } else { 
         document.getElementById('company-logo').style.display = 'none'; 
         document.getElementById('nav-logo').style.display = 'none';
     }
     document.getElementById('designer-name').innerText = DESIGNER_NAME;
+
+    // 🔴 منطق شاشة الترحيب 🔴
+    function checkWelcome() {
+        if (!localStorage.getItem('welcome_seen')) {
+            document.getElementById('welcomeModal').style.display = 'flex';
+        } else {
+            // إذا كان المستخدم قد رأى الترحيب سابقاً، ابدأ الكاميرا فوراً (بعد تأخير بسيط جداً)
+            setTimeout(startCamera, 500); 
+        }
+    }
+
+    function closeWelcome() {
+        document.getElementById('welcomeModal').style.display = 'none';
+        localStorage.setItem('welcome_seen', 'true');
+        startCamera(); // بدء الكاميرا بعد إغلاق الترحيب
+    }
 
     async function checkRealConnection() {
         try { 
@@ -493,8 +546,8 @@
     function editCurrentProduct() {
         if(!currentProduct) return;
         
-        // 🔒 التحقق من كلمة السر
-        var pass = prompt("🔐 أدخل كود المدير (?):");
+        // 🔒 كلمة السر: 159955
+        var pass = prompt("🔐 أدخل كود الوصول لملف التعديل (؟):");
         if (pass !== "159955") { alert("⛔ كلمة المرور خاطئة!"); return; }
 
         let code = currentProduct.code2 || currentProduct.code1;
@@ -608,10 +661,10 @@
     function showStatus(text, type) { statusDiv.innerText = text; statusDiv.className = "status-msg " + type; statusDiv.style.display = 'block'; }
     
     (function initApp() {
-        setTimeout(startCamera, 1000); 
-        fetchProducts();
+        loadFromCache(); 
+        fetchProducts(); 
+        checkWelcome(); // التحقق من الترحيب
     })();
 </script>
 </body>
 </html>
-
