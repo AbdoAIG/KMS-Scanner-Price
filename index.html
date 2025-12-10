@@ -66,6 +66,24 @@
       padding-bottom: 80px; 
       display: flex; flex-direction: column;
   }
+
+  /* 🔴 كود الزر المعدل (توسيط مثالي) 🔴 */
+  .btn { 
+      display: block; 
+      width: 95%; /* تقليل العرض قليلاً لضمان عدم الالتصاق */
+      padding: 16px; 
+      margin: 15px auto; /* auto يضمن التوسيط الأفقي */
+      border: none; 
+      border-radius: 15px; 
+      font-size: 16px; 
+      font-weight: bold; 
+      cursor: pointer; 
+      color: white; 
+      text-align: center; /* ضمان توسيط النص داخل الزر */
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+      font-family: 'Tajawal', sans-serif; 
+      box-sizing: border-box; /* أهم سطر لحل مشاكل الحواف */
+  }
   
   .app-logo { max-width: 130px; max-height: 80px; display: block; margin: 0 auto 10px auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
 
@@ -675,3 +693,4 @@
 </script>
 </body>
 </html>
+
