@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>KMS Price Scanner (V66)</title>
+<title>KMS Price Scanner (V67)</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
 <style>
@@ -26,45 +26,36 @@
       --scanner-color: #ffffff;
   }
 
-  /* 🔴🔴 الحل الجذري لمشكلة تكبير الخط 🔴🔴 */
+  /* 1. تثبيت الأبعاد ومنع التكبير العشوائي */
   html, body {
-      /* 1. منع المتصفح من تعديل حجم الخط تلقائياً */
       -webkit-text-size-adjust: 100%;
-      -moz-text-size-adjust: 100%;
-      -ms-text-size-adjust: 100%;
       text-size-adjust: 100%;
-      
-      /* 2. إجبار المتصفح على استخدام حجم ثابت مهما كانت إعدادات الهاتف */
-      font-size: 16px !important; 
-      
       font-family: 'Tajawal', sans-serif; 
       text-align: center; 
       padding: 0; 
+      margin: 0;
       background-color: var(--bg-body); 
-      margin: 0; 
       color: var(--text-dark); 
       user-select: none; 
       -webkit-tap-highlight-color: transparent;
       padding-top: 40px;
-      
-      /* ضمان عدم ظهور سكرول بار جانبي */
       overflow-x: hidden;
-      width: 100vw;
-      height: 100vh;
+      width: 100%; height: 100%;
   }
   
-  /* باقي العناصر ستعتمد على الحجم الثابت */
-  
+  /* 2. الحاوية الرئيسية (مرفوعة عن الخلفية) */
   .container { 
-      max-width: 600px; margin: 10px auto; 
-      background: var(--card-bg); padding: 20px; 
+      max-width: 600px; 
+      margin: 20px auto; 
+      background: var(--card-bg); 
+      padding: 20px; 
       border-radius: 25px; 
       box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
       position: relative; 
-      /* استخدام min-height بالنسبة المئوية لضمان الظهور في الشاشات الصغيرة */
-      min-height: 80vh; 
+      min-height: 85vh; 
       padding-bottom: 80px; 
       display: flex; flex-direction: column;
+      z-index: 10; /* هام جداً: لتظهر فوق أي خلفية */
   }
   
   .app-logo { max-width: 130px; max-height: 80px; display: block; margin: 0 auto 10px auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
@@ -81,11 +72,25 @@
   .btn-edit { background: linear-gradient(45deg, #17a2b8, #138496); }
   .refresh-btn { background: white; border: 1px solid var(--secondary-color); color: var(--primary-color); padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; margin-bottom: 15px; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-  .menu-btn { position: absolute; top: 45px; right: 25px; font-size: 35px; cursor: pointer; background: none; border: none; color: var(--primary-color); z-index: 5000; filter: drop-shadow(0 2px 2px rgba(255,255,255,0.8)); }
+  /* 3. زر القائمة الثابت (Fixed Layer) */
+  .menu-btn { 
+      position: fixed; /* ثابت على الشاشة */
+      top: 20px; 
+      right: 20px; 
+      font-size: 30px; 
+      cursor: pointer; 
+      background: rgba(255,255,255,0.9); /* خلفية لضمان الرؤية */
+      width: 45px; height: 45px; line-height: 45px;
+      border-radius: 50%;
+      border: none; 
+      color: var(--primary-color); 
+      z-index: 99999; /* أعلى طبقة في التطبيق */
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
 
-  /* القائمة الجانبية */
+  /* 4. القائمة الجانبية الزجاجية */
   .sidenav {
-      height: 100%; width: 0; position: fixed; z-index: 6000; top: 0; right: 0;
+      height: 100%; width: 0; position: fixed; z-index: 100000; top: 0; right: 0;
       background: rgba(255, 255, 255, 0.95); 
       backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
       overflow-x: hidden; transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -101,14 +106,15 @@
       color: var(--primary-color); border-color: var(--secondary-color);
   }
   .sidenav .closebtn { position: absolute; top: 15px; right: 20px; font-size: 35px; color: #777; background: none; box-shadow: none; width: auto; margin: 0; padding: 0; border: none; }
-  .sidenav-header { margin-top: 30px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+  
+  .sidenav-header { margin-top: 40px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.05); }
   .sidenav-header img { width: 60px; height: 60px; object-fit: contain; border-radius: 50%; background: white; padding: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 8px; }
   .sidenav-header h3 { font-size: 18px; margin: 0; color: var(--primary-color); }
   
-  .search-wrapper { position: relative; margin-bottom: 20px; }
+  .search-wrapper { position: relative; margin-bottom: 20px; z-index: 20; }
   .search-input { width: 100%; padding: 15px; background: #f8f9fa; border: 2px solid transparent; border-radius: 15px; font-size: 16px; font-family: 'Tajawal', sans-serif; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: 0.3s; box-sizing: border-box; outline: none; }
   .search-input:focus { background: white; border-color: var(--secondary-color); box-shadow: 0 4px 15px rgba(0,123,255,0.2); }
-  .suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 0 0 15px 15px; z-index: 1000; max-height: 250px; overflow-y: auto; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+  .suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 0 0 15px 15px; z-index: 100; max-height: 250px; overflow-y: auto; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
   .suggestion-item { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; text-align: right; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--text-dark); font-weight: 500; }
   .suggestion-thumb { width: 40px; height: 40px; object-fit: contain; border-radius: 8px; border: 1px solid #eee; background: #fff; margin-left: 10px; }
   .prod-info-flex { display: flex; align-items: center; }
@@ -117,12 +123,18 @@
   .sub-cat-btn { background: white; color: var(--text-light); border: 1px solid #eee; padding: 8px 18px; border-radius: 25px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-family: 'Tajawal', sans-serif; }
   .sub-cat-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); box-shadow: 0 4px 10px rgba(0,98,204,0.4); transform: scale(1.05); }
 
-  /* الماسح */
-  .scanner-wrapper { position: relative; width: 100%; height: 350px; margin-bottom: 10px; border-radius: 20px; overflow: hidden; background: #2a7793; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 3px solid var(--secondary-color); }
-  #reader { width: 100%; height: 100%; object-fit: cover; }
+  /* 5. الماسح (Video Containment) */
+  .scanner-wrapper { 
+      position: relative; width: 100%; height: 350px; margin-bottom: 10px; border-radius: 20px; overflow: hidden; background: #2a7793; border: 3px solid var(--secondary-color); box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      z-index: 5; /* طبقة منخفضة لكي لا تغطي القوائم */
+  }
+  /* إجبار الفيديو على احترام الحدود */
+  .scanner-wrapper video { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: 20px; }
+  #reader { width: 100%; height: 100%; }
+
   .laser-beam { position: absolute; width: 100%; height: 3px; background: #ff0000; box-shadow: 0 0 20px #ff0000; top: 0; left: 0; z-index: 10; animation: scan-anim 1.5s infinite ease-in-out; pointer-events: none; }
   @keyframes scan-anim { 0% { top: 10%; opacity: 0; } 50% { opacity: 1; } 100% { top: 90%; opacity: 0; } }
-  .scan-overlay { position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px; border-radius: 15px; pointer-events: none; box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.1); }
+  .scan-overlay { position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px; border-radius: 15px; pointer-events: none; box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.1); z-index: 10; }
   .scan-overlay::before, .scan-overlay::after { content: ''; position: absolute; width: 40px; height: 40px; border-color: white; border-style: solid; border-width: 0; filter: drop-shadow(0 0 5px white); }
   .scan-overlay::before { top: 0; left: 0; border-top-width: 4px; border-left-width: 4px; border-radius: 12px 0 0 0; }
   .scan-overlay::after { top: 0; right: 0; border-top-width: 4px; border-right-width: 4px; border-radius: 0 12px 0 0; }
@@ -142,7 +154,7 @@
   input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--secondary-color); cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
 
   #list-screen, .result-box { display: none; text-align: right; }
-  .result-box { text-align: center; background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; }
+  .result-box { text-align: center; background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; z-index: 50; position: relative; }
   .product-img { width: auto; height: 120px; max-width: 100%; object-fit: contain; border-radius: 10px; margin: 0 auto 15px; border: 1px solid #eee; background: white; cursor: pointer; display: block; }
   .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed #eee; }
   .detail-label { color: var(--text-light); font-weight: bold; font-size: 14px; margin-left: 10px; }
@@ -157,12 +169,12 @@
   #back-fab { position: fixed; bottom: 25px; left: 25px; width: 60px; height: 60px; background-color: var(--secondary-color); color: white; border-radius: 50%; border: none; box-shadow: 0 5px 20px rgba(0,123,255,0.4); font-size: 28px; cursor: pointer; z-index: 2000; display: none; align-items: center; justify-content: center; transition: transform 0.2s; }
   #back-fab:active { transform: scale(0.9); }
 
-  .modal { display: none; position: fixed; z-index: 5000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); backdrop-filter: blur(5px); }
+  .modal { display: none; position: fixed; z-index: 100001; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); backdrop-filter: blur(5px); }
   .modal-content { margin: auto; display: block; width: 90%; max-width: 700px; border-radius: 15px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
   .close-zoom { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; }
-  .form-modal { display: none; position: fixed; z-index: 4000; left: 0; top: 0; width: 100%; height: 100%; background-color: white; }
+  .form-modal { display: none; position: fixed; z-index: 100000; left: 0; top: 0; width: 100%; height: 100%; background-color: white; }
   .form-iframe { width: 100%; height: 100%; border: none; }
-  .close-form-btn { position: absolute; top: 15px; left: 15px; background: #dc3545; color: white; border: none; padding: 10px 25px; border-radius: 25px; font-size: 14px; font-weight: bold; cursor: pointer; z-index: 4001; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3); }
+  .close-form-btn { position: absolute; top: 15px; left: 15px; background: #dc3545; color: white; border: none; padding: 10px 25px; border-radius: 25px; font-size: 14px; font-weight: bold; cursor: pointer; z-index: 100001; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3); }
 
   .action-buttons { display: flex; gap: 15px; margin-top: 25px; }
   .action-buttons button { flex: 1; margin-top: 0; }
@@ -170,8 +182,8 @@
   .loading { background-color: #e2f0fb; color: var(--primary-color); }
   .designer-footer { margin-top: auto; padding-top: 30px; border-top: 1px solid #eee; font-size: 12px; color: #999; text-align: center; font-weight: bold; opacity: 0.8; }
 
-  /* شاشة الترحيب */
-  .welcome-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+  /* 6. شاشة الترحيب */
+  .welcome-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
   .welcome-box { background: white; padding: 30px 25px; border-radius: 25px; width: 85%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.4); animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
   .welcome-box h3 { color: var(--primary-color); margin-top: 15px; font-size: 22px; margin-bottom: 10px; }
   .welcome-box p { color: #666; font-size: 15px; line-height: 1.6; margin-bottom: 20px; }
@@ -215,8 +227,9 @@
 
 <button id="back-fab" onclick="goBack()">🔙</button>
 
+<button class="menu-btn" onclick="openNav()">☰</button>
+
 <div class="container">
-  <button class="menu-btn" onclick="openNav()">☰</button>
   <div id="scan-screen">
     <img id="company-logo" src="" class="app-logo" alt="Logo" onerror="this.style.display='none'">
     <h2 style="color:var(--primary-color); margin-top:0; font-size: 22px; font-weight: 800;">ماسح المنتجات</h2>
@@ -243,7 +256,7 @@
         <input type="range" id="zoom-slider" min="1" max="3" step="0.1" value="1" oninput="applyZoom(this.value)">
     </div>
     
-    <a id="add-btn" href="#" target="_blank" class="btn btn-warning" style="text-decoration: none;">➕ إضافة منتج جديد</a>
+    <a id="add-btn" href="#" target="_blank" class="btn btn-warning" style="text-decoration:none;">➕ إضافة منتج جديد</a>
   </div>
 
   <div id="list-screen">
@@ -259,8 +272,8 @@
         <div class="detail-row"> <span class="detail-label">القسم:</span> <span id="p_cat" class="detail-value"></span> </div>
         <div class="detail-row"> <span class="detail-label">الفرع:</span> <span id="p_subcat" class="detail-value"></span> </div>
         <div class="detail-row"> <span class="detail-label">المنتج:</span> <span id="p_name" class="detail-value"></span> </div>
-        <div class="detail-row"> <span class="detail-label">الباركود (الدولي):</span> <span id="p_code_global" class="detail-value barcode-style"></span> </div>
         <div class="detail-row"> <span class="detail-label">الباركود (المحلي):</span> <span id="p_code_local" class="detail-value barcode-style"></span> </div>
+        <div class="detail-row"> <span class="detail-label">الباركود (الدولي):</span> <span id="p_code_global" class="detail-value barcode-style"></span> </div>
     </div>
     <div id="prices-container"></div>
     <div class="action-buttons">
@@ -553,9 +566,9 @@
     function editCurrentProduct() {
         if(!currentProduct) return;
         
-        // 🔒 كلمة السر: 2030
-        var pass = prompt("🔐 أدخل كود المدير (2030):");
-        if (pass !== "2030") { alert("⛔ كلمة المرور خاطئة!"); return; }
+        // 🔒 كلمة السر: 159955
+        var pass = prompt("🔐 أدخل كلمه المرور :");
+        if (pass !== "159955") { alert("⛔ كلمة المرور خاطئة!"); return; }
 
         let code = currentProduct.code2 || currentProduct.code1;
         let sep = GOOGLE_FORM_URL.includes('?') ? '&' : '?';
@@ -670,7 +683,7 @@
     (function initApp() {
         loadFromCache(); 
         fetchProducts(); 
-        checkWelcome(); 
+        checkWelcome(); // التحقق من الترحيب
     })();
 </script>
 </body>
