@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<title>KMS Price Scanner (V67)</title>
+<title>تطبيق الشركة (V74 Welcome Test)</title>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
 <style>
@@ -26,36 +26,21 @@
       --scanner-color: #ffffff;
   }
 
-  /* 1. تثبيت الأبعاد ومنع التكبير العشوائي */
   html, body {
-      -webkit-text-size-adjust: 100%;
-      text-size-adjust: 100%;
-      font-family: 'Tajawal', sans-serif; 
-      text-align: center; 
-      padding: 0; 
-      margin: 0;
-      background-color: var(--bg-body); 
-      color: var(--text-dark); 
-      user-select: none; 
+      -webkit-text-size-adjust: 100%; text-size-adjust: 100%;
+      font-family: 'Tajawal', sans-serif; text-align: center; 
+      padding: 0; margin: 0; background-color: var(--bg-body); 
+      color: var(--text-dark); user-select: none; 
       -webkit-tap-highlight-color: transparent;
-      padding-top: 40px;
-      overflow-x: hidden;
-      width: 100%; height: 100%;
+      padding-top: 40px; overflow-x: hidden; width: 100%; height: 100%;
   }
   
-  /* 2. الحاوية الرئيسية (مرفوعة عن الخلفية) */
   .container { 
-      max-width: 600px; 
-      margin: 20px auto; 
-      background: var(--card-bg); 
-      padding: 20px; 
-      border-radius: 25px; 
+      max-width: 600px; margin: 20px auto; background: var(--card-bg); 
+      padding: 20px; border-radius: 25px; 
       box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
-      position: relative; 
-      min-height: 85vh; 
-      padding-bottom: 80px; 
-      display: flex; flex-direction: column;
-      z-index: 10; /* هام جداً: لتظهر فوق أي خلفية */
+      position: relative; min-height: 85vh; padding-bottom: 80px; 
+      display: flex; flex-direction: column; z-index: 10;
   }
   
   .app-logo { max-width: 130px; max-height: 80px; display: block; margin: 0 auto 10px auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
@@ -72,41 +57,13 @@
   .btn-edit { background: linear-gradient(45deg, #17a2b8, #138496); }
   .refresh-btn { background: white; border: 1px solid var(--secondary-color); color: var(--primary-color); padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; margin-bottom: 15px; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-  /* 3. زر القائمة الثابت (Fixed Layer) */
-  .menu-btn { 
-      position: fixed; /* ثابت على الشاشة */
-      top: 20px; 
-      right: 20px; 
-      font-size: 30px; 
-      cursor: pointer; 
-      background: rgba(255,255,255,0.9); /* خلفية لضمان الرؤية */
-      width: 45px; height: 45px; line-height: 45px;
-      border-radius: 50%;
-      border: none; 
-      color: var(--primary-color); 
-      z-index: 99999; /* أعلى طبقة في التطبيق */
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  }
+  .menu-btn { position: fixed; top: 20px; right: 20px; font-size: 30px; cursor: pointer; background: rgba(255,255,255,0.9); width: 45px; height: 45px; line-height: 45px; border-radius: 50%; border: none; color: var(--primary-color); z-index: 99999; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
 
-  /* 4. القائمة الجانبية الزجاجية */
-  .sidenav {
-      height: 100%; width: 0; position: fixed; z-index: 100000; top: 0; right: 0;
-      background: rgba(255, 255, 255, 0.95); 
-      backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-      overflow-x: hidden; transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-      padding-top: 20px; text-align: center; box-shadow: -10px 0 30px rgba(0,0,0,0.15); border-left: 1px solid rgba(255,255,255,0.6);
-  }
-  .sidenav a {
-      background: white; margin: 12px 15px; padding: 15px; text-decoration: none; font-size: 16px; color: var(--text-dark);
-      display: block; transition: 0.3s; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); font-weight: 700;
-      border: 1px solid transparent; position: relative; overflow: hidden;
-  }
-  .sidenav a:hover {
-      background: white; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-      color: var(--primary-color); border-color: var(--secondary-color);
-  }
+  /* القائمة الجانبية */
+  .sidenav { height: 100%; width: 0; position: fixed; z-index: 100000; top: 0; right: 0; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); overflow-x: hidden; transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); padding-top: 20px; text-align: center; box-shadow: -10px 0 30px rgba(0,0,0,0.15); border-left: 1px solid rgba(255,255,255,0.6); }
+  .sidenav a { background: white; margin: 12px 15px; padding: 15px; text-decoration: none; font-size: 16px; color: var(--text-dark); display: block; transition: 0.3s; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); font-weight: 700; border: 1px solid transparent; position: relative; overflow: hidden; }
+  .sidenav a:hover { background: white; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); color: var(--primary-color); border-color: var(--secondary-color); }
   .sidenav .closebtn { position: absolute; top: 15px; right: 20px; font-size: 35px; color: #777; background: none; box-shadow: none; width: auto; margin: 0; padding: 0; border: none; }
-  
   .sidenav-header { margin-top: 40px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.05); }
   .sidenav-header img { width: 60px; height: 60px; object-fit: contain; border-radius: 50%; background: white; padding: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 8px; }
   .sidenav-header h3 { font-size: 18px; margin: 0; color: var(--primary-color); }
@@ -123,12 +80,8 @@
   .sub-cat-btn { background: white; color: var(--text-light); border: 1px solid #eee; padding: 8px 18px; border-radius: 25px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-family: 'Tajawal', sans-serif; }
   .sub-cat-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); box-shadow: 0 4px 10px rgba(0,98,204,0.4); transform: scale(1.05); }
 
-  /* 5. الماسح (Video Containment) */
-  .scanner-wrapper { 
-      position: relative; width: 100%; height: 350px; margin-bottom: 10px; border-radius: 20px; overflow: hidden; background: #2a7793; border: 3px solid var(--secondary-color); box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-      z-index: 5; /* طبقة منخفضة لكي لا تغطي القوائم */
-  }
-  /* إجبار الفيديو على احترام الحدود */
+  /* الماسح */
+  .scanner-wrapper { position: relative; width: 100%; height: 350px; margin-bottom: 10px; border-radius: 20px; overflow: hidden; background: #000; border: 3px solid var(--secondary-color); box-shadow: 0 10px 30px rgba(0,0,0,0.15); z-index: 5; }
   .scanner-wrapper video { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: 20px; }
   #reader { width: 100%; height: 100%; }
 
@@ -182,9 +135,21 @@
   .loading { background-color: #e2f0fb; color: var(--primary-color); }
   .designer-footer { margin-top: auto; padding-top: 30px; border-top: 1px solid #eee; font-size: 12px; color: #999; text-align: center; font-weight: bold; opacity: 0.8; }
 
-  /* 6. شاشة الترحيب */
-  .welcome-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-  .welcome-box { background: white; padding: 30px 25px; border-radius: 25px; width: 85%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.4); animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+  /* 🔴 شاشة الترحيب القوية 🔴 */
+  .welcome-overlay { 
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+      background: rgba(0,0,0,0.98); /* خلفية داكنة جداً لحجب الكاميرا */
+      z-index: 2147483647; /* أعلى رقم Z-Index ممكن لضمان الظهور فوق الكاميرا */
+      display: none; 
+      align-items: center; justify-content: center; 
+      backdrop-filter: blur(10px); 
+  }
+  .welcome-box { 
+      background: white; padding: 30px 25px; border-radius: 25px; 
+      width: 85%; max-width: 400px; text-align: center; 
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4); 
+      animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  }
   .welcome-box h3 { color: var(--primary-color); margin-top: 15px; font-size: 22px; margin-bottom: 10px; }
   .welcome-box p { color: #666; font-size: 15px; line-height: 1.6; margin-bottom: 20px; }
   .welcome-list { list-style: none; padding: 0; text-align: right; margin-bottom: 25px; }
@@ -202,17 +167,15 @@
 <div id="welcomeModal" class="welcome-overlay">
     <div class="welcome-box">
         <img id="welcome-logo" src="" class="welcome-logo" onerror="this.style.display='none'">
-        <h3>مرحباً بك/ي في KMS Price Scanner! 👋</h3>
-        <p>هذا التطبيق يسهل عليك معرفة أسعار المنتجات بواسطة هاتفك/ي دون الحاجة للذهاب للكاشير.</p>
+        <h3>مرحباً بك في تطبيقك! 👋</h3>
+        <p>نظام ذكي لإدارة مخزونك بسهولة واحترافية.</p>
         <ul class="welcome-list">
-            <li><span>📱</span> <b>توجية الكاميرا:</b> قم بتوجية كاميرا هاتفك/ي إلي الباركود.</li>
             <li><span>📸</span> <b>ماسح ذكي:</b> قراءة فورية للباركود (المحلي والدولي).</li>
             <li><span>🔍</span> <b>بحث بالاسم:</b> لا يوجد باركود؟ اكتب "اسم المنتج" للبحث عنه.</li>
-            <li><span>📚</span> <b>بحث في الأقسام:</b> لا تعرف/ي اسم المنتج؟ قم بالبحث داخل القسم الخاص بك/ي.</li>
-            <li><span>⚡️</span> <b>وضع الأوفلاين:</b> يعمل بكفاءة تامة حتى بدون إنترنت.</li>
-            <li><span>🙋🏼‍♀️🙋🏻</span> <b>إبداء رأيك/ي:</b> قم بإبداء رأيك عن التطبيق وإخباري إن كان هناك اي فكرة تود إضافتها، وشكرا لكم😊</li>
+            <li><span>⚡</span> <b>وضع الأوفلاين:</b> يعمل بكفاءة تامة حتى بدون إنترنت.</li>
+            <li><span>✏️</span> <b>تحكم كامل:</b> إمكانية تعديل الأسعار (للمدير فقط).</li>
         </ul>
-        <button class="btn btn-primary" onclick="closeWelcome()"> إبدأ العمل الأن🚀</button>
+        <button class="btn btn-primary" onclick="closeWelcome()">ابدأ العمل الآن 🚀</button>
     </div>
 </div>
 
@@ -220,7 +183,7 @@
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <div class="sidenav-header">
         <img id="nav-logo" src="" alt="Logo">
-        <h3 style="margin: 5px 0 0 0; color: var(--primary-color);">أقسام المول</h3>
+        <h3 style="margin: 5px 0 0 0; color: var(--primary-color);">أقسام المخزن</h3>
     </div>
     <div id="categories-container"></div>
 </div>
@@ -272,8 +235,8 @@
         <div class="detail-row"> <span class="detail-label">القسم:</span> <span id="p_cat" class="detail-value"></span> </div>
         <div class="detail-row"> <span class="detail-label">الفرع:</span> <span id="p_subcat" class="detail-value"></span> </div>
         <div class="detail-row"> <span class="detail-label">المنتج:</span> <span id="p_name" class="detail-value"></span> </div>
-        <div class="detail-row"> <span class="detail-label">الباركود (المحلي):</span> <span id="p_code_local" class="detail-value barcode-style"></span> </div>
-        <div class="detail-row"> <span class="detail-label">الباركود (الدولي):</span> <span id="p_code_global" class="detail-value barcode-style"></span> </div>
+        <div class="detail-row"> <span class="detail-label">باركود (C):</span> <span id="p_code_local" class="detail-value barcode-style"></span> </div>
+        <div class="detail-row"> <span class="detail-label">باركود (D):</span> <span id="p_code_global" class="detail-value barcode-style"></span> </div>
     </div>
     <div id="prices-container"></div>
     <div class="action-buttons">
@@ -308,18 +271,24 @@
     }
     document.getElementById('designer-name').innerText = DESIGNER_NAME;
 
+    // 🔴🔴 التحكم في الترحيب والكاميرا 🔴🔴
     function checkWelcome() {
+        // 1. مسح الذاكرة مؤقتاً لكي ترى الترحيب الآن (امسح هذا السطر لاحقاً إذا أردت)
+        localStorage.removeItem('welcome_seen');
+
         if (!localStorage.getItem('welcome_seen')) {
+            // إظهار الترحيب وإخفاء الكاميرا
             document.getElementById('welcomeModal').style.display = 'flex';
         } else {
+            // إذا كان المستخدم قديماً، ابدأ الكاميرا
             setTimeout(startCamera, 500); 
         }
     }
 
     function closeWelcome() {
         document.getElementById('welcomeModal').style.display = 'none';
-        localStorage.setItem('welcome_seen', 'true');
-        startCamera();
+        localStorage.setItem('welcome_seen', 'true'); // حفظ أن المستخدم شاهد الترحيب
+        startCamera(); // الآن فقط ابدأ الكاميرا
     }
 
     async function checkRealConnection() {
@@ -567,7 +536,7 @@
         if(!currentProduct) return;
         
         // 🔒 كلمة السر: 159955
-        var pass = prompt("🔐 أدخل كلمه المرور :");
+        var pass = prompt("🔐 أدخل كلمه المرور):");
         if (pass !== "159955") { alert("⛔ كلمة المرور خاطئة!"); return; }
 
         let code = currentProduct.code2 || currentProduct.code1;
@@ -633,6 +602,9 @@
     }
 
     function startCamera() {
+      // ⚠️ تأكد أننا لا نبدأ الكاميرا إذا كانت شاشة الترحيب مفتوحة
+      if(document.getElementById('welcomeModal').style.display === 'flex') return;
+
       if(document.getElementById('reader').innerHTML !== "") return;
       
       setTimeout(() => {
@@ -683,7 +655,7 @@
     (function initApp() {
         loadFromCache(); 
         fetchProducts(); 
-        checkWelcome(); // التحقق من الترحيب
+        checkWelcome(); // 👈 هذا هو المسؤول عن الترحيب والبدء
     })();
 </script>
 </body>
